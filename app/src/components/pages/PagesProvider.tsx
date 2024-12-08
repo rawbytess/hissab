@@ -88,6 +88,7 @@ const PagesProvider = ({ children }: PropsWithChildren) => {
   // Delete a note
   const deleteNote = (id: string) => {
     setNotes(notes.filter((note) => note.id !== id));
+    setCurrentPage(notes[0]);
   };
 
   return (

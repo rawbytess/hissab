@@ -25,13 +25,13 @@ export default function Pages() {
   const [editing, setEditing] = useState<Page | undefined>(undefined);
   useEffect(() => {
     if (notes.length === 0) {
-      const newNote: Page = createNote("New Page", "");
+      const newNote: Page = createNote(getRandomPlaceholderName(), "");
       setCurrentPage(newNote);
     }
     if (currentPage === undefined) {
       setCurrentPage(notes[0]);
     }
-  }, []);
+  }, [notes]);
 
   return (
     <div>
@@ -69,17 +69,17 @@ export default function Pages() {
                   }}
                 />
                 <ToolTips tip={"Done Editing"} side={"right"}>
-                  <button
+                  <Button
                     className={"text-green-600 hover:bg-gray-900 p-2"}
                     onClick={() => {
                       setEditing(undefined);
                     }}
                   >
                     <ClipboardCheck />
-                  </button>
+                  </Button>
                 </ToolTips>
                 <ToolTips tip={"Delete Page"} side={"right"}>
-                  <button
+                  <Button
                     className={"text-red-600 w-10 hover:bg-gray-900 p-2"}
                     onClick={() => {
                       deleteNote(page.id);
@@ -88,7 +88,7 @@ export default function Pages() {
                     }}
                   >
                     <Trash2 />
-                  </button>
+                  </Button>
                 </ToolTips>
               </div>
             ) : (
