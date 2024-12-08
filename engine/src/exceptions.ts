@@ -1,10 +1,7 @@
 class UserError extends Error {
-  private code: number;
-
   constructor(code: number) {
     super("User Error");
     this.name = this.constructor.name;
-    this.code = code;
   }
 }
 
@@ -19,12 +16,9 @@ class ReportError extends Error {
 }
 
 class UnhandledError extends Error {
-  private code: number;
-
   constructor(code: number) {
     super("Unhandled Error");
     this.name = this.constructor.name;
-    this.code = code;
   }
 }
 

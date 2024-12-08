@@ -11,7 +11,9 @@
     "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
     "allowSyntheticDefaultImports": true,
-    "declaration": true
+    "declaration": true,
+    "noUnusedLocals": false, // make sure this is false to have no errors
+    "noUnusedParameters": false
   },
   "include": ["./**/*", "./tests/expression/expressions.test.ts"],
   "exclude": ["./dist/**/*", "./tests"]

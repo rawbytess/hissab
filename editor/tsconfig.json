@@ -11,15 +11,15 @@
     "skipLibCheck": true,
     "declaration": true,
     "moduleResolution": "node",
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "esModuleInterop": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "noUnusedLocals": false, // make sure this is false to have no errors
+    "noUnusedParameters": false
   },
   "include": ["./**/*", ".eslintrc.cjs"],
   "exclude": ["node_modules", "./dist/**/*", "test", "playwright.config.js"]

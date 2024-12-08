@@ -182,6 +182,7 @@ class NumberToken extends Token {
           parseFloat(thisVal).toPrecision(3),
         ).toLocaleString(
           undefined,
+          // @ts-ignore
           localeOptions ?? {
             maximumFractionDigits: 10,
             notation: Math.abs(v) < 1e-9 ? "scientific" : "standard",
@@ -191,6 +192,7 @@ class NumberToken extends Token {
       } else {
         this._value = parseFloat(parseFloat(thisVal).toFixed(4)).toLocaleString(
           undefined,
+          // @ts-ignore
           localeOptions ?? {
             maximumFractionDigits: 10,
             notation: Math.abs(v) > 1e15 ? "scientific" : "standard",

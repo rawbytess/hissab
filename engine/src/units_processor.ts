@@ -1,7 +1,6 @@
 import { UserError } from "./exceptions";
 import tokenFactory from "./tokens/token_factory";
 import TokenBaseType from "./tokens/token_basetypes";
-import { getRate } from "./utils";
 import UnitTypes from "./types/unit_enum";
 import {
   DateToken,
@@ -9,22 +8,6 @@ import {
   expressionUnit,
   NumberToken,
 } from "./tokens/tokens";
-
-async function convertCurrency(
-  srvVal: number,
-  srcUnit: string,
-  destUnit: string,
-  date: DateToken | null,
-) {
-  let dateStr;
-  if (date && date.year && date.month && date.date && date.year > 1999) {
-    dateStr = `${date.year}`;
-    dateStr += date.month < 10 ? `-0${date.month}` : `-${date.month}`;
-    dateStr += date.date < 10 ? `-0${date.date}` : `-${date.date}`;
-  }
-  const rate: { [key: string]: number } = await getRate(srcUnit, dateStr);
-  return srvVal * rate[destUnit];
-}
 
 class ProcessConversions {
   _token: NumberToken | DateToken | ColorToken;
