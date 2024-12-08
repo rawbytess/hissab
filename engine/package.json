@@ -1,0 +1,42 @@
+{
+  "name": "engine",
+  "version": "0.5.5",
+  "description": "Hissab engine NPM module",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "jest",
+    "test-single": "jest --config jest_single.config.cjs",
+    "test:Expressions": "npm run build && node --experimental-specifier-resolution=node tests/cli.js",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.41.2",
+    "@types/chroma-js": "^2.4.4",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.17",
+    "cross-env": "^7.0.3",
+    "jest": "^29.6.4",
+    "jest-playwright-preset": "^4.0.0",
+    "playwright": "^1.42.1",
+    "regenerator-runtime": "^0.14.0",
+    "ts-jest": "^29.1.1"
+  },
+  "dependencies": {
+    "chroma-js": "^2.4.2",
+    "spacetime": "^7.4.7",
+    "timezone-soft": "^1.4.1"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rawbytess/hissab-engine.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/rawbytess"
+  },
+  "author": "Mufaddal Makati",
+  "homepage": "https://github.com/rawbytess/hissab-engine#readme"
+}

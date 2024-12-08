@@ -1,0 +1,10 @@
+# Ignore artifacts:
+build
+node_modules
+dist
+.docusaurus
+.wrangler
+resources
+public
+.next
+pnpm-lock.yaml

@@ -1,0 +1,24 @@
+const enum UnitTypes {
+  LENGTH,
+  TEMPERATURE,
+  WEIGHT,
+  AREA,
+  VOLUME,
+  ANGLE,
+  DATA,
+  ENERGY,
+  FORCE,
+  TIME,
+  AMPM,
+  MONTH,
+  TIMEZONE,
+  DURATION,
+  CITY,
+  GEOMETRY,
+  PREFIX,
+  POSTFIX,
+  CURRENCY,
+  FUNCTION,
+}
+
+export default UnitTypes;

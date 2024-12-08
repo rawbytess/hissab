@@ -1,0 +1,135 @@
+import TokenBaseType from "../tokens/token_basetypes";
+
+type SynonymsType = {
+  [syn: string]: {
+    value: string;
+    basetype: TokenBaseType;
+  };
+};
+const Synonyms: SynonymsType = {
+  times: { value: "*", basetype: TokenBaseType.SYMBOL },
+  time: { value: "now", basetype: TokenBaseType.STRING },
+  date: { value: "today", basetype: TokenBaseType.STRING },
+  in: { value: "to", basetype: TokenBaseType.STRING },
+  into: { value: "to", basetype: TokenBaseType.STRING },
+  as: { value: "to", basetype: TokenBaseType.STRING },
+  add: { value: "sum", basetype: TokenBaseType.STRING },
+  of: { value: "*", basetype: TokenBaseType.SYMBOL },
+  "**": { value: "^", basetype: TokenBaseType.SYMBOL },
+
+  inches: { value: "inch", basetype: TokenBaseType.STRING },
+  // "'": { value: "inch", basetype: TokenBaseType.STRING },
+  // '"': { value: "feet", basetype: TokenBaseType.STRING },
+  centuries: { value: "century", basetype: TokenBaseType.STRING },
+  km: { value: "kilo meter", basetype: TokenBaseType.STRING },
+  cm: { value: "centi meter", basetype: TokenBaseType.STRING },
+  mm: { value: "milli meter", basetype: TokenBaseType.STRING },
+  nm: { value: "nano meter", basetype: TokenBaseType.STRING },
+  lb: { value: "pound", basetype: TokenBaseType.STRING },
+
+  foot: { value: "feet", basetype: TokenBaseType.STRING },
+  "'": { value: "feet", basetype: TokenBaseType.STRING },
+  '"': { value: "inch", basetype: TokenBaseType.STRING },
+  metre: { value: "meter", basetype: TokenBaseType.STRING },
+  mtr: { value: "meter", basetype: TokenBaseType.STRING },
+  au: { value: "astronomical unit", basetype: TokenBaseType.STRING },
+  sq: { value: "square", basetype: TokenBaseType.STRING },
+
+  "cu km": { value: "cubic kilometer", basetype: TokenBaseType.STRING },
+  "sq km": { value: "square kilometer", basetype: TokenBaseType.STRING },
+
+  ml: { value: "milliliter", basetype: TokenBaseType.STRING },
+  litre: { value: "liter", basetype: TokenBaseType.STRING },
+  ltr: { value: "liter", basetype: TokenBaseType.STRING },
+  tsp: { value: "teaspoon", basetype: TokenBaseType.STRING },
+  tbsp: { value: "tablespoon", basetype: TokenBaseType.STRING },
+  "fl oz": { value: "fluid ounce", basetype: TokenBaseType.STRING },
+  cu: { value: "cubic", basetype: TokenBaseType.STRING },
+  cc: { value: "cubic centimeter", basetype: TokenBaseType.STRING },
+  oz: { value: "ounce", basetype: TokenBaseType.STRING },
+
+  kg: { value: "kilo gram", basetype: TokenBaseType.STRING },
+  mg: { value: "milli gram", basetype: TokenBaseType.STRING },
+  "atomic mass unit": { value: "amu", basetype: TokenBaseType.STRING },
+
+  cel: { value: "celsius", basetype: TokenBaseType.STRING },
+  fah: { value: "fahrenheit", basetype: TokenBaseType.STRING },
+
+  kb: { value: "kilo byte", basetype: TokenBaseType.STRING },
+  mb: { value: "mega byte", basetype: TokenBaseType.STRING },
+  gb: { value: "giga byte", basetype: TokenBaseType.STRING },
+  tb: { value: "tera byte", basetype: TokenBaseType.STRING },
+  kbit: { value: "kilo bit", basetype: TokenBaseType.STRING },
+  mbit: { value: "mega bit", basetype: TokenBaseType.STRING },
+  gbit: { value: "giga bit", basetype: TokenBaseType.STRING },
+  tbit: { value: "tera bit", basetype: TokenBaseType.STRING },
+
+  hr: { value: "hour", basetype: TokenBaseType.STRING },
+
+  jan: { value: "january", basetype: TokenBaseType.STRING },
+  feb: { value: "february", basetype: TokenBaseType.STRING },
+  mar: { value: "march", basetype: TokenBaseType.STRING },
+  apr: { value: "april", basetype: TokenBaseType.STRING },
+  jun: { value: "june", basetype: TokenBaseType.STRING },
+  jul: { value: "july", basetype: TokenBaseType.STRING },
+  aug: { value: "august", basetype: TokenBaseType.STRING },
+  sep: { value: "september", basetype: TokenBaseType.STRING },
+  oct: { value: "october", basetype: TokenBaseType.STRING },
+  nov: { value: "november", basetype: TokenBaseType.STRING },
+  dec: { value: "december", basetype: TokenBaseType.STRING },
+
+  septillion: { value: "yotta", basetype: TokenBaseType.STRING },
+  sextillion: { value: "zetta", basetype: TokenBaseType.STRING },
+  quintillion: { value: "exa", basetype: TokenBaseType.STRING },
+  quadrillion: { value: "peta", basetype: TokenBaseType.STRING },
+  trillion: { value: "tera", basetype: TokenBaseType.STRING },
+  billion: { value: "giga", basetype: TokenBaseType.STRING },
+  million: { value: "mega", basetype: TokenBaseType.STRING },
+  thousand: { value: "kilo", basetype: TokenBaseType.STRING },
+  hundred: { value: "hecto", basetype: TokenBaseType.STRING },
+  ten: { value: "deka", basetype: TokenBaseType.STRING },
+  deca: { value: "deka", basetype: TokenBaseType.STRING },
+  tenth: { value: "deci", basetype: TokenBaseType.STRING },
+  hundredth: { value: "centi", basetype: TokenBaseType.STRING },
+  thousandth: { value: "milli", basetype: TokenBaseType.STRING },
+  millionth: { value: "micro", basetype: TokenBaseType.STRING },
+  billionth: { value: "nano", basetype: TokenBaseType.STRING },
+  trillionth: { value: "pico", basetype: TokenBaseType.STRING },
+  quadrillionth: { value: "femto", basetype: TokenBaseType.STRING },
+  quintillionth: { value: "atto", basetype: TokenBaseType.STRING },
+  sextillionth: { value: "zepto", basetype: TokenBaseType.STRING },
+  septillionth: { value: "yocto", basetype: TokenBaseType.STRING },
+
+  k: { value: "kilo", basetype: TokenBaseType.STRING },
+  m: { value: "mega", basetype: TokenBaseType.STRING },
+  b: { value: "giga", basetype: TokenBaseType.STRING },
+  t: { value: "tera", basetype: TokenBaseType.STRING },
+
+  log: { value: "loge", basetype: TokenBaseType.STRING },
+
+  annually: { value: "yearly", basetype: TokenBaseType.STRING },
+
+  "color temp": { value: "color temperature", basetype: TokenBaseType.STRING },
+  "unix time": { value: "epoch", basetype: TokenBaseType.STRING },
+  "arithmetic mean": { value: "avg", basetype: TokenBaseType.STRING },
+  mean: { value: "avg", basetype: TokenBaseType.STRING },
+  absolute: { value: "abs", basetype: TokenBaseType.STRING },
+  minimum: { value: "min", basetype: TokenBaseType.STRING },
+  maximum: { value: "max", basetype: TokenBaseType.STRING },
+  rgba: { value: "rgb", basetype: TokenBaseType.STRING },
+  "std dev": { value: "standard deviation", basetype: TokenBaseType.STRING },
+
+  arctan: { value: "atan", basetype: TokenBaseType.STRING },
+  arccos: { value: "acos", basetype: TokenBaseType.STRING },
+  arcsin: { value: "asin", basetype: TokenBaseType.STRING },
+  arcsec: { value: "asec", basetype: TokenBaseType.STRING },
+  arccsc: { value: "acsc", basetype: TokenBaseType.STRING },
+  arccot: { value: "acot", basetype: TokenBaseType.STRING },
+  arctanh: { value: "atanh", basetype: TokenBaseType.STRING },
+  arccosh: { value: "acosh", basetype: TokenBaseType.STRING },
+  arcsinh: { value: "asinh", basetype: TokenBaseType.STRING },
+  arcsech: { value: "asech", basetype: TokenBaseType.STRING },
+  arccsch: { value: "acsch", basetype: TokenBaseType.STRING },
+  arccoth: { value: "acoth", basetype: TokenBaseType.STRING },
+};
+export default Synonyms;
