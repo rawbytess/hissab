@@ -1,6 +1,6 @@
 ---
-import {doLex, doParse, parseResultIf, TokenType} from "engine";
-import {HissabHighlightStyle} from "editor/src/theme";
+import {doLex, doParse} from "engine";
+import type { TokenType} from "engine";
 const { text, classes } = Astro.props;
 
 function generateHighlightedHTML(
@@ -29,14 +29,12 @@ function generateHighlightedHTML(
     tokens.forEach((token) => {
         const tokenStart = originalString.indexOf(token.originalValue, currentIndex);
 
-        // Add spaces or non-token text between tokens
         if (tokenStart > currentIndex) {
             const gap = originalString.slice(currentIndex, tokenStart);
             resultHTML += gap;
         }
-
-        // Highlight the current token
-        const style = hissabTags[token.instanceName as keyof hissabTags];
+        // @ts-ignore
+        const style = hissabTags[token.instanceName];
 
         if (style) {
             const colorStyle = `color: #${style};`;

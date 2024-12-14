@@ -1,4 +1,4 @@
-export default function Video({ src, width }) {
+export default function Video({ src, width }: { src: string; width: number }) {
   return (
     <video
       height={"auto"}

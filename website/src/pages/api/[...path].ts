@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { hc } from "hono/client";
 import { cors } from "hono/cors";
 import type { APIRoute } from "astro";
+export const prerender = false;
 
 const app = new Hono().basePath("/api/");
 app.use("/api/*", cors());

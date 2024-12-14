@@ -1,15 +1,11 @@
 import "../css/index.css";
 import "../css/home.css";
-import Lottie from "lottie-react";
-import HoverVideoPlayer from "react-hover-video-player";
 import Header from "./Header.tsx";
 
 const firstPromo = "/resources/home/first-promo.png";
 const freePromo = "/resources/home/free-promo.png";
 const proPromo = "/resources/home/pro-promo.png";
-import loading from "../resources/loading.json";
 import Footer from "@/components/Footer.tsx";
-const heroOverlay = "/resources/hero-overlay.png";
 
 export default function Main() {
   return (
