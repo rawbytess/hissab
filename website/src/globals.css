@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+  :root {
+    --radius: 0.5rem;
+    background-color: #1c1c1c;
+  }
+  html {
+    @apply scroll-smooth;
+  }
+
+  #navbar li {
+    @apply p-4;
+  }
+  .feat-button-sel {
+    @apply h-fit p-2 m-2 drop-shadow-xl
+    bg-transparent ring-lighttext text-light ring-2;
+  }
+
+  .feat-button {
+    @apply h-fit p-2 m-2 bg-[#1c1c1c] text-lighttext ring-1 ring-black
+    hover:bg-transparent hover:ring-lighttext hover:text-lighttext hover:ring-2;
+  }
+  .feat-img {
+    @apply mb-3 w-20;
+  }
+  .feat-box {
+    @apply max-w-xl p-2 flex flex-col items-start text-justify
+    text-lighttext font-normal w-[20rem];
+  }
+  .feat-title {
+    @apply text-2xl font-semibold mb-3 tracking-wider text-start;
+  }
+
+  .hover-animation {
+    @apply transition duration-200 ease-out hover:scale-110;
+  }
+  .searchbar-animation {
+    @apply transition duration-200 ease-out;
+  }
+  .hero-feats {
+    @apply max-w-[10em] font-medium text-2xl text-center drop-shadow-2xl hover-animation;
+  }
+  .hero-text-grad {
+    @apply text-transparent drop-shadow-2xl text-lighttext;
+  }
+  .hero-text-grad-main {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-purple-500;
+  }
+}

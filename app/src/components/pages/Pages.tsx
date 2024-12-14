@@ -38,14 +38,14 @@ export default function Pages() {
       <div className={"p-2 pb-4 drop-shadow bg-purple-900"}>
         <p className={"text-center"}>{currentPage?.title}</p>
       </div>
-      <ul>
+      <ul className={"mt-5"}>
         {notes.map((page, index) => (
           <li
             key={index}
             className={cn(
-              "p-1 border-b-[1px] border-gray-700   hover:bg-gray-800",
+              "p-1  hover:bg-stone-800 mx-2 rounded-xl my-1",
               page.id === currentPage?.id
-                ? "font-medium text-white bg-cyan-900"
+                ? "font-medium text-white bg-stone-800 text-purple-200"
                 : "font-light",
             )}
             onClick={() => {
@@ -113,7 +113,7 @@ export default function Pages() {
                 setEditing(newNote);
               }}
               className={
-                "bg-blue-900 hover:bg-blue-700 rounded drop-shadow p-2"
+                "bg-neutral-700 hover:bg-blue-900 rounded drop-shadow p-2"
               }
             >
               <FilePlus2 />
@@ -126,7 +126,7 @@ export default function Pages() {
                 editing ? setEditing(undefined) : setEditing(currentPage);
               }}
               className={
-                "bg-teal-900 hover:bg-teal-700 rounded drop-shadow p-2"
+                "bg-neutral-700 hover:bg-teal-900 rounded drop-shadow p-2"
               }
             >
               <Pencil />

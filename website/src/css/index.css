@@ -1,0 +1,60 @@
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: Outfit, sans-serif;
+}
+.policies {
+  @apply text-lighttext;
+  font-family: system-ui;
+}
+.min-width {
+  width: min(40rem, 95vw);
+}
+.min-width-2 {
+  width: min(35rem, 95vw);
+}
+
+.device-iphone {
+  position: relative;
+  transform: scale(0.8);
+  z-index: 1;
+}
+
+.hero-text {
+  /* From https://css.glass */
+  background: rgba(0, 0, 0, 0.52);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5.3px);
+  -webkit-backdrop-filter: blur(5.3px);
+  background-clip: text;
+  --webkit-background-clip: text;
+}
+
+.available-grid {
+  grid-template-columns: repeat(6, 1fr);
+}
+.footer--dark {
+  background: black;
+}
+
+.faqs h2 {
+  text-align: center;
+}
+.faqs h3 {
+  color: salmon;
+}
+.faqs blockquote {
+  color: #4cb3d4;
+  background-color: transparent;
+  border-left: 0;
+}
+.faqs blockquote a {
+  text-decoration: none;
+  color: #4cb3d4;
+  @apply underline underline-offset-2;
+}

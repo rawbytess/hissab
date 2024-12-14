@@ -19,7 +19,7 @@ import {
 } from "@codemirror/language";
 import { autocompletion, closeBrackets } from "@codemirror/autocomplete";
 
-import { debounce } from "lodash";
+import pkg from "lodash";
 import {
   doLex,
   doParse,
@@ -32,6 +32,8 @@ import {
 
 import { getStreamLanguage, HissabHighlightStyle, hissabTheme } from "./theme";
 import autoComplete from "./autoComplete";
+
+const { debounce } = pkg;
 
 interface hissabEditorIf {
   currentPage: string;
@@ -375,8 +377,6 @@ class ResultWidget extends WidgetType {
     readonly pro: boolean,
   ) {
     super();
-    this.result = result;
-    this.pro = pro;
   }
 
   toDOM() {

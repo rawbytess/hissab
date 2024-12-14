@@ -1,0 +1,57 @@
+---
+id: date-time
+title: General
+---
+
+import HissabExample from "../../../../components/HissabExample.astro";
+
+Hissab supports various date and time operations.
+
+###### Valid date and time formats are:
+
+
+| Format                                                                                                                                                                          | Example                                                                                   |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| dd.mm.yyyy                                                                                                                                                                      | <HissabExample text= "15.03.2020" classes="hissab-example"/>                              |
+| mm.dd.yyyy                                                                                                                                                                      | <HissabExample text="03.15.2020"  classes="hissab-example"/>                              |
+| mm.dd.yyyy <blockquote>In this format, if there is ambiguity between date and month, it will use mm.dd.yyyy format </blockquote>                                                | <HissabExample text="03.02.2020" classes="hissab-example"/>                               |
+| dd mmm yyyy                                                                                                                                                                     | <HissabExample text="15 mar 2020" classes="hissab-example"/>                              |
+| yyyy mmm dd                                                                                                                                                                     | <HissabExample text="2020 mar 15" classes="hissab-example"/>                              |
+| \{date} \{timezone/city} <blockquote>Use common timezone abbreviations to specify timezones. You can also use popular city names to specify its timezone (Preferred)</blockquote> | <HissabExample text={`15 mar 2020 est \n15 mar 2020 new york`} classes="hissab-example"/> |
+| hh:mm:ss:ms <blockquote>The hour is mandatory in time format. Minutes, seconds and milliseconds are optional. </blockquote>                                                     | <HissabExample text="05:12:43:287" classes="hissab-example"/>                             |
+| hh:mm am/pm <blockquote> If am or pm is not mentioned, it will use 24 hour format. </blockquote>                                                                                | <HissabExample text="10:33 pm" classes="hissab-example"/>                                 |
+| hh:mm                                                                                                                                                                           | <HissabExample text="14:3" classes="hissab-example"/>                                     |
+| \{date} \{time} <blockquote>Use any date format with time format</blockquote>                                                                                                     | <HissabExample text="2020 mar 15 10:12 pm" classes="hissab-example"/>                     |
+
+###### You can perform intuitive operations with dates and times.
+
+| Operation                                                                                        | Example                                                                                                                                                              |
+| ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Add days, months, years etc to dates                                                             | <HissabExample text={`15 mar 2020 + 10 days\n03.15.2020 + 3 months + 43 days`} classes="hissab-example"/>                                                            |
+| Subtract days, months, years etc from dates                                                      | <HissabExample text={`15 mar 2020 - 10 days\n03.15.2020 - 3 months - 43 days`} classes="hissab-example"/>                                                            |
+| Similar operations can be performed with times                                                   | <HissabExample text={`02:23:22 + 4 hours + 32 minutes\n22:23:22 - 132 minutes` } classes="hissab-example"/>                                                          |
+| Or with combination of dates and times                                                           | <HissabExample text={ `15 mar 2020 - 30 hours\n15 mar 2020 02:23 pm - 4 hours + 30 minutes\n15 mar 2020 02:23 am - 4 hours + 30 minutes`} classes="hissab-example"/> |
+| Get difference between two dates or times. Default answer in free version will be in millisecond | <HissabExample text={ `15 mar 2020 - 23 jul 2020` } classes="hissab-example"/>                                                                                       |
+| But, You can convert it into any unit like year, days, hours etc.                                | <HissabExample text={`15 mar 2020 - 23 jul 2010 to days\n23:12:23 - 06:34 to minutes` } classes="hissab-example"/>                                                   |
+
+###### Hissab also supports these keywords to get current date or time
+
+| Keyword                                                   | Example                                                     |
+| --------------------------------------------------------- | ----------------------------------------------------------- |
+| now <blockquote> Get current date and time</blockquote>   | <HissabExample text= "now" classes="hissab-example"/>       |
+| today <blockquote> Get today's date </blockquote>         | <HissabExample text= "today" classes="hissab-example"/>     |
+| tomorrow <blockquote> Get tomorrow's date </blockquote>   | <HissabExample text= "tomorrow" classes="hissab-example"/>  |
+| yesterday <blockquote> Get yesterday's date </blockquote> | <HissabExample text= "yesterday" classes="hissab-example"/> |
+
+> Note:
+> Date formats such as mm/dd/yyyy or mm-dd-yyyy with a / or - as a
+> separator are not supported because of its ambiguity with divide and
+> subtract operations.
+
+### Unix epoch timestamp conversion
+
+You can convert a unix timestamp in millisecond or second to date or vice versa.
+
+<HissabExample
+  text={`12 mar 2020 to epoch\n12 mar 2020 to timestamp\n1693248840 seconds to human date\n1693248840234 to human date`}
+  classes="hissab-example hissab-example-inline" />

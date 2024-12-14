@@ -1,0 +1,37 @@
+section {
+  @apply max-w-7xl mx-auto p-4 text-center my-10 flex flex-col items-center;
+}
+
+section h2 {
+  font-size: clamp(2em, 4vw, 4em);
+  font-weight: normal;
+}
+
+.hero-text-size {
+  font-size: clamp(3em, 7vw, 7em);
+  line-height: 1.2;
+}
+
+.sub-hero-text {
+  font-size: clamp(1em, 1.5vw, 2.5em);
+  line-height: 1.5;
+}
+
+.promo-list {
+  @apply font-light tracking-wider text-xl flex flex-col flex-wrap justify-center items-center gap-4;
+}
+.promo-list li {
+  font-size: clamp(0.8em, 1vw, 1em);
+  @apply list-inside text-[#fafafa] text-stone-400;
+}
+.promo-p {
+  font-size: clamp(1em, 3vw, 2em);
+  @apply text-stone-300 font-medium;
+}
+.promo-imgs {
+  @apply max-w-[60em] w-full drop-shadow-lg rounded-2xl ring-2 ring-[#8100ff] mt-8;
+}
+
+.fade-in-animation {
+  @apply opacity-0 transition-opacity ease-in duration-700;
+}

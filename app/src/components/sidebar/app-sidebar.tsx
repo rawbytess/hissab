@@ -7,7 +7,7 @@ export default function AppSidebar() {
     <Sidebar
       variant={"sidebar"}
       collapsible={"offcanvas"}
-      className={"text-white border-gray-950 bg-gray-950"}
+      className={"text-white border-stone-950 bg-stone-950"}
     >
       <SidebarContent>
         <SidebarGroup>
@@ -24,6 +24,18 @@ export default function AppSidebar() {
                 <div className={"flex gap-1 items-center"}>
                   <ExternalLink className={"w-4"} />
                   Help
+                </div>
+              </a>
+            </li>
+            <li>
+              <a
+                href={"https://hissab.io/privacy-app"}
+                target={"_blank"}
+                className={"text-sm"}
+              >
+                <div className={"flex gap-1 items-center"}>
+                  <ExternalLink className={"w-4"} />
+                  Privacy
                 </div>
               </a>
             </li>

@@ -1,0 +1,38 @@
+---
+id: number-systems
+title: Number Systems
+---
+
+import HissabExample from "../../../../components/HissabExample.astro";
+
+Most calculations are done using decimal (base 10) number systems, but hissab also supports other number systems.
+
+| Number system                                                                                                                            | Examples                                                                 |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Decimal <blockquote> Base: 10. The default number system we all know and love </blockquote>                                              | <HissabExample text={`1234 \n23*43`} classes="hissab-example"/>          |
+| Binary <blockquote> Base: 2. To input as a binary number use prefix 0b or 0B followed by the binary number </blockquote>                 | <HissabExample text={`0b010101 + 0B101010`} classes="hissab-example"/>   |
+| Octal <blockquote> Base: 8. To input as a octal number use prefix 0o or 0O followed by the octal number </blockquote>                    | <HissabExample text={`0O214562 + 0o263546` } classes="hissab-example"/>  |
+| Hexadecimal <blockquote> Base: 16. To input as a hexadecimal number use prefix 0x or 0X followed by the hexadecimal number </blockquote> | <HissabExample text={`0x1a2f3d2 + 0Xc323ef4`} classes="hissab-example"/> |
+
+Numbers with any number system can be used same way as a decimal number.
+
+<HissabExample
+  text="0b100101 kilogram to grams"
+  classes="hissab-example hissab-example-inline"
+/>
+
+You can also use different number systems in the same expression. In this case the result will be presented using the first number system used in the expression.
+
+<HissabExample
+  text={`0b100101 + 2345\n2345 + 0b100101`}
+  classes="hissab-example hissab-example-inline"
+/>
+
+### Number system conversion
+
+You can convert a number from one number system to another.
+
+<HissabExample
+  text={`0b100101 to hex\n0b100101 to decimal\n2345 + 0b100101 to octal\n234234 to binary`}
+  classes="hissab-example hissab-example-inline"
+/>

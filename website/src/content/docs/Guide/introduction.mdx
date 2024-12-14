@@ -1,0 +1,72 @@
+---
+id: introduction
+title: Introduction
+
+
+---
+
+import HissabExample from "../../../components/HissabExample.astro";
+
+Type your expressions in the editor and the answer is calculated and
+shown instantly on the right.
+
+<HissabExample  text="1 + 1" classes="hissab-example hissab-example-inline" />
+
+Each line computes one expression. Multiple expressions on one line
+will not work.
+
+<HissabExample
+  text="1 + 1   12 meters to cm"
+  classes="hissab-example hissab-example-inline hissab-example-wrong"
+/>
+
+<HissabExample
+  text={`1 + 1 \n 12 meters to cm`}
+  classes="hissab-example hissab-example-inline hissab-example-correct"
+/>
+
+Words or strings are case-insensitive except variable name.
+
+<HissabExample
+  text="12 mEteRs to CeNtImeTer"
+  classes="hissab-example hissab-example-inline"
+/>
+
+Popular short forms of units will work. Also, plural forms will work
+in most cases and will be refined over time.
+
+<HissabExample
+  text={`10 gram to kilogram \n10 gram to kg\n10 grams to kg`}
+  classes="hissab-example hissab-example-inline"
+/>
+
+You can enter numbers with commas in them.
+
+<HissabExample
+  text={`123,456,789 \n123456789`}
+  classes="hissab-example hissab-example-inline"
+/>
+
+It is recommended to use brackets to override the default
+precedence. Check the following example, where one expression gives
+different results with and without brackets.
+
+<HissabExample
+  text={`10 + 20 * 3 \n(10 + 20) * 3`}
+  classes="hissab-example hissab-example-inline"
+/>
+
+Hissab also supports functions which provides quick way to get complex calculations done in simple syntax.
+
+Functions take on a fix or variable number of parameters as input and output the results using those inputs.
+
+Its syntax is:
+
+> function name(input1, input2, input3,...)'.
+
+Each input can be an expression in itself.
+
+<HissabExample
+  text={`sum(12,23,52,65)`}
+  classes="hissab-example hissab-example-inline"
+/>

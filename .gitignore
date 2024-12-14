@@ -29,3 +29,5 @@ Dockerfile
 /packages/api/.wrangler/
 /packages/api/.env
 .env
+
+*.zip

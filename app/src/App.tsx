@@ -1,4 +1,3 @@
-import "./App.css";
 import Editor from "@/components/Editor.tsx";
 import Sidebar from "@/components/sidebar/Sidebar.tsx";
 import PagesProvider from "@/components/pages/PagesProvider.tsx";
@@ -8,7 +7,9 @@ import Footer from "@/components/footer/Footer.tsx";
 
 function App() {
   return (
-    <div className={"h-screen mx-auto"}>
+    <div
+      className={`${import.meta.env.VITE_CHROME === "true" ? "min-h-[550px] min-w-[500px]" : ""}`}
+    >
       <TooltipProvider>
         <PagesProvider>
           <Sidebar>

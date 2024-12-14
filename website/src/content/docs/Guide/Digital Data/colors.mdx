@@ -1,0 +1,59 @@
+---
+id: colors
+title: Colors
+---
+
+import HissabExample from "../../../../components/HissabExample.astro";
+
+# Colors
+
+Hissab supports various color representations.
+
+- Hex (with or without alpha)
+- rgb
+- rgba
+- hsl
+- Color names
+- Color numbers
+
+### Color Conversion
+
+You can convert color representations from one format to another.
+
+<HissabExample
+  text={`#8100ff to rgb color\nrgb(129, 0, 255) to hex\nred to hsl color\npink to color number\n#ff69b4 to color name`}
+  classes="hissab-example"
+/>
+
+### Color Temperature
+
+You can get the temperature of the color.
+
+<HissabExample
+  text={`#8100ff to color temperature\nyellow to color temp`}
+  classes="hissab-example"
+/>
+
+### Mix Colors
+
+You can mix color by simply adding one color with another.
+
+<HissabExample
+  text={`#1c1c1c + rgb(12,145,121)\ncyan + magenta`}
+  classes="hissab-example"
+/>
+
+### Darken or Brighten colors
+
+You can find a darker or lighter shade of a color by adding a number to the color.
+
+<HissabExample
+  text={`#1c1c1c + 1.3\n#efefef - 1.3\nhsl(270,0.5,0.5)`}
+  classes="hissab-example"
+/>
+
+### Complimentary Colors
+
+You can find complimentary or inverse of a color.
+
+<HissabExample text={`~#1c1c1c\n ~red`} classes="hissab-example" />

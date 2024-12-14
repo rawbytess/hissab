@@ -1,0 +1,41 @@
+---
+id: timezone
+title: Timezone
+---
+
+import HissabExample from "../../../../components/HissabExample.astro";
+
+You can find current time in any timezone.
+
+<HissabExample
+  text={`now in pst \ntoday in dubai`}
+  classes="hissab-example hissab-example-inline"
+/>
+
+You can also convert any time from one timezone to another.
+
+<HissabExample
+  text="4 pm ist to denver"
+  classes="hissab-example hissab-example-inline"
+/>
+
+It is recommended to use city names instead of timezone abbreviations as those are not standardized and can
+refer to multiple different timezones. Hissab will guess and use one of those timezone.
+
+e.g. CST refers to Central Standard time UTC-06, China Standard time UTC+08 and Cuba Standard Time UTC-05.
+
+You can also calculate specific time of one timezone to another timezone.
+
+<HissabExample
+  text={`10:30 pm ireland to beijing`}
+  classes="hissab-example hissab-example-inline"
+/>
+
+:::tip
+Quickly find time difference between two timezones by simply subtracting both zones.
+
+<HissabExample
+  text={`sydney - japan\nmumbai - london`}
+  classes="hissab-example hissab-example-inline"
+/>
+:::

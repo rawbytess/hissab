@@ -1,0 +1,54 @@
+---
+id: unit-conversion
+title: Unit Conversion
+---
+
+import HissabExample from "../../../components/HissabExample.astro";
+
+Hissab supports unit conversions for most popular units, and then some.
+
+To convert from one unit to another, type your expressions in this
+format:
+
+> \{value} \{unit} to \{destination unit}
+
+The 'to' can be replaced with 'in' as well.
+
+> \{value} \{unit} in \{destination unit}
+
+<HissabExample
+  text="50 meters to miles"
+  classes="hissab-example hissab-example-inline hissab-example-correct"
+/>
+
+<HissabExample
+  text={`Convert 50 meters to miles\n50 meters to 5 miles`}
+  classes="hissab-example hissab-example-inline hissab-example-wrong"
+/>
+
+You can perform various mathematical operations with values of different
+units seamlessly. Hissab will choose the first value's unit as base and
+convert all other values to that base unit to calculate final result.
+
+<HissabExample
+  text="50 meters + 15 miles - 10 km"
+  classes="hissab-example hissab-example-inline"
+/>
+
+However, if you want to force final result to use certain unit, simply
+add 'to \{final unit}' at the end of the expression.
+
+<HissabExample
+  text="50 meters + 15 miles - 10 km to yards"
+  classes="hissab-example hissab-example-inline"
+/>
+
+### Breakdown units
+
+The results with large value will be broken down into smaller valued units as seen above.
+You can also explicitly mention what units the value should be broken down.
+
+<HissabExample
+  text="50 meters + 15 miles - 10 km to miles,yards,feet"
+  classes="hissab-example hissab-example-inline"
+/>

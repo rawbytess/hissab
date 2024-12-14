@@ -1,0 +1,191 @@
+[
+  {
+    "title": "Math",
+    "tag": "Mathematics arithmetic",
+    "description": "Hissab supports all standard math operations.",
+    "example": "214 + 23 - 231\n(37^2)/3\n6!",
+    "doclink": "basicmath"
+  },
+  {
+    "title": "Addition",
+    "tag": "sum summation plus +",
+    "description": "",
+    "example": "10+12\n12 meters+2 km\n12 jan + 3 months",
+    "doclink": "basicmath"
+  },
+  {
+    "title": "Subtraction",
+    "tag": "minus remove -",
+    "description": "",
+    "example": "15-22\n2 ton - 3lb\n12 jan - 3 months",
+    "doclink": "basicmath"
+  },
+  {
+    "title": "Multiplication",
+    "tag": "times *",
+    "description": "",
+    "example": "10*12",
+    "doclink": "basicmath"
+  },
+  {
+    "title": "Division",
+    "tag": "/ by",
+    "description": "",
+    "example": "22/7",
+    "doclink": "basicmath"
+  },
+  {
+    "title": "Brackets",
+    "tag": "/ by",
+    "description": "Group expressions inside () brackets to override default operator precedence and get predictable results",
+    "example": "5 + 2 * 2\n(5 + 2) * 2",
+    "doclink": "basicmath"
+  },
+  {
+    "title": "Permutations",
+    "tag": "",
+    "description": "Permutation relates to the act of arranging all the members of a set into some sequence or order.",
+    "example": "5 perm 2",
+    "doclink": "basicmath"
+  },
+  {
+    "title": "Combinations",
+    "tag": "",
+    "description": "Combination is a way of selecting items from a collection, such that (unlike permutations) the order of selection does not matter.",
+    "example": "5 comb 2",
+    "doclink": "basicmath"
+  },
+  {
+    "title": "Factorial",
+    "tag": "",
+    "description": "Factorial of a non-negative integer n, denoted by n!, is the product of all positive integers less than or equal to n",
+    "example": "5!",
+    "doclink": "basicmath"
+  },
+  {
+    "title": "Exponent",
+    "tag": "Exponentiation power raised",
+    "description": "",
+    "example": "5^3\n5**3",
+    "doclink": "basicmath"
+  },
+  {
+    "title": "Modulas",
+    "tag": "remainder",
+    "description": "Find remainder when number divides another number",
+    "example": "50 mod 7",
+    "doclink": "basicmath"
+  },
+  {
+    "title": "Percentage",
+    "tag": "percent",
+    "description": "You can perform various operations with percentages.",
+    "example": "25%\n25% of 200\n200 + 25%\n200 - 25%\n25% of what is 200",
+    "doclink": "basicmath"
+  },
+  {
+    "title": "Unit conversion",
+    "tag": "units convert to",
+    "description": "Hissab supports all standard and popular units for the following types: Length, Area, Volume, Weight, Angle, Temperature, Data, Duration, Postfixes.",
+    "example": "5 km to miles\n3 cups + 5tbsp + 2.3 liter",
+    "doclink": "unitconversions"
+  },
+  {
+    "title": "Dates",
+    "tag": "",
+    "description": "Supported Date formats: dd.mm.yyyy (15.03.2020), mm.dd.yyyy (03.15.2020), dd mmm yyyy (15 mar 2020), yyyy mmm dd (2020 mar 15)",
+    "example": "15 mar 2020 + 10 days\n15 mar 2020 - 23 jul 2010 to days",
+    "doclink": "datetime"
+  },
+  {
+    "title": "now",
+    "tag": "current date and time",
+    "description": "Get current date and time",
+    "example": "now\nnow + 5 days",
+    "doclink": "datetime"
+  },
+  {
+    "title": "today",
+    "tag": "date",
+    "description": "Get today's date",
+    "example": "today\ntoday - 10 days",
+    "doclink": "datetime"
+  },
+  {
+    "title": "tomorrow",
+    "tag": "",
+    "description": "Get tomorrow's date",
+    "example": "tomorrow\ntomorrow + 2 months",
+    "doclink": "datetime"
+  },
+  {
+    "title": "yesterday",
+    "tag": "",
+    "description": "Get yesterday's date",
+    "example": "yesterday\nyesterday - 3 months",
+    "doclink": "datetime"
+  },
+  {
+    "title": "Timezone",
+    "tag": "",
+    "description": "Find current time at any timezone or city. You can also convert any time from one timezone to another.",
+    "example": "now in pst\n4 pm ist to denver",
+    "doclink": ""
+  },
+  {
+    "title": "Variables",
+    "tag": "references, store and reuse results",
+    "description": "Store results for any expression in a variable of any name, which can be referenced in any other expression.",
+    "example": "myvar = 123 + 234\nmyvar - 100",
+    "doclink": ""
+  },
+  {
+    "title": "prev",
+    "tag": "refer previous line's result",
+    "description": "Refer previous line's result.",
+    "example": "123 * 2\nprev/2",
+    "doclink": ""
+  },
+  {
+    "title": "total",
+    "tag": "sum of all lines, add all lines",
+    "description": "Find total of all above lines",
+    "example": "234+2\n10 mod 7\ntotal",
+    "doclink": ""
+  },
+  {
+    "title": "Functions",
+    "tag": "sum, average, avg",
+    "description": "Functions allow to compute complex calculations with an easy interface.",
+    "example": "sum(1,2,3)\navg(4,5,6)",
+    "doclink": ""
+  },
+  {
+    "title": "sum",
+    "tag": "",
+    "description": "Function to add multiple values",
+    "example": "sum(1,2,3)\nsum(5 km, 3 miles, 1031 meters)",
+    "doclink": ""
+  },
+  {
+    "title": "avg",
+    "tag": "",
+    "description": "Function to find average of multiple values",
+    "example": "avg(1,2,3)\navg(5 km, 3 miles, 1031 meters)",
+    "doclink": ""
+  },
+  {
+    "title": "Number systems",
+    "tag": "binary, octal, decimal, hexadecimal, base 2, base 10, base 8, base 16",
+    "description": "Hissab supports varions number systems like binary, octal and hexadecimal along with decimal.",
+    "example": "0b101010 + 0x1fa\n0o12363 - 7752",
+    "doclink": ""
+  },
+  {
+    "title": "Bitwise operations",
+    "tag": "binary operations",
+    "description": "Hissab supports various bitwise operations like AND, OR, XOR, NOT etc.",
+    "example": "0b10101010 & 0b11001101\n0b10101010 xor 0b1100110",
+    "doclink": ""
+  }
+]

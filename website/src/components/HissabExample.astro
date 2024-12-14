@@ -1,0 +1,87 @@
+---
+import {doLex, doParse, parseResultIf, TokenType} from "engine";
+import {HissabHighlightStyle} from "editor/src/theme";
+const { text, classes } = Astro.props;
+
+function generateHighlightedHTML(
+    originalString: string,
+    tokens: TokenType[],
+): string {
+    // Define the highlight styles
+    const hissabTags = {
+        numberToken: "00ff71",
+        unitToken: "e7d81a",
+        dateToken: "e1f05d",
+        functionToken: "32c5ff",
+        operatorToken: "e88b00",
+        controllerToken: "a3a2f6",
+        variableToken: "f984e1",
+        colorToken: "84f9ef",
+        VariableNameToken: "f984e1",
+        undefinedToken: "999999",
+        stringToken: "999999",
+        comment: "93A1A1",
+    };
+
+    let resultHTML = "";
+    let currentIndex = 0;
+
+    tokens.forEach((token) => {
+        const tokenStart = originalString.indexOf(token.originalValue, currentIndex);
+
+        // Add spaces or non-token text between tokens
+        if (tokenStart > currentIndex) {
+            const gap = originalString.slice(currentIndex, tokenStart);
+            resultHTML += gap;
+        }
+
+        // Highlight the current token
+        const style = hissabTags[token.instanceName as keyof hissabTags];
+
+        if (style) {
+            const colorStyle = `color: #${style};`;
+            resultHTML += `<span style="${colorStyle}">${token.originalValue}</span>`;
+        } else {
+            // If no style is defined for the token, use default
+            resultHTML += `<span>${token.originalValue}</span>`;
+        }
+
+        // Update current index to after the current token
+        currentIndex = tokenStart + token.originalValue.length;
+    });
+
+    // Add any trailing text after the last token
+    if (currentIndex < originalString.length) {
+        resultHTML += originalString.slice(currentIndex);
+    }
+
+    return resultHTML;
+}
+
+  const texts = text.split("\n");
+  const textTokens = [];
+      for (const t in texts) {
+          try {
+              const tokens = doLex(texts[t]);
+              const htmlSpan = generateHighlightedHTML(texts[t], tokens);
+              const res = await doParse(tokens, true);
+              textTokens.push({text: texts[t], tokens, res, htmlSpan});
+          } catch (e) {
+              continue;
+          }
+      }
+---
+
+
+    <div class={`hissab-example bg-amber-50 ${classes}`}>
+      {textTokens?.map((text, index) =>
+          (
+        <div class="eg-lines">
+            <div set:html={text.htmlSpan} />
+            <span style="color: #9385ff; text-align: right">{text.res.result}</span>
+        </div>
+      )
+      )}
+    </div>
+
+

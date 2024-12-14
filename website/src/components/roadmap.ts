@@ -1,0 +1,118 @@
+export const roadmap = [
+  {
+    title: "Improve autocomplete suggestions",
+    description:
+      "Improve the autocomplete suggestions by adding city names, improve descriptions, and other UX improvements.",
+    status: "wip",
+  },
+  {
+    title: "Quick features glance",
+    description:
+      "Include small animations/gifs to showcase basic usage and features at a quick glance",
+    status: "incomplete",
+  },
+  {
+    title: "Improve search help with lot more keywords",
+    description:
+      "Currently search data is limited to certain keywords. Thus improve the search db with lot more keywords.",
+    status: "incomplete",
+  },
+  {
+    title: "Hissab apps on the app store for iOS and Android",
+    description:
+      "Hissab can be installed on iOS and Android as pwa. This however add official apps that can be downloaded from the app stores.",
+    status: "considering",
+  },
+  {
+    title: "Show helpful errors for wrong expressions",
+    description:
+      "Currently, if the expression cannot generate a result,there is no error or message shown. Thus, I want to add feature to show errors and possible causes e.g. when unit family are different and cannot convert etc.",
+    status: "considering",
+  },
+  {
+    title: "Compound units and corresponding calculations",
+    description:
+      "Add support for compound units like meter/sec or kg/(m·s2) aka Pascal and support calculations using them like 50 meter/sec to miles/hour.",
+    status: "considering",
+  },
+  {
+    title: "Solve equations",
+    description: "Add ability to solve equations",
+    status: "considering",
+  },
+  {
+    title: "Complex numbers and corresponding calculations",
+    description: "Add support for complex (or imaginary) numbers",
+    status: "considering",
+  },
+  {
+    title: "Add interface to collect feedback from customers ",
+    description:
+      "Implement a way to collect feedback from customers like feature requests, bug fixes, testimonials and general comments",
+    status: "completed",
+  },
+  {
+    title: "Support advanced math calculations for academic",
+    description:
+      "Support geometric, log, statistics and related academic math calculations and operations",
+    status: "completed",
+  },
+  {
+    title: "Support advanced math calculations for programmers",
+    description:
+      "Support advanced calculations helpful for developers like color conversion, number system conversions etc.",
+    status: "completed",
+  },
+  {
+    title: "Copy results of expressions",
+    description:
+      "This feature will allows users to quickly copy the results of any expression to the clipboard.",
+    status: "completed",
+  },
+  {
+    title: "Hissab Pro - Advanced features, faster workflow, smarter results",
+    description:
+      "Hissab Pro allows creating books and pages to organize calculations, autocomplete suggestions, financial data (like currency conversion, stock prices...) calculations, advanced math operations, smart results and so much more...! These Features will be rolled out overtime.",
+    status: "completed",
+  },
+  {
+    title: "Customization options and controls",
+    description:
+      "Allow controls and options to change font size, fonts and other customizations in app",
+    status: "completed",
+  },
+  {
+    title: "Quick search documentation",
+    description:
+      "Add search capability to quickly find help regarding any functionality or see examples",
+    status: "completed",
+  },
+  {
+    title: "Documentation and roadmap",
+    description: "Publish thorough documentation and roadmap",
+    status: "completed",
+  },
+  {
+    title: "Add keyboard helper buttons",
+    description:
+      "Add numbers and symbols keys row for quick typing on small devices",
+    status: "completed",
+  },
+  {
+    title: "Hissab v1.0 launch",
+    description: "Hissab launch on all major platforms",
+    status: "completed",
+  },
+  {
+    title: "Hissab Beta launch",
+    description:
+      "Hissab beta with support for arithmetic, unit conversions, date and time calculations, timezone conversions, functions, various number systems and more.",
+    status: "completed",
+  },
+  {
+    title: "Loads of exciting features",
+    description:
+      "There are many more cool and exiting features in the pipeline. I will add those here overtime.",
+    status: "exciting",
+  },
+];

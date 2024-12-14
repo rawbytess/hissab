@@ -1,8 +1,8 @@
 import { Tag } from "@lezer/highlight";
 import { StreamLanguage, StringStream } from "@codemirror/language";
 import { doLex } from "engine";
-import { sortedIndexBy } from "lodash";
-
+import pkg from "lodash";
+const { sortedIndexBy } = pkg;
 function themeConfig(isDark: boolean, editorBackground: string) {
   return {
     editorText: isDark ? "#c9c9c9" : "#525252",

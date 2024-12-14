@@ -1,0 +1,152 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+@import url("https://fonts.cdnfonts.com/css/chillax");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+:root {
+  --ifm-color-primary: #1c1c1c;
+  --ifm-color-primary-dark: #191919;
+  --ifm-color-primary-darker: #181818;
+  --ifm-color-primary-darkest: #141414;
+  --ifm-color-primary-light: #1f1f1f;
+  --ifm-color-primary-lighter: #202020;
+  --ifm-color-primary-lightest: #242424;
+  --ifm-background-color: #efefef;
+  --ifm-navbar-background-color: #530e97;
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme="dark"] {
+  --ifm-color-primary: #ededed;
+  --ifm-color-primary-dark: #d5d5d5;
+  --ifm-color-primary-darker: #c9c9c9;
+  --ifm-color-primary-darkest: #a6a6a6;
+  --ifm-color-primary-light: #ffffff;
+  --ifm-color-primary-lighter: #ffffff;
+  --ifm-color-primary-lightest: #ffffff;
+  --ifm-background-color: #1c1c1c;
+}
+body {
+  @apply tracking-wider;
+  font-family: "Outfit", sans-serif;
+}
+.eg-lines {
+  @apply flex flex-col justify-between gap-4 flex-wrap;
+  border-bottom: 1px solid #1c1c1c;
+  margin: 0 !important;
+}
+.eg-lines:last-child {
+  border-bottom: none;
+}
+
+.hissab-example {
+  @apply bg-[#111111] px-4 py-2 min-w-[20em] max-w-[40em];
+  text-align: start;
+  margin-top: 1.5rem /* 20px */;
+  margin-bottom: 1.5rem /* 20px */;
+  clear: both;
+  font-family: "Chillax", serif;
+  position: relative;
+  border-radius: 1em;
+}
+
+.hissab-example-inline {
+  width: auto;
+}
+.hissab-example-correct::after {
+  content: "✅";
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+}
+.hissab-example-wrong::after {
+  content: "🚫";
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+}
+blockquote {
+  @apply rounded;
+  background-color: #213a44;
+  padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+  border-left-width: 2px;
+}
+
+table {
+  --ifm-table-stripe-background: none;
+}
+
+td blockquote {
+  margin-top: 1rem /* 16px */;
+  border-style: none;
+  position: relative;
+  --tw-text-opacity: 1;
+  color: #cccccc;
+  width: fit-content;
+}
+.menu {
+  font-weight: normal;
+}
+
+.hissab-app-nav {
+  @apply rounded-md drop-shadow-lg bg-[#8100ff] tracking-widest;
+}
+.learn-more-nav {
+  @apply ring-2 ring-[#8100ff] rounded-md drop-shadow-lg text-xs text-white tracking-widest;
+}
+.navbar__search-input {
+  @apply rounded-md;
+}
+.video-player {
+  @apply ring-2 ring-black drop-shadow rounded w-20;
+}
+.play-button {
+  @apply w-40;
+}
+.pricing-table tr,
+.pricing-table td,
+.pricing-table thead,
+.pricing-table th,
+.pricing-table tbody {
+  --ifm-table-stripe-background: none;
+  @apply bg-transparent p-5 border-0 ring-1 ring-gray-600;
+}
+
+.glow {
+  filter: drop-shadow(0 0 10px #8100ff80);
+}
+.responsiveTable {
+  --ifm-table-border-color: #3b3b3b;
+  @apply text-sm;
+}
+.responsiveTable tbody {
+  @apply text-stone-400 font-medium;
+}
+.responsiveTable tr {
+  --ifm-table-stripe-background: none;
+}
+
+.header-twitter-link:hover {
+  opacity: 0.8;
+}
+
+.header-twitter-link {
+  @apply px-2;
+  content: url("/img/twitter.ico");
+  width: 56px;
+}
+
+.header-reddit-link:hover {
+  opacity: 0.8;
+}
+
+.header-reddit-link {
+  @apply px-2;
+  content: url("/img/reddit.svg");
+  width: 48px;
+}

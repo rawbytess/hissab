@@ -1,0 +1,42 @@
+---
+id: exchange
+title: Exchange Rates
+
+---
+
+import HissabExample from "../../../components/HissabExample.astro";
+
+# Exchange Rates<sup className={"glow text-lg mx-2"}>PRO</sup>
+
+You can convert currencies using the latest exchange rates. The rates are cached for 12 hours, so they are not realtime rates,
+but we plan to shorten the cached duration overtime.
+
+The syntax is similar to unit conversion.
+
+> \{value} \{source currency} to \{destination currency}
+
+You can use currency symbols but must use the ISO 3-letter currency code.
+Also similar to unit conversion, you can seamlessly perform calculations with values of different currencies and all necessary conversions will take place automatically.
+
+<HissabExample
+  text={`$33 usd to eur\n$40 usd + 15 cad + 300 cny`}
+  classes="hissab-example hissab-example-inline"
+  isPro={true}
+/>
+
+<HissabExample
+  text="$15 + €31.06"
+  classes="hissab-example hissab-example-inline hissab-example-wrong"
+/>
+<HissabExample
+  text={`$15 usd + €31.06 eur`}
+  classes="hissab-example hissab-example-inline hissab-example-correct"
+/>
+
+You can also get historical rates by mentioning the full date.
+
+<HissabExample
+  text={`33 usd to eur on 15 mar 2015\n1200 inr to aed on 2008.06.13`}
+  classes="hissab-example hissab-example-inline"
+  isPro={true}
+/>

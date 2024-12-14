@@ -1,0 +1,130 @@
+---
+id: references
+title: References & Variables
+
+---
+
+import HissabExample from "../../../components/HissabExample.astro";
+
+A cool feature of hissab is that it can store results for any expression in a variable of any name, which can be referenced in any other expression.
+
+<HissabExample
+  text={`myvar = 123 + 234 \nmyvar - 100`}
+  classes="hissab-example hissab-example-inline"
+/>
+
+Here 'myvar' is a variable name. There are rules around variable names.
+
+- Variable cannot start from a number or special character, except \_ (underscore).
+- It must start from a letter.
+- It cannot contain any special character except \_.
+
+<HissabExample
+  text={`abcd123 = 1234 \n_ab = 12\nmy_var = 34`}
+  classes="hissab-example hissab-example-inline hissab-example-correct"
+/>
+
+<HissabExample
+  text={`123abcd = 1234\n#ab = 12\nab# = 12`}
+  classes="hissab-example hissab-example-inline hissab-example-wrong"
+/>
+
+Variables can hold values with units as well as dates and times.
+
+<HissabExample
+  text={`unit1 = 5 miles \nunit1 to kilometers`}
+  classes="hissab-example hissab-example-inline hissab-example-correct"
+/>
+
+<HissabExample
+  text={`time_then = now + 100 days \ntime_then - now to days`}
+  classes="hissab-example hissab-example-inline"
+/>
+
+Variable names are case-sensitive.
+
+<HissabExample
+  text={`abcd123 = 1234 \nabcd123 + 12`}
+  classes="hissab-example hissab-example-inline hissab-example-correct"
+/>
+
+<HissabExample
+  text={`abcd123 = 1234 \nAbcd123 + 12`}
+  classes="hissab-example hissab-example-inline hissab-example-wrong"
+/>
+
+Variable names cannot be a unit name or hissab keyword like 'time'.
+
+<HissabExample
+  text={`time = 1234 \nmeters = 123`}
+  classes="hissab-example hissab-example-inline hissab-example-wrong"
+/>
+
+<HissabExample
+  text={`time123 = 1234`}
+  classes="hissab-example hissab-example-inline hissab-example-correct"
+/>
+
+Variable declaration must be at the beginning of an expression.
+
+<HissabExample
+  text={`9876 + (myvar = 1234) \nmyvar - 9876`}
+  classes="hissab-example hissab-example-inline hissab-example-wrong"
+/>
+
+<HissabExample
+  text={`myvar = 1234 \n9876 + myvar`}
+  classes="hissab-example hissab-example-inline hissab-example-correct"
+/>
+
+You can directly reference results from any previous lines without storing it in variables as well by
+using line (or just l) followed by the line number and no space in between.
+
+You cannot only refer to lines above the current line.
+
+<HissabExample
+  text={`123 + 234 \nline1*2\n50 meters to cm\nl3 to meters`}
+  classes="hissab-example hissab-example-inline hissab-example-correct"
+/>
+
+<HissabExample
+  text={`line2 + 200 \n123\nline 2 *2`}
+  classes="hissab-example hissab-example-inline hissab-example-wrong"
+/>
+
+You can refer to the previous line's result with the 'prev' keyword.
+
+<HissabExample
+  text={`123 * 2 \nprev/2`}
+  classes="hissab-example hissab-example-inline"
+/>
+
+'prev' keyword also works if there are empty lines in between.
+
+<HissabExample
+  text={`123 * 2246 \n\n\nprev/2123`}
+  classes="hissab-example hissab-example-inline"
+/>
+
+If you want to add results from all above lines, you can use the 'total' keyword.
+This only works if those results are addable.
+
+<HissabExample
+  text={`1234 \n234+2 \n10 mod 7\ntotal`}
+  classes="hissab-example hissab-example-inline hissab-example-correct"
+/>
+
+<HissabExample
+  text={`50 sq meter\n10 sq km to sq miles\n10 sq mile to acre\ntotal to sq km`}
+  classes="hissab-example hissab-example-inline hissab-example-correct"
+/>
+
+<HissabExample
+  text={`12\n20\ntotal\n10\n50\ntotal`}
+  classes="hissab-example hissab-example-inline hissab-example-correct"
+/>
+
+<HissabExample
+  text={`1234\ntoday\n2000 kb to mb\ntotal`}
+  classes="hissab-example hissab-example-inline hissab-example-wrong"
+/>
