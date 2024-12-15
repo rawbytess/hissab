@@ -1,6 +1,6 @@
 import { Sidebar, SidebarContent, SidebarGroup } from "@/components/ui/sidebar";
 import Pages from "@/components/pages/Pages.tsx";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Heart } from "lucide-react";
 
 export default function AppSidebar() {
   return (
@@ -13,7 +13,7 @@ export default function AppSidebar() {
         <SidebarGroup>
           <Pages />
         </SidebarGroup>
-        <SidebarGroup className={"fixed bottom-0 p-4"}>
+        <SidebarGroup className={"fixed bottom-0 p-4 w-fit"}>
           <ul className={"flex gap-10 justify-start"}>
             <li>
               <a

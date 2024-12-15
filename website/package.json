@@ -15,23 +15,27 @@
     "@astrojs/starlight": "^0.29.2",
     "@astrojs/tailwind": "^5.1.2",
     "astro": "^4.16.16",
+    "better-auth": "^1.0.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "drizzle-orm": "^0.38.2",
+    "editor": "workspace:*",
+    "engine": "workspace:*",
     "hono": "^4.6.12",
+    "lottie-react": "^2.4.0",
     "lucide-react": "^0.462.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-hover-video-player": "^10.0.2",
+    "react-super-responsive-table": "^6.0.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss": "^3.4.15",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5.7.2",
-    "editor": "workspace:*",
-    "engine": "workspace:*",
-    "lottie-react": "^2.4.0",
-    "react-hover-video-player": "^10.0.2",
-    "react-super-responsive-table": "^6.0.0"
+    "typescript": "^5.7.2"
   },
   "devDependencies": {
-    "@astrojs/node": "^8.3.4"
+    "@astrojs/node": "^8.3.4",
+    "@cloudflare/workers-types": "^4.20241205.0",
+    "drizzle-kit": "^0.30.1"
   }
 }

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Hissab - Smart Calculator",
-  "description": "Hissab is a simple, intuitive, and powerful calculator and unit converter for everyone. Just type and calculate anything with ease. Perform basic to advanced calculations, unit conversions, percentage operations, date and time calculations, and more.",
-  "version": "2.0.0",
+  "description": "Hissab is an intuitive & powerful calculator. Perform calculations, unit conversions, percentage, date and time calculations.",
+  "version": "2.2.0",
   "action": { "default_popup": "index.html" },
   "icons": {
     "32": "icons/32.png",
