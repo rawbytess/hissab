@@ -1,16 +1,10 @@
-import "../css/index.css";
-import "../css/home.css";
-import Header from "./Header.tsx";
-
 const firstPromo = "/resources/home/first-promo.png";
 const freePromo = "/resources/home/free-promo.png";
 const proPromo = "/resources/home/pro-promo.png";
-import Footer from "@/components/Footer.tsx";
 
 export default function Main() {
   return (
     <>
-      <Header />
       <section>
         <h1
           className="font-black drop-shadow-2xl tracking-widest
@@ -89,7 +83,6 @@ export default function Main() {
 
         <img src={proPromo} className={"promo-imgs"} />
       </section>
-      <Footer />
     </>
   );
 }

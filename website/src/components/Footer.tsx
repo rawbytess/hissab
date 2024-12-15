@@ -56,10 +56,10 @@ export default function Footer() {
                 rel="noreferrer"
               >
                 <img
-                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=406257&theme=light"
+                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=406257&theme=dark"
                   alt="Hissab - Just&#0032;Type&#0032;and&#0032;Calculate&#0032;Anything&#0044;&#0032;Instantly | Product Hunt"
                   style={{
-                    width: "200px",
+                    width: "250px",
                   }}
                   width="250"
                   height="54"

@@ -1,3 +1,11 @@
+---
+import "../css/index.css";
+import "../css/home.css";
+import "../css/custom.css";
+import "../css/tailwind.css";
+import Header from "../components/Header.tsx";
+import Footer from "../components/Footer.tsx";
+---
 <!doctype html>
 <html lang="en">
 	<head>
@@ -13,7 +21,9 @@
 		<script defer src="https://analytics.rawbytes.com/script.js" data-website-id="19ee36c5-98a3-48d8-bf85-8ebfb5f6c17d"></script>
 	</head>
 	<body>
+	<Header />
 		<slot />
+	<Footer />
 	</body>
 </html>
 
