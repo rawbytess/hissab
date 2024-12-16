@@ -6,7 +6,17 @@
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "wrangler:dev": "wrangler pages dev ./dist --d1=dev-db",
+    "auth:schema:generate": "npx @better-auth/cli generate --y --output=./src/db/auth.ts",
+    "drizzle:schema:generate": "pnpm drizzle-kit generate",
+    "schema:generate": "pnpm auth:schema:generate && pnpm drizzle:schema:generate",
+    "schema:migrate": "pnpm drizzle-kit migrate",
+    "db:create": "wrangler wrangler d1 migrations create D1",
+    "db:list": "wrangler wrangler d1 migrations list D1",
+    "db:migrate": "wrangler wrangler d1 migrations migrate --local",
+    "db:migrate:prod": "wrangler wrangler d1 migrations migrate --remote",
+    "drizzle:studio:local": "drizzle-kit studio --config=drizzle.local.config.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -35,7 +45,9 @@
   },
   "devDependencies": {
     "@astrojs/node": "^8.3.4",
+    "@better-auth/cli": "^1.0.21",
     "@cloudflare/workers-types": "^4.20241205.0",
+    "better-sqlite3": "^11.7.0",
     "drizzle-kit": "^0.30.1"
   }
 }

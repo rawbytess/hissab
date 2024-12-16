@@ -4,10 +4,7 @@ export default defineConfig({
   out: "./drizzle",
   schema: ["./src/db/schema.ts", "./src/db/auth.ts"],
   dialect: "sqlite",
-  driver: "d1-http",
   dbCredentials: {
-    accountId: process.env.CLOUDFLARE_ACCOUNT_ID!,
-    databaseId: process.env.CLOUDFLARE_DATABASE_ID!,
-    token: process.env.CLOUDFLARE_D1_TOKEN!,
+    url: ".wrangler/state/v3/d1/miniflare-D1DatabaseObject/dcf4856486a9314079a2f63df72675b3281540940adb51fd736660821b62a765.sqlite",
   },
 });
