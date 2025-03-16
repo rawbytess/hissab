@@ -1,6 +1,7 @@
 import HissabEditor, { hissabEditorIf, HissabEditorType } from "editor/src";
 import { useContext, useEffect, useRef } from "react";
 import { PageContext } from "@/components/pages/PagesProvider.tsx";
+import Prompt from "@/components/Prompt/Prompt.tsx";
 
 export default function Editor() {
   const { updateNote, currentPage, setEditorOperations } =
@@ -21,7 +22,7 @@ export default function Editor() {
     };
 
     const he: HissabEditorType = new HissabEditor(
-      heRef.current!,
+      heRef.current,
       hissabEditorOptions,
     );
 
@@ -32,6 +33,7 @@ export default function Editor() {
         undo: he.undoEditor,
         redo: he.redoEditor,
         clear: he.clearEditor,
+        insertText: he.appendText,
       });
     });
     return () => he.destroy();
@@ -40,10 +42,13 @@ export default function Editor() {
   if (!currentPage) return null;
 
   return (
-    <div
-      id="editor-root"
-      className={"flex-grow w-full font-normal bg-[#1c1c1c]"}
-      ref={heRef}
-    ></div>
+    <div className={"flex flex-col gap-4 w-full h-full"}>
+      <div
+        id="editor-root"
+        className={"w-full font-normal bg-[#1c1c1c] "}
+        ref={heRef}
+      ></div>
+      <Prompt />
+    </div>
   );
 }

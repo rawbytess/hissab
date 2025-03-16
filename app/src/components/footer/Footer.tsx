@@ -46,7 +46,7 @@ export default function Footer() {
   return (
     <footer
       className={
-        "flex justify-center bg-gray-950 text-gray-300 p-2 sticky top-full"
+        "flex justify-center bg-gray-950 text-gray-300 p-2 sticky top-full z-50"
       }
     >
       <div className={"flex flex-row items-center gap-2 "}>

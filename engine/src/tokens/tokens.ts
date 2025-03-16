@@ -397,11 +397,12 @@ class DateToken extends Token {
   setTimeFormat() {
     this.timeformat = "";
     const hourFormat = this.hour && this.meridian ? "{hour}" : "{hour-24}";
-    if (this.hour) this.timeformat = hourFormat;
-    if (this.minute) this.timeformat = `${hourFormat}:{minute-pad}`;
-    if (this.second)
+    if (!!this.hour || !!this.spacetime?.hour()) this.timeformat = hourFormat;
+    if (!!this.minute || !!this.spacetime?.minute())
+      this.timeformat = `${hourFormat}:{minute-pad}`;
+    if (!!this.second || !!this.spacetime?.second())
       this.timeformat = `${hourFormat}:{minute-pad}:{second-pad}`;
-    if (this.millisecond)
+    if (!!this.millisecond || !!this.spacetime?.millisecond())
       this.timeformat = `${hourFormat}:{minute-pad}:{second-pad}:{millisecond-pad}`;
     if (this.meridian) this.timeformat += " {ampm}";
   }

@@ -7,7 +7,7 @@ import tailwind from "@astrojs/tailwind";
 import starlight from "@astrojs/starlight";
 
 export default defineConfig({
-  output: "hybrid",
+  output: "static",
   adapter: cloudflare({
     platformProxy: {
       enabled: true,

@@ -98,6 +98,7 @@ export default class HissabEditor {
     this.undoEditor = this.undoEditor.bind(this);
     this.redoEditor = this.redoEditor.bind(this);
     this.hasFocus = this.hasFocus.bind(this);
+    this.appendText = this.appendText.bind(this);
   }
 
   focusEditor() {
@@ -150,6 +151,20 @@ export default class HissabEditor {
       },
       selection: { anchor: cursor + text.length },
       scrollIntoView: true,
+    });
+
+    if (transaction) {
+      this.view?.dispatch(transaction);
+      this.focusEditor();
+    }
+  }
+
+  appendText(text: string) {
+    const transaction = this.view?.state.update({
+      changes: {
+        from: this.view?.state.doc.length,
+        insert: "\n" + text,
+      },
     });
 
     if (transaction) {

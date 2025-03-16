@@ -19,6 +19,7 @@ export type pageContextType = {
     undo: () => void;
     redo: () => void;
     clear: () => void;
+    insertText: (text: string) => void;
   };
   setEditorOperations: React.Dispatch<React.SetStateAction<any>>;
 };
@@ -40,6 +41,7 @@ const defaultPageContext: pageContextType = {
     undo: () => {},
     redo: () => {},
     clear: () => {},
+    insertText: () => {},
   },
   setEditorOperations: () => {},
 };
@@ -54,6 +56,7 @@ const PagesProvider = ({ children }: PropsWithChildren) => {
     undo: () => {},
     redo: () => {},
     clear: () => {},
+    insertText: () => {},
   });
 
   // Create a new note

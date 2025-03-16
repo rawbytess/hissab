@@ -1,0 +1,16 @@
+name = "hissab-api"
+account_id = "a0609a9b2f23cde30f9f3a87339196b8"
+compatibility_flags = []
+workers_dev = true
+main = "src/index.ts"
+compatibility_date = "2023-03-14"
+
+[build]
+command = "pnpm run build"
+
+[vars]
+SECRET_AUTH_KEY = "k_MsDsY12Tblcbe4sJYSHaB9N8-IZv0jdU_OX6s9wIhCqpPP_VyHiPRgTS97iplq"
+
+[env.production]
+workers_dev = false
+route = { pattern = "https://api.hissab.io", custom_domain = true }

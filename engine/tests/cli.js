@@ -1,5 +1,5 @@
 import { createInterface } from "readline";
-import { doLex, doParse } from "../dist/index.js";
+import { doLex, doParse } from "../src/index.ts";
 import context from "../dist/context.js";
 
 const readline = createInterface({
