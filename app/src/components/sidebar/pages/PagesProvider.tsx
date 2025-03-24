@@ -21,7 +21,7 @@ export type pageContextType = {
     clear: () => void;
     insertText: (text: string) => void;
   };
-  setEditorOperations: React.Dispatch<React.SetStateAction<any>>;
+  setEditorOperations: React.Dispatch<React.SetStateAction<object>>;
 };
 
 const defaultPageContext: pageContextType = {

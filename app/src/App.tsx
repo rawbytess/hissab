@@ -1,11 +1,10 @@
 import Editor from "@/components/Editor.tsx";
-import Sidebar from "@/components/sidebar/Sidebar.tsx";
-import PagesProvider from "@/components/pages/PagesProvider.tsx";
+import Sidebar from "@/components/sidebar/AppSidebar.tsx";
+import PagesProvider from "@/components/sidebar/pages/PagesProvider.tsx";
 import Header from "@/components/header/Header.tsx";
-import { TooltipProvider } from "@/components/ui/tooltip.tsx";
 import Footer from "@/components/footer/Footer.tsx";
-import { SessionProvider } from "@/components/auth/SessionProvider.tsx";
-import { HeroUIProvider } from "@heroui/react";
+import { SessionProvider } from "@/components/user/auth/SessionProvider.tsx";
+import { cn, HeroUIProvider } from "@heroui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { infinity } from "ldrs";
 
@@ -16,26 +15,27 @@ infinity.register();
 function App() {
   return (
     <div
-      className={`${import.meta.env.VITE_CHROME === "true" ? "min-h-[550px] min-w-[500px]" : ""}`}
+      className={cn(
+        `${import.meta.env.VITE_CHROME === "true" ? "min-h-[550px] min-w-[500px]" : ""}`,
+        "dark text-foreground bg-background",
+      )}
     >
       <QueryClientProvider client={queryClient}>
         <HeroUIProvider>
           <SessionProvider>
-            <TooltipProvider>
-              <PagesProvider>
-                <Sidebar>
-                  <div
-                    className={
-                      "flex flex-col justify-between w-full rounded h-screen"
-                    }
-                  >
-                    <Header />
-                    <Editor />
-                    <Footer />
-                  </div>
-                </Sidebar>
-              </PagesProvider>
-            </TooltipProvider>
+            <PagesProvider>
+              <Sidebar>
+                <div
+                  className={
+                    "flex flex-col justify-between w-full rounded h-screen"
+                  }
+                >
+                  <Header />
+                  <Editor />
+                  <Footer />
+                </div>
+              </Sidebar>
+            </PagesProvider>
           </SessionProvider>
         </HeroUIProvider>
       </QueryClientProvider>

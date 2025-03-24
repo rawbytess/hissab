@@ -1,7 +1,7 @@
 import HissabEditor, { hissabEditorIf, HissabEditorType } from "editor/src";
 import { useContext, useEffect, useRef } from "react";
-import { PageContext } from "@/components/pages/PagesProvider.tsx";
-import Prompt from "@/components/Prompt/Prompt.tsx";
+import { PageContext } from "@/components/sidebar/pages/PagesProvider.tsx";
+import PromptInputWithBottomActions from "@/components/prompt/prompt-input-with-bottom-actions";
 
 export default function Editor() {
   const { updateNote, currentPage, setEditorOperations } =
@@ -48,7 +48,7 @@ export default function Editor() {
         className={"w-full font-normal bg-[#1c1c1c] "}
         ref={heRef}
       ></div>
-      <Prompt />
+      <PromptInputWithBottomActions />
     </div>
   );
 }

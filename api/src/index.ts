@@ -1,7 +1,8 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import expression from "./expression/expression";
-import ai from "./ai/ai";
+import expression from "./routes/expression/expression";
+import ai from "./routes/ai/ai";
+import ls from "./routes/ls/ls";
 import { Bindings } from "./envTypes";
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -12,6 +13,7 @@ app.get("/", (c) => c.text("Hissab API"));
 
 app.route("/expression", expression);
 app.route("/ai", ai);
+app.route("/ls", ls);
 
 app.notFound((c) => c.json({ message: "Not Found", ok: false }, 404));
 

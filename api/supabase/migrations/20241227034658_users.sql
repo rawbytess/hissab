@@ -1,4 +1,4 @@
-create type "public"."plans" as enum ('free', 'sub_m', 'sub_y', 'cli', 'credits');
+create type "public"."plans" as enum ('free', 'lite_m', 'lite_y', 'plus_m','plus_y', 'ppu');
 
 create type "public"."user_status" as enum ('active', 'inactive', 'unverified', 'blocked');
 
@@ -84,11 +84,11 @@ CREATE OR REPLACE FUNCTION public.handle_email_verification()
 AS $function$
 begin
   -- Check if email_confirmed_at is updated to a non-NULL value and the current status is 'unverified'
-  if new.email_confirmed_at is not null 
+  if new.email_confirmed_at is not null
      and old.email_confirmed_at is null then
     update public.users
     set status = 'active'
-    where user_id = new.id 
+    where user_id = new.id
       and status = 'unverified'; -- Only update if the current status is 'unverified'
   end if;
   return new;
@@ -105,35 +105,15 @@ AS $function$
 begin
   insert into public.users (created_at, user_id, email, name, status)
   values (
-    new.created_at, 
-    new.id, 
-    new.email, 
+    new.created_at,
+    new.id,
+    new.email,
     null, -- name is set to NULL
     'unverified' -- status is set to 'unverified'
   );
   return new;
 end;
 $function$
-;
-
-CREATE OR REPLACE FUNCTION public.insert_trial_credits()
- RETURNS trigger
- LANGUAGE plpgsql
- SECURITY DEFINER
- SET search_path TO ''
-AS $function$begin
-  -- Check if the status is updated to 'active' and was 'unverified' before
-  if new.status = 'active' and old.status = 'unverified' then
-    insert into public.user_plan (expire_at, user_id, plan, credits)
-    values (
-      null,              -- expire_at is set to NULL
-      new.id,       -- user_id from public.users
-      'free',            -- plan is set to 'free'
-      100                -- credits are set to 100
-    );
-  end if;
-  return new;
-end;$function$
 ;
 
 CREATE OR REPLACE FUNCTION public.nanoid(size integer DEFAULT 50, alphabet text DEFAULT '_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'::text, additionalbytesfactor double precision DEFAULT 1.6)
@@ -332,8 +312,12 @@ grant truncate on table "public"."users" to "service_role";
 
 grant update on table "public"."users" to "service_role";
 
-CREATE TRIGGER on_user_signup AFTER UPDATE OF status ON public.users FOR EACH ROW EXECUTE FUNCTION insert_trial_credits();
+DROP TRIGGER IF EXISTS signup_copy on auth.users;
+CREATE TRIGGER signup_copy
+    AFTER INSERT ON auth.users
+    FOR EACH ROW EXECUTE PROCEDURE public.handle_new_auth_user();
 
-CREATE TRIGGER user_onboarding AFTER UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION supabase_functions.http_request('http://10.76.153.28:4321/api/user/onboard', 'POST', '{"Content-type":"application/json","Authorization":"db-webhook-key"}', '{}', '5000');
-
-
+DROP TRIGGER IF EXISTS verified_users on auth.users;
+CREATE TRIGGER verified_users
+    AFTER UPDATE ON auth.users
+    FOR EACH ROW EXECUTE PROCEDURE public.handle_email_verification();

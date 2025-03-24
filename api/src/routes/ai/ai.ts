@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { getAIResponse, getGeminiModel } from "./gemini";
-import { Bindings } from "../envTypes";
+import { Bindings } from "../../envTypes";
 import { cors } from "hono/cors";
-import { AIResponseType } from "../../../types/AIResponse";
+import { AIResponseType } from "../../../../types/AIResponse";
 
 const app = new Hono<{ Bindings: Bindings }>();
 app.use("/*", cors());
@@ -20,6 +20,7 @@ app.post("/prompt", async (c) => {
   // const geminiModel = getGeminiModel(c.env.GEMINI_API_KEY);
   // const response = await getAIResponse(geminiModel, prompt);
   // const AIResponse = response.response.text();
+  // return c.json({ AIResponse: JSON.parse(AIResponse) });
   await sleep(2000);
   const AIResponse: AIResponseType = {
     AIResponse: {
@@ -27,7 +28,6 @@ app.post("/prompt", async (c) => {
     },
   };
   return c.json(AIResponse);
-  // return c.json({ prompt: prompt });
 });
 
 export default app;
