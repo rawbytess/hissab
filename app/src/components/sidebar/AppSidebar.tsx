@@ -17,7 +17,8 @@ export default function AppSidebar({
 }: {
   children: React.ReactNode;
 }) {
-  const { session } = useContext(SessionContext);
+  const { session, metadata } = useContext(SessionContext);
+  const status = metadata?.subscription?.status;
   return (
     <SidebarProvider>
       <Sidebar
@@ -32,13 +33,12 @@ export default function AppSidebar({
           <SidebarGroup
             className={"fixed bottom-10 p-4 mb-5 w-[--sidebar-width]"}
           >
-            {session ? (
-              <UserDropdown />
-            ) : (
+            {status !== "past_due" && status !== "active" && (
               <>
                 <GetStarted />
               </>
             )}
+            {session && <UserDropdown />}
           </SidebarGroup>
 
           <SidebarGroup

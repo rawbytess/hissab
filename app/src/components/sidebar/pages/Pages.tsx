@@ -30,22 +30,24 @@ export default function Pages() {
 
   return (
     <>
-      <Button
-        onPress={() => {
-          const newNote: Page = createNote(getRandomPlaceholderName(), "");
-          setCurrentPage(newNote);
-          setEditing(newNote);
-        }}
-        variant={"light"}
-        size={"sm"}
-        className="m-2 w-fit text-gray-300 h-7"
-      >
-        <Icon
-          icon="fluent:document-one-page-add-20-filled"
-          width="20"
-          height="20"
-        />
-      </Button>
+      <div className="bg-purple-700">
+        <Button
+          onPress={() => {
+            const newNote: Page = createNote(getRandomPlaceholderName(), "");
+            setCurrentPage(newNote);
+            setEditing(newNote);
+          }}
+          variant={"light"}
+          size={"sm"}
+          className="m-2 w-fit text-gray-300 h-7"
+        >
+          <Icon
+            icon="fluent:document-one-page-add-20-filled"
+            width="20"
+            height="20"
+          />
+        </Button>
+      </div>
       <Divider />
       <ul className={"mt-2"}>
         {notes.map((page, index) => (

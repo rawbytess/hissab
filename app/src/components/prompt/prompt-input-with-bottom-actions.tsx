@@ -6,7 +6,7 @@ import { cn } from "@heroui/react";
 import PromptInput from "./PromptInput.tsx";
 import { PageContext } from "@/components/sidebar/pages/PagesProvider.tsx";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { AIResponseType } from "../../../../types/AIResponse.ts";
+import { AIResponseType } from "../../../../lib/types/AIResponse.ts";
 
 export default function Component() {
   const [prompt, setPrompt] = React.useState<string>("");
