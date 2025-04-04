@@ -1,11 +1,13 @@
 import type { TextAreaProps } from "@heroui/react";
 
-import React from "react";
+import React, { useContext } from "react";
 import { Textarea } from "@heroui/react";
 import { cn } from "@heroui/react";
+import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
 
 const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ({ classNames = {}, ...props }, ref) => {
+    const { isPaid } = useContext(SessionContext);
     return (
       <Textarea
         ref={ref}
@@ -17,7 +19,7 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
           input: cn("py-0", classNames?.input),
         }}
         minRows={1}
-        placeholder="Enter a prompt here"
+        placeholder={isPaid ? "Enter a prompt here" : "Upgrade now to use AI"}
         radius="lg"
         variant="bordered"
         {...props}

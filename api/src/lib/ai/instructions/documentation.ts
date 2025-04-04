@@ -181,11 +181,11 @@ Hissab Expression: #ffa2b3 to rbg color
 ## Label expressions and Reference previous result
 You can label an expression using the = sign. This will allow you to refer to the result of the expression later in the 
 conversation. The label should be followed by the expression. If there are multiple expressions in the array, you must 
-label them all appropriately.
+label them all appropriately. Use snake case for label names.
 
 Example: 
 User: "My monthly income is 1000, expenses are 200 and savings are 50. What is my yearly expense?"
-Response: {"expressions": ["monthly expense = 1000 + 200 - 50", "yearly expense = monthly expense to yearly"]}
+Response: {"expressions": ["monthly_expense = 1000 + 200 - 50", "yearly expense = monthly expense to yearly"]}
 
 You can also refer to the result of the previous calculation using the keyword "prev". "prev" will only refer to the 
 immediate previous expression in the array. Thus for any further previous expressions, you must use the label.

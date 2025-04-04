@@ -1,12 +1,12 @@
 import { Hono } from "hono";
 import { createClient } from "@supabase/supabase-js";
-import { Bindings } from "../../../types/envTypes";
+import { Bindings } from "@lib/types/envTypes";
 import {
   zLSWebhook,
   zOrderObject,
   zSubscriptionObject,
-} from "../../../types/lemonSqueezyTypes";
-import { lsWebhookAuth } from "../../../middlewares/lsWebhookAuth";
+} from "@lib/types/lemonSqueezyTypes";
+import { lsWebhookAuth } from "@middlewares/lsWebhookAuth";
 import { z } from "zod";
 import { userMetadata } from "../../../../../lib/types/userMetadata";
 
@@ -29,7 +29,7 @@ function isOrderObject(obj: LSWebhook): obj is z.infer<typeof zOrderObject> {
 
 app.post("/", async (c) => {
   const bodyJson: LSWebhook = c.var.body;
-
+  console.log(bodyJson);
   const supabase = createClient(
     c.env.SUPABASE_API_URL,
     c.env.SUPABASE_ADMIN_KEY,
@@ -67,6 +67,7 @@ app.post("/", async (c) => {
     }
 
     const user_id = data.id;
+    console.log(user_id);
     const { subscription_id } = first_subscription_item;
     const { error: insertError } = await supabase.from("user_plan").insert({
       user_id,

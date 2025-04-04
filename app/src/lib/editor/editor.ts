@@ -11,6 +11,7 @@ import {
   ViewPlugin,
   WidgetType,
 } from "@codemirror/view";
+import { prompt } from "./promptDecoration";
 import { defaultKeymap, history, redo, undo } from "@codemirror/commands";
 import {
   bracketMatching,
@@ -99,6 +100,7 @@ export default class HissabEditor {
     this.redoEditor = this.redoEditor.bind(this);
     this.hasFocus = this.hasFocus.bind(this);
     this.appendText = this.appendText.bind(this);
+    this.applyPromptDecoration = this.applyPromptDecoration.bind(this);
   }
 
   focusEditor() {
@@ -159,6 +161,10 @@ export default class HissabEditor {
     }
   }
 
+  applyPromptDecoration() {
+    // underlineSelection(this.view!);
+  }
+
   appendText(text: string) {
     const transaction = this.view?.state.update({
       changes: {
@@ -208,6 +214,7 @@ export default class HissabEditor {
 
   getResult = async (state: EditorState) => {
     const data = state.doc.toString();
+    const currentLine = state.doc.lineAt(state.selection.main.head).number;
     const variables: Variables = {};
     const results: Results[] = [];
     const lines = data.split("\n");
@@ -216,6 +223,31 @@ export default class HissabEditor {
 
     for (const [index, line] of lines.entries()) {
       try {
+        if (line.trim().startsWith("ai ")) {
+          const aiPrompt = line.trim().substring(2).trim();
+          console.log("AI Prompt: ", aiPrompt, index, currentLine - 1);
+          if (index === currentLine - 1 || aiPrompt.length === 0) {
+            console.log("AI 1: ");
+            results.push({
+              result: this.oldResults[index].result || "",
+              stale: true,
+              lineNumber: index,
+              error: false,
+              errorMessage: null,
+            });
+            continue;
+          }
+          results.push({
+            result: aiPrompt,
+            stale: false,
+            lineNumber: index,
+            error: false,
+            errorMessage: null,
+          });
+
+          console.log("AI 3: ");
+          continue;
+        }
         [ln] = line.split("//");
         ln = ln.trim();
         await this.calculateTotal(index + 1, variables);
@@ -318,6 +350,7 @@ export default class HissabEditor {
       closeBrackets(),
       highlightActiveLine(),
       placeholder(" Type your expressions here..."),
+      prompt,
       keymap.of(defaultKeymap),
       syntaxHighlighting(
         HighlightStyle.define(HissabHighlightStyle(this.isDark)),
@@ -333,7 +366,11 @@ export default class HissabEditor {
       EditorView.lineWrapping,
       getStreamLanguage(this),
       EditorView.updateListener.of((v) => {
-        if (v.docChanged) this.view = v.view;
+        if (v.docChanged) {
+          this.view = v.view;
+          //underlineSelection(v.view);
+          //this.applyPromptDecoration();
+        }
       }),
       EditorView.focusChangeEffect.of((_, focusing) => {
         if (this.setFocus) this.setFocus(focusing);
@@ -350,11 +387,11 @@ export default class HissabEditor {
           position: "absolute",
           parent: this.parent.parentNode as HTMLElement,
         }),
-        autocompletion({
+        /*autocompletion({
           override: [autoComplete],
           closeOnBlur: false,
           tooltipClass: () => "autocomplete-position",
-        }),
+        }),*/
       ];
 
       extensions.push(...proExtensions);
@@ -380,6 +417,9 @@ interface Results {
   errorMessage: ReportError | null;
   stale: boolean;
   lineNumber: number;
+  ai?: {
+    expressions: string[];
+  };
 }
 
 const copiedDiv = document.createElement("div");

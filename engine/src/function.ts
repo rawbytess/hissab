@@ -201,7 +201,7 @@ function rgbColor(...params: any[]): any {
   const blue = blueT.toNumber();
   const alpha = alphaT?.toNumber() || 1;
   if (!chroma.valid([red, green, blue, alpha])) throw new UserError(976);
-  const color = chroma([red, green, blue, alpha]);
+  const color = chroma(red, green, blue, alpha);
 
   const colorToken: ColorToken = tokenFactory(
     color.hex(),

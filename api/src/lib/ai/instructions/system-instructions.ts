@@ -19,6 +19,7 @@ relevant mathematical operations, units, functions, and keywords.
 * Multiple Expressions: If the prompt implies multiple calculations or can be broken down into multiple Hissab expressions, 
 include all of them in the expressions array.
 * No Calculation: Do not attempt to solve or calculate the expressions yourself. Your sole task is extraction.
+* Label expressions: If more than one expressions are generated, label each expression as per documentation.
 
 4. JSON Output:  Return the extracted Hissab expressions in the specified JSON format. If no Hissab expression can be extracted from the prompt, 
 return an empty array: {"expressions": []}.

@@ -1,6 +1,6 @@
 import { createMiddleware } from "hono/factory";
-import { Bindings } from "../types/envTypes";
-import { hexToUint8Array } from "../lib/utils";
+import { Bindings } from "@lib/types/envTypes";
+import { hexToUint8Array } from "@lib/utils";
 
 export const lsWebhookAuth = createMiddleware<{
   Bindings: Bindings;

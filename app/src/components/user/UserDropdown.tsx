@@ -4,7 +4,7 @@ import {
   DropdownMenu,
   DropdownItem,
   User,
-  Divider,
+  DropdownSection,
 } from "@heroui/react";
 import { useContext } from "react";
 import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
@@ -26,60 +26,90 @@ export default function UserDropdown() {
               fallback: session?.user.email,
             }}
             className="transition-transform "
-            description={metadata?.subscription?.product_name || "Free Plan"}
+            description={
+              isPaid ? metadata?.subscription?.product_name : "Free Plan"
+            }
             name={session?.user?.email}
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" className={"text-gray-300"}>
-          {isPaid ? (
-            <DropdownItem key="manage_account" textValue={"Manage Account"}>
-              <a
-                href={"https://hissab.io/faqs"}
-                target={"_blank"}
-                className="flex items-center justify-between"
-              >
-                Manage Account
-                <Icon icon="lets-icons:external" width="20" height="20" />
-              </a>
+          <DropdownSection showDivider>
+            {isPaid ? (
+              <DropdownItem key="manage_account" textValue={"Manage Account"}>
+                <a
+                  href={"https://hissab.io/faqs"}
+                  target={"_blank"}
+                  className="flex items-center justify-start gap-2"
+                >
+                  <Icon
+                    icon="material-symbols:manage-accounts-outline-rounded"
+                    width="16"
+                    height="16"
+                  />
+                  <p>Manage Account</p>
+                  <Icon
+                    icon="lets-icons:external"
+                    className={"ml-auto"}
+                    width="16"
+                    height="16"
+                  />
+                </a>
+              </DropdownItem>
+            ) : (
+              <>
+                <DropdownItem key="learn_hissab_ai" textValue={"Learn More"}>
+                  <a
+                    href={"https://hissab.io/faqs"}
+                    target={"_blank"}
+                    className="flex items-center justify-start gap-2"
+                  >
+                    <Icon icon="mdi:learn-outline" width="16" height="16" />
+                    <p className="text-xs">Learn More about Hissab AI</p>
+                    <Icon
+                      icon="lets-icons:external"
+                      className={"ml-auto"}
+                      width="16"
+                      height="16"
+                    />
+                  </a>
+                </DropdownItem>
+                <DropdownItem key="but_hissab_ai" textValue={"Buy Hissab AI"}>
+                  <a
+                    href={"https://hissab.io/faqs"}
+                    target={"_blank"}
+                    className="flex items-center justify-start gap-2"
+                  >
+                    <Icon icon="icon-park-outline:buy" width="16" height="16" />
+                    <p>Buy Hissab AI</p>
+                    <Icon
+                      icon="lets-icons:external"
+                      className={"ml-auto"}
+                      width="16"
+                      height="16"
+                    />
+                  </a>
+                </DropdownItem>
+              </>
+            )}
+          </DropdownSection>
+          <DropdownSection>
+            <DropdownItem
+              key="logout"
+              color="danger"
+              className={"text-red-700"}
+              onPress={logout}
+              textValue={"Log Out"}
+            >
+              <div className={"flex items-center justify-start gap-2"}>
+                <Icon icon="humbleicons:logout" width="16" height="16" />
+                <p>Log Out</p>
+              </div>
             </DropdownItem>
-          ) : (
-            <>
-              <DropdownItem key="learn_hissab_ai" textValue={"Learn More"}>
-                <a
-                  href={"https://hissab.io/faqs"}
-                  target={"_blank"}
-                  className="flex items-center justify-between"
-                >
-                  Learn More about <br />
-                  Hissab AI
-                  <Icon icon="lets-icons:external" width="20" height="20" />
-                </a>
-              </DropdownItem>
-              <DropdownItem key="but_hissab_ai" textValue={"Buy Hissab AI"}>
-                <a
-                  href={"https://hissab.io/faqs"}
-                  target={"_blank"}
-                  className="flex items-center justify-between"
-                >
-                  Buy Hissab AI
-                  <Icon icon="lets-icons:external" width="20" height="20" />
-                </a>
-              </DropdownItem>
-            </>
-          )}
-          <DropdownItem
-            key="logout"
-            color="danger"
-            className={"text-red-700"}
-            onPress={logout}
-            textValue={"Log Out"}
-          >
-            <Divider className={"mb-2"} />
-            Log Out
-          </DropdownItem>
-          {/*<DropdownItem key="logout" color="danger" className={"text-red-700"}>
+
+            {/*<DropdownItem key="logout" color="danger" className={"text-red-700"}>
             Delete Account
           </DropdownItem>*/}
+          </DropdownSection>
         </DropdownMenu>
       </Dropdown>
     </div>

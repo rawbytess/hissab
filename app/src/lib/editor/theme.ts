@@ -1,5 +1,5 @@
 import { Tag } from "@lezer/highlight";
-import { StreamLanguage, StringStream } from "@codemirror/language";
+import { StreamLanguage, StringStream, TagStyle } from "@codemirror/language";
 import { doLex } from "engine";
 import pkg from "lodash";
 const { sortedIndexBy } = pkg;
@@ -18,7 +18,7 @@ function themeConfig(isDark: boolean, editorBackground: string) {
   };
 }
 
-export function HissabHighlightStyle(isDark: boolean) {
+export function HissabHighlightStyle(isDark: boolean): TagStyle[] {
   return [
     { tag: hissabTags.numberToken, color: isDark ? "#00ff71" : "#096630" },
     { tag: hissabTags.unitToken, color: isDark ? "#e7d81a" : "#7e6f02" },
@@ -34,11 +34,16 @@ export function HissabHighlightStyle(isDark: boolean) {
       fontStyle: "bold",
     },
     { tag: hissabTags.undefinedToken, color: isDark ? "#999999" : "#999999" },
-    { tag: hissabTags.stringToken, color: isDark ? "#999999" : "#999999" },
+    { tag: hissabTags.stringToken, color: isDark ? "#f984e1" : "#999999" },
     {
       tag: hissabTags.comment,
       color: isDark ? "#93A1A1" : "#93A1A1",
       fontStyle: "italic",
+    },
+    {
+      tag: hissabTags.prompt,
+      color: isDark ? "#cdcdcd" : "#754103",
+      class: "cm-prompt",
     },
   ];
 }
@@ -56,6 +61,7 @@ export const hissabTags = {
   stringToken: Tag.define(),
   colorToken: Tag.define(),
   comment: Tag.define(),
+  prompt: Tag.define(),
 };
 
 export function hissabTheme(
@@ -219,6 +225,10 @@ export function hissabTheme(
 export function getStreamLanguage(ed: any) {
   return StreamLanguage.define({
     token(stream: StringStream) {
+      if (stream.match("ai ")) {
+        stream.skipToEnd();
+        return "prompt";
+      }
       if (stream.match("//")) {
         stream.skipToEnd();
         return "comment";

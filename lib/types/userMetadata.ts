@@ -12,7 +12,7 @@ export type userMetadata = {
     ends_at: string;
     created_at: string;
     updated_at: string;
-    product_name: string;
+    product_name: "AI Lite" | "AI Plus" | string;
     variant_name: string;
   };
   lifetime:

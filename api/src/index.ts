@@ -1,10 +1,9 @@
 import { Hono } from "hono";
 import ai from "./routes/ai/route";
 import classic from "./routes/classic/route";
-import prompt from "./routes/user/ai/prompt/route";
+import userAI from "./routes/user/ai/route";
 import lemonsqueezy from "./routes/webhook/lemonsqueezy/route";
-import plan from "./routes/user/plan/route";
-import { Bindings } from "./types/envTypes";
+import { Bindings } from "@lib/types/envTypes";
 
 const app = new Hono<{ Bindings: Bindings }>();
 
@@ -13,9 +12,8 @@ app.get("/", (c) => c.text("Hissab API"));
 
 // app.route("/ai", ai);
 app.route("/classic", classic);
-app.route("/user/ai/prompt", prompt);
+app.route("/user/ai", userAI);
 app.route("/webhook/lemonsqueezy", lemonsqueezy);
-app.route("/user/plan", plan);
 
 app.notFound((c) => c.json({ message: "Not Found", ok: false }, 404));
 

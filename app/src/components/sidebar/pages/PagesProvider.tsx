@@ -7,6 +7,13 @@ export type Page = {
   content: string;
 };
 
+export type EditorOperations = {
+  undo: () => void;
+  redo: () => void;
+  clear: () => void;
+  insertText: (text: string) => void;
+};
+
 export type pageContextType = {
   notes: Page[];
   createNote: (title: string, content: string) => Page;
@@ -15,13 +22,8 @@ export type pageContextType = {
   deleteNote: (id: string) => void;
   currentPage?: Page;
   setCurrentPage: React.Dispatch<React.SetStateAction<Page | undefined>>;
-  editorOperations: {
-    undo: () => void;
-    redo: () => void;
-    clear: () => void;
-    insertText: (text: string) => void;
-  };
-  setEditorOperations: React.Dispatch<React.SetStateAction<object>>;
+  editorOperations: EditorOperations;
+  setEditorOperations: React.Dispatch<React.SetStateAction<EditorOperations>>;
 };
 
 const defaultPageContext: pageContextType = {
@@ -41,7 +43,7 @@ const defaultPageContext: pageContextType = {
     undo: () => {},
     redo: () => {},
     clear: () => {},
-    insertText: () => {},
+    insertText: (text: string) => {},
   },
   setEditorOperations: () => {},
 };
@@ -52,11 +54,11 @@ export const PageContext =
 const PagesProvider = ({ children }: PropsWithChildren) => {
   const [notes, setNotes] = useLocalStorage<Page[]>("hissab-pages", []);
   const [currentPage, setCurrentPage] = useState<Page>();
-  const [editorOperations, setEditorOperations] = useState({
+  const [editorOperations, setEditorOperations] = useState<EditorOperations>({
     undo: () => {},
     redo: () => {},
     clear: () => {},
-    insertText: () => {},
+    insertText: (text) => {},
   });
 
   // Create a new note

@@ -1,38 +1,27 @@
-import {
-  GenerativeModel,
-  GoogleGenerativeAI,
-  SchemaType,
-  Schema,
-} from "@google/generative-ai";
-import systemInstructions from "../../lib/ai/instructions/system-instructions";
-import documentation from "../../lib/ai/instructions/documentation";
+import { GoogleGenAI } from "@google/genai";
+import systemInstructions from "@lib/ai/instructions/system-instructions";
+import documentation from "@lib/ai/instructions/documentation";
+import { schema } from "./jsonSchema";
 
-const schema: Schema = {
-  description: "List of Hissab Expressions",
-  type: SchemaType.OBJECT,
-  required: ["expressions"],
-  properties: {
-    expressions: {
-      type: SchemaType.ARRAY,
-      description: "List of Hissab expressions",
-      nullable: false,
-      items: {
-        type: SchemaType.STRING,
+export class Gemini {
+  private ai: GoogleGenAI;
+  private model: string;
+  private cache: string;
+
+  constructor(apiKey: string, model: string) {
+    this.ai = new GoogleGenAI({ apiKey });
+    this.model = model;
+  }
+
+  async chat(prompt: string) {
+    return this.ai.models.generateContent({
+      model: this.model,
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: schema,
+        systemInstruction: systemInstructions + documentation,
       },
-    },
-  },
-};
-
-export function getGeminiModel(apiKey: string) {
-  return new GoogleGenerativeAI(apiKey).getGenerativeModel({
-    model: "gemini-2.0-flash-lite",
-    generationConfig: {
-      responseMimeType: "application/json",
-      responseSchema: schema,
-    },
-  });
-}
-
-export function getAIResponse(model: GenerativeModel, prompt: string) {
-  return model.generateContent(systemInstructions + documentation + prompt);
+    });
+  }
 }

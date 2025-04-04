@@ -1,60 +1,30 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useMemo } from "react";
 import { Button, Tooltip } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { cn } from "@heroui/react";
 
 import PromptInput from "./PromptInput.tsx";
 import { PageContext } from "@/components/sidebar/pages/PagesProvider.tsx";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { AIResponseType } from "../../../../lib/types/AIResponse.ts";
+import { PromptHistory } from "@/components/prompt/PromptHistory.tsx";
+import { useAIPromptQuery } from "@/queries/useAIPromptQuery.tsx";
+import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
 
-export default function Component() {
+export function PromptWrapper() {
   const [prompt, setPrompt] = React.useState<string>("");
   const { editorOperations } = useContext(PageContext);
-  const queryClient = useQueryClient();
+  const { metadata, isPaid } = useContext(SessionContext);
 
-  const AIResponse = useQuery<AIResponseType>({
-    queryKey: ["AIResponse", prompt],
-    enabled: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    retry: false,
-    queryFn: async () => {
-      if (prompt.length === 0) return;
-      const response = await fetch("http://localhost:8787/ai/prompt", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt: prompt }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to fetch AI response" + response.status);
-      }
-      return response.json();
-    },
-  });
-
-  useEffect(() => {
-    if (AIResponse.data) {
-      editorOperations.insertText(
-        AIResponse.data.AIResponse.expressions.join("\n"),
-      );
-      queryClient.removeQueries({ queryKey: ["AIResponse", prompt] });
-      return;
+  const AIResponse = useAIPromptQuery(prompt, editorOperations.insertText);
+  const maxPromptLength = useMemo(() => {
+    if (isPaid) {
+      return metadata?.subscription?.product_name === "AI Lite"
+        ? 500
+        : metadata?.subscription?.product_name === "AI Plus"
+          ? 2000
+          : 0;
     }
-    if (AIResponse.error) {
-      queryClient.removeQueries({ queryKey: ["AIResponse", prompt] });
-      return;
-    }
-  }, [
-    AIResponse.data,
-    AIResponse.error,
-    editorOperations,
-    prompt,
-    queryClient,
-  ]);
+    return 0;
+  }, [metadata, isPaid]);
 
   return (
     <div className="flex h-full flex-col gap-8 items-center justify-end mx-5 mb-10">
@@ -81,9 +51,9 @@ export default function Component() {
         <div className="flex flex-col gap-4 rounded-2xl">
           <form
             className={cn(
-              "flex flex-col items-start rounded-medium text-white  transition-colors  bg-gray-800 hover:bg-blue-950",
-              "focus-within:bg-blue-950  ring-2  hover:ring-blue-500 focus-within:ring-blue-500",
-              AIResponse.error ? "ring-red-500 " : "ring-gray-600",
+              "flex flex-col items-start rounded-medium text-white  transition-colors  bg-[#1c1c1c]  ring-2",
+              AIResponse.error ? "ring-red-500 " : "ring-purple-700",
+              isPaid ? "ring-purple-700" : "ring-gray-600",
             )}
             onSubmit={async (e) => {
               e.preventDefault();
@@ -95,8 +65,10 @@ export default function Component() {
               classNames={{
                 inputWrapper: "!bg-transparent shadow-none h-auto",
                 innerWrapper: "relative",
-                input: "pt-1 pl-2 pb-6 !pr-10 text-medium",
+                input:
+                  "pt-1 pl-2 pb-6 !pr-10 text-medium disabled:cursor-not-allowed disabled:opacity-50",
               }}
+              disabled={!isPaid}
               minRows={3}
               maxRows={10}
               startContent={
@@ -104,7 +76,7 @@ export default function Component() {
                   <Tooltip
                     showArrow
                     offset={-5}
-                    delay={1000}
+                    delay={500}
                     content="Previous Prompt"
                     className={"text-white bg-neutral-700 rounded-2xl"}
                   >
@@ -112,7 +84,10 @@ export default function Component() {
                       isIconOnly
                       variant={"light"}
                       size={"sm"}
-                      className={"text-white"}
+                      className={
+                        "text-white disabled:cursor-not-allowed disabled:opacity-50"
+                      }
+                      disabled={!isPaid}
                     >
                       <Icon
                         className={cn(
@@ -128,41 +103,28 @@ export default function Component() {
                   </Tooltip>
                   <Tooltip
                     showArrow
-                    delay={1000}
+                    delay={500}
                     offset={-5}
                     content="See Prompts history"
                     className={"text-white bg-neutral-700 rounded-2xl"}
                   >
-                    <Button
-                      isIconOnly
-                      variant={"light"}
-                      size={"sm"}
-                      className={"text-white "}
-                    >
-                      <Icon
-                        className={cn(
-                          "[&>path]:stroke-[2px]",
-                          !prompt
-                            ? "text-default-600"
-                            : "text-primary-foreground",
-                        )}
-                        icon="mdi:clipboard-text-history-outline"
-                        width={20}
-                      />
-                    </Button>
+                    <PromptHistory />
                   </Tooltip>
                   <Tooltip
                     showArrow
                     offset={-5}
-                    delay={1000}
-                    content="Previous Prompt"
+                    delay={500}
+                    content="Next Prompt"
                     className={"text-white bg-neutral-700 rounded-2xl"}
                   >
                     <Button
                       isIconOnly
                       variant={"light"}
                       size={"sm"}
-                      className={"text-white "}
+                      className={
+                        "text-white disabled:cursor-not-allowed disabled:opacity-50"
+                      }
+                      disabled={!isPaid}
                     >
                       <Icon
                         className={cn(
@@ -234,7 +196,11 @@ export default function Component() {
           </form>
         </div>
         <div className={"flex flex-row justify-between items-center mx-2"}>
-          <p className="text-tiny text-default-400">{prompt.length}/2000</p>
+          {maxPromptLength && (
+            <p className="text-tiny text-default-400">
+              {prompt.length}/{maxPromptLength}
+            </p>
+          )}
           {AIResponse.error && (
             <p className={"text-tiny text-red-400"}>
               {AIResponse.error.message +

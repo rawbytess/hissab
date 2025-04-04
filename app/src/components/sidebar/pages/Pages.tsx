@@ -56,8 +56,8 @@ export default function Pages() {
             className={cn(
               "p-1  hover:bg-stone-800 mx-2 rounded my-1",
               page.id === currentPage?.id
-                ? "font-medium bg-stone-800 text-purple-200"
-                : "font-light",
+                ? "font-medium bg-stone-800 text-slate-200"
+                : "font-light text-slate-300",
             )}
             onClick={() => {
               setCurrentPage(page);
@@ -95,7 +95,14 @@ export default function Pages() {
             ) : (
               <div className="flex items-center">
                 <div className={"flex p-1 items-center gap-2 cursor-pointer"}>
-                  <Icon icon="emojione-v1:page" width="16" height="16" />
+                  <Icon
+                    icon="emojione-v1:page"
+                    width="16"
+                    height="16"
+                    className={
+                      page.id === currentPage?.id ? "opacity-100" : "opacity-70"
+                    }
+                  />
                   <p className={"text-sm"}>{page.title}</p>
                 </div>
                 {page.id === currentPage?.id && (

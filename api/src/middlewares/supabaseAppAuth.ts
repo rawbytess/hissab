@@ -1,12 +1,12 @@
 import { createMiddleware } from "hono/factory";
-import { createClient } from "@supabase/supabase-js";
-import { Bindings } from "../types/envTypes";
+import { createClient, User } from "@supabase/supabase-js";
+import { Bindings } from "@lib/types/envTypes";
 import { HTTPException } from "hono/http-exception";
 
 export const supabaseAppAuth = createMiddleware<{
   Bindings: Bindings;
   Variables: {
-    user: {};
+    user: { user: User };
   };
 }>(async (c, next) => {
   const refresh_token = c.req.header("Refresh");
@@ -20,9 +20,7 @@ export const supabaseAppAuth = createMiddleware<{
   const { data, error } = await supabase.auth.getUser(access_token);
 
   if (data.user) {
-    c.set("user", {
-      id: data.user.id,
-    });
+    c.set("user", { user: data.user });
   }
   // TODO: handle error properly
   if (error) {
@@ -45,7 +43,7 @@ export const supabaseAppAuth = createMiddleware<{
 
     if (refreshed.user) {
       c.set("user", {
-        id: refreshed.user.id,
+        user: refreshed.user,
       });
     }
   }

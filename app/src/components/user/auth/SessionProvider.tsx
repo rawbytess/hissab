@@ -2,7 +2,7 @@ import { createContext, useEffect, useMemo, useState } from "react";
 import { AuthOtpResponse, AuthResponse, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client.ts";
 import { userMetadata } from "../../../../../lib/types/userMetadata.ts";
-import { bouncy } from "ldrs";
+import { isPremiumUser } from "../../../../../lib/getPremiumStatus.ts";
 
 export type SessionContextType = {
   session: Session | null;
@@ -32,7 +32,7 @@ export const SessionContext = createContext<SessionContextType>({
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
-  const metadata = (session?.user?.app_metadata || null) as userMetadata;
+  const metadata = (session?.user?.user_metadata || null) as userMetadata;
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
@@ -57,19 +57,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   const isPaid = useMemo(() => {
     if (!session) return false;
-    if (!metadata) return false;
-    if (!metadata.subscription) return false;
-
-    if (metadata.subscription.status === "expired") return false;
-    if (
-      metadata.subscription.status === "cancelled" ||
-      metadata.subscription.status === "active"
-    ) {
-      const endsAt = new Date(metadata.subscription.ends_at);
-      const now = new Date();
-      return endsAt > now;
-    }
-    return false;
+    return isPremiumUser(metadata);
   }, [session, metadata]);
 
   async function logout() {
@@ -104,7 +92,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         logout,
         verifyOTP,
         signInWithOTP,
-        metadata: (session?.user?.app_metadata ?? null) as userMetadata,
+        metadata: (session?.user?.user_metadata ?? null) as userMetadata,
         isPaid,
       }}
     >

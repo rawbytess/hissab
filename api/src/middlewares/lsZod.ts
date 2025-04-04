@@ -1,7 +1,7 @@
 import { createMiddleware } from "hono/factory";
-import { Bindings } from "../types/envTypes";
+import { Bindings } from "@lib/types/envTypes";
 import { z } from "zod";
-import { zLSWebhook } from "../types/lemonSqueezyTypes";
+import { zLSWebhook } from "@lib/types/lemonSqueezyTypes";
 
 type LSWebhook = z.infer<typeof zLSWebhook>;
 

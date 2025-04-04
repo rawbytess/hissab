@@ -1,0 +1,588 @@
+Financial & Budgeting
+Prompt: "I earn $4500 per month, spend $1200 on rent, $600 on food, and $200 on utilities. How much do I save per year?"
+Expression: (4500 - (1200 + 600 + 200)) * 12
+
+Prompt: "I invest $5000 today with an annual return of 7%. What will it be worth in 20 years?"
+Expression: 5000 * (1.07^20)
+
+Prompt: "My loan balance is $250,000 at 5% annual interest. If I pay $1500 per month, how long will it take to pay off?"
+Expression: 250000 / (1500 * 12) to years
+
+Prompt: "I save $300 per month and earn 5% annual interest, compounded monthly. How much will I have in 15 years?"
+Expression: 300 * (((1 + (0.05 / 12))^(15 * 12) - 1) / (0.05 / 12))
+
+Prompt: "I bought an item for $2499 and got a 15% discount. How much did I pay?"
+Expression: 2499 - 15%
+
+Prompt: "My salary increases by 4% per year. If I start with $60,000, what will it be in 5 years?"
+Expression: 60000 * (1.04^5)
+
+Prompt: "If a store is offering 25% off on an item originally priced at $120, and I have a $10 coupon, how much do I pay?"
+Expression: (120 - 25%) - 10
+
+Time & Scheduling
+Prompt: "If I start a 2-hour movie at 7:30 PM, what time will it end?"
+Expression: 7:30 pm + 2 hours
+
+Prompt: "I was born on 15th June 1995. How old am I today?"
+Expression: today - 15 jun 1995 to years
+
+Prompt: "If my flight lands in New York at 8:00 AM PST, what time is that in GMT?"
+Expression: 8:00 am pst in gmt
+
+Prompt: "How many days are left until Christmas?"
+Expression: 25 dec 2025 - today to days
+
+Unit Conversions & Measurements
+Prompt: "I ran 5 kilometers today. How many miles is that?"
+Expression: 5 kilometers to miles
+
+Prompt: "I need 2 gallons of water. How many liters is that?"
+Expression: 2 gallons to liters
+
+Prompt: "If I weigh 70 kilograms, how many pounds is that?"
+Expression: 70 kg to pounds
+
+Prompt: "Convert 78°F to Celsius."
+Expression: 78 F to C
+
+Prompt: "How many seconds are in 2 weeks?"
+Expression: 2 weeks to seconds
+
+Health & Fitness
+Prompt: "If I consume 2500 calories per day and burn 2800 calories, how much weight will I lose in a month? (Assume 7700 calories = 1 kg)"
+Expression: ((2800 - 2500) * 30) / 7700
+
+Prompt: "I drink 8 glasses of water daily, each glass is 250ml. How much water do I consume in a year?"
+Expression: 8 * 250ml * 365 to liters
+
+Scientific & Engineering Calculations
+Prompt: "How much is the gravitational force between two 5kg masses separated by 2 meters? (Use G = 6.674×10⁻¹¹)"
+Expression: (6.674e-11 * 5 * 5) / (2^2)
+
+Prompt: "If a car accelerates at 3 m/s² for 10 seconds, how fast will it be going?"
+Expression: 3 * 10
+
+Prompt: "What is the speed of light in miles per second?"
+Expression: 299792458 meters per second to miles per second
+
+Set Operations & Statistics
+Prompt: "Find the largest of these values: 23, 45, 67, 89, 101, 34."
+Expression: max(23, 45, 67, 89, 101, 34)
+
+Prompt: "What is the average of 87, 93, 102, 115, and 120?"
+Expression: avg(87, 93, 102, 115, 120)
+
+Prompt: "Find the standard deviation of 12, 14, 19, 22, 25."
+Expression: standard deviation(12, 14, 19, 22, 25)
+
+Cryptography & Bitwise Operations
+Prompt: "What is the binary representation of 873?"
+Expression: 873 to binary
+
+Prompt: "Perform bitwise AND on 0b1101 and 0b1011."
+Expression: 0b1101 & 0b1011
+
+Color & Graphics
+Prompt: "Convert the color #ffa500 to RGB."
+Expression: #ffa500 to rgb color
+
+Prompt: "What is the complementary color of blue?"
+Expression: ~blue
+
+Complex Expressions Combining Multiple Features
+Prompt: "If I start a business with $10,000 and earn 20% profit every year, how much will I have in 5 years?"
+Expression: 10000 * (1.2^5)
+
+Prompt: "A rectangle has a length of 12 meters and width of 8 meters. What is its area in square feet?"
+Expression: 12m * 8m to square feet
+
+Prompt: "If a car travels 60 miles per hour, how long will it take to cover 150 miles?"
+Expression: 150 / 60 to hours
+
+Prompt: "I work 40 hours per week and earn $25 per hour. What is my monthly salary before taxes?"
+Expression: (40 * 25) * 4
+
+Prompt: "I start a savings account with $5000 and add $200 every month. How much will I have in 3 years?"
+Expression: 5000 + (200 * 36)
+
+Prompt: "My trip distance is 400 miles, and my car gives 30 miles per gallon. Gas costs $3.50 per gallon. What is my fuel cost?"
+Expression: (400 / 30) * 3.5
+
+Prompt: "If my daily commute is 22 miles, how many hours do I spend commuting in a year? (Assume 250 workdays)"
+Expression: (22 * 2) * 250 to hours
+
+-----------------------------
+Financial & Budgeting:
+
+User: "My monthly income is $6,200. I spend $1,800 on rent, $400 on utilities, $600 on food, and $350 on transportation. I also have a student loan payment of $200 per month. If I save 15% of my remaining income, how much will I have saved in 5 years?"
+Expression: "((6200 - 1800 - 400 - 600 - 350 - 200) * 0.15) * 12 * 5"
+
+User: "I want to invest $10,000 in a stock that has an average annual return of 8%. How much will my investment be worth in 20 years, assuming compound interest?"
+Expression: "10000 * (1 + 0.08)^20"
+
+User: "I'm buying a house for $350,000 with a 20% down payment. I'm getting a 30-year mortgage at a 4.5% interest rate. What will my monthly mortgage payment be?"
+Expression: "350000 * 0.8 * (0.045/12) / (1 - (1 + 0.045/12)^(-360))" (Note: This is the mortgage formula. You would need to make sure hissab can calculate it)
+
+User: "I have a credit card with a balance of $2,500 and an APR of 18%. If I only make the minimum payment of $50 per month, how long will it take to pay off the balance?" (Note: This is complex, hissab may not be able to do this exactly, but could do approximations)
+
+User: "Calculate my net worth if I have $50,000 in savings, $20,000 in stocks, a car worth $15,000, and a student loan of $10,000 and credit card debt of 5000."
+Expression: "50000 + 20000 + 15000 - 10000 - 5000"
+
+Travel & Time:
+
+User: "If I drive at an average speed of 65 miles per hour, how long will it take me to travel 350 kilometers?"
+Expression: "350 kilometers / 65 miles to hours"
+
+User: "I'm planning a trip from London to Tokyo. If the flight time is 12 hours and 30 minutes, and I leave London at 10:00 AM GMT, what time will I arrive in Tokyo local time?"
+Expression: "10:00 am gmt + 12 hours 30 minutes in tokyo"
+
+User: "If a plane is flying at 500 knots, how many miles will it travel in 3 hours?"
+Expression: "500 nautical miles/hour * 3 hours"
+
+Cooking & Measurements:
+
+User: "A recipe calls for 2 cups of flour, but I only want to make half the recipe. How much flour do I need in tablespoons?"
+Expression: "2 cups / 2 to tablespoons"
+
+User: "Convert a baking temperature of 350 degrees Fahrenheit to Celsius."
+Expression: "350 fahrenheit to celsius"
+
+Geometry & Physics:
+
+User: "Calculate the area of a circle with a diameter of 10 centimeters."
+Expression: "pi * (10 cm / 2)^2"
+
+User: "If an object is falling from a height of 100 meters, how long will it take to reach the ground, ignoring air resistance?"
+Expression: "sqrt(2 * 100 meters / 9.8 m/s^2)" (Note: This is a physics formula. You would need to make sure hissab can calculate it)
+
+User: "What is the hypotenuse of a right-angled triangle with sides of 3 inches and 4 inches?"
+Expression: "sqrt(3 inches^2 + 4 inches^2)"
+
+Color & Design:
+
+User: "I want to mix a red (#FF0000) paint with a blue (#0000FF) paint. What is the resulting color in RGB?"
+Expression: "#FF0000 + #0000FF to rgb"
+
+User: "What is the complimentary color to rgb(100, 150, 200)?"
+Expression: "~rgb(100, 150, 200)"
+
+Data & Statistics:
+
+User: "I have a dataset of test scores: 78, 85, 92, 68, 75, 89. What is the average and standard deviation of these scores?"
+Expression: "avg(78, 85, 92, 68, 75, 89), standard deviation(78, 85, 92, 68, 75, 89)"
+
+User: "If I have 10 gigabytes of data, how many megabytes is that?"
+Expression: "10 gigabytes to megabytes"
+
+-----------------------------
+
+Personal Finance
+"My salary is
+5
+,
+500
+/
+m
+o
+n
+t
+h
+.
+I
+p
+a
+y
+5,500/month.Ipay2,100 in rent,
+300
+i
+n
+c
+a
+r
+p
+a
+y
+m
+e
+n
+t
+s
+,
+300incarpayments,550 for groceries, and earn an extra $800/month. How much can I save in 10 years?"
+→ (5500 - 2100 - 300 - 550 + 800) * 12 * 10
+
+"If I invest $300 monthly at 7% annual return, compounded monthly, how much will I have after 20 years?"
+→ Future Value = 300 * (((1 + (0.07/12))^(12*20) - 1) / (0.07/12))
+(Hissab would need a financial function for this, but if supported, it could be fv(300, 0.07/12, 12*20))
+
+"I bought a house for $350,000 with a 20% down payment and a 30-year mortgage at 4.5% APR. What’s my monthly payment?"
+→ Loan = 350000 - 20% → PMT = (Loan * (0.045/12)) / (1 - (1 + 0.045/12)^(-12*30))
+(If Hissab supports pmt(rate, nper, pv), it could be pmt(0.045/12, 30*12, 350000 - 20%))
+
+"If I spend
+120
+o
+n
+g
+r
+o
+c
+e
+r
+i
+e
+s
+,
+120ongroceries,80 on dining,
+60
+o
+n
+g
+a
+s
+,
+a
+n
+d
+60ongas,and200 on entertainment per week, how much do I spend yearly?"
+→ (120 + 80 + 60 + 200) * 52
+
+"I have a
+15
+,
+000
+l
+o
+a
+n
+a
+t
+6
+15,000loanat6400 monthly, how long until it’s paid off?"
+→ nper(0.06/12, -400, 15000) (if financial functions are supported)
+
+Business & Investments
+"If a stock grows from
+120
+t
+o
+120to185 in 3 years, what’s the annualized return?"
+→ (185/120)^(1/3) - 1
+
+"A startup’s revenue grows from
+50
+k
+t
+o
+50kto200k in 4 years. What’s the CAGR?"
+→ (200000/50000)^(1/4) - 1
+
+"If a company’s profit margin is 15% and revenue is $1.2M, what’s the net profit?"
+→ 1200000 * 15%
+
+"If I sell a product for $45 with a 30% margin, what’s my cost price?"
+→ 45 / (1 + 0.30)
+
+"If I get a 5% raise every year from a $60,000 salary, what will my salary be in 7 years?"
+→ 60000 * (1.05)^7
+
+Health & Fitness
+"If I burn 500 calories per workout and do 4 workouts a week, how many pounds will I lose in 3 months (assuming 3,500 calories = 1 lb)?"
+→ (500 * 4 * 12) / 3500
+
+"If I walk 8,000 steps daily, how many miles is that in a year (2,000 steps ≈ 1 mile)?"
+→ (8000 / 2000) * 365
+
+"If I drink 2.5 liters of water daily, how many gallons is that per year?"
+→ 2.5 * 365 litres to gallons
+
+"If my protein intake is 1.6g per kg of body weight and I weigh 75kg, how much protein do I need daily?"
+→ 1.6 * 75
+
+Travel & Logistics
+"If my car gets 28 MPG and gas costs $3.50/gallon, how much does a 450-mile trip cost?"
+→ (450 / 28) * 3.50
+
+"If I drive 15,000 miles a year with a 30 MPG car, how much do I spend on gas at $3.80/gallon?"
+→ (15000 / 30) * 3.80
+
+"A flight from NYC to London is 7 hours. If I leave at 3:45 PM EST, what’s the arrival time in GMT?"
+→ 3:45 pm est + 7 hours in gmt
+
+"If a train travels 220 km in 1h 45m, what’s its average speed in mph?"
+→ 220 kilometers / (1 + 45/60) hours to miles per hour
+
+Home & Utilities
+"If my electricity bill is $120/month and I install solar panels that save 60%, what’s my new bill?"
+→ 120 - 60%
+
+"If my water heater uses 4500 watts and runs 3 hours/day, how much does it cost monthly at $0.12/kWh?"
+→ (4500 * 3 * 30) / 1000 * 0.12
+
+"If a room is 12ft × 15ft with 8ft ceilings, how many gallons of paint are needed (1 gallon covers 350 sq ft)?"
+→ (2*(12*8 + 15*8) + 12*15) / 350
+
+Education & Time Management
+"If I study 2 hours daily, how many hours is that in a 4-year college degree?"
+→ 2 * 365 * 4
+
+"If a book has 450 pages and I read 15 pages/day, how many days to finish?"
+→ 450 / 15
+
+"If I work 8 hours/day, 5 days/week, with 3 weeks vacation, how many hours do I work yearly?"
+→ 8 * 5 * (52 - 3)
+
+Advanced Math & Engineering
+"What’s the volume of a cylinder with radius 5cm and height 12cm in cubic inches?"
+→ (pi * 5^2 * 12) cm³ to cubic inches
+
+"If a car accelerates from 0 to 60 mph in 4.5 seconds, what’s its acceleration in m/s²?"
+→ (60 miles/hour / 4.5 seconds) to meters/second²
+
+"If a circuit has a 12V battery and 3 resistors (4Ω, 6Ω, 8Ω) in series, what’s the current?"
+→ 12 / (4 + 6 + 8)
+
+Shopping & Discounts
+"A $1,200 laptop is on sale for 25% off. If tax is 8%, what’s the final price?"
+→ (1200 - 25%) + 8%
+
+"If I buy 3 shirts at $25 each with a 'Buy 2, Get 1 Free' deal, what’s the per-shirt cost?"
+→ (25 * 2) / 3
+
+"A store offers 15% off $500, plus an extra 10% for members. What’s the final price?"
+→ (500 - 15%) - 10%
+
+Miscellaneous Real-World Problems
+"If a recipe serves 6 but I need 18 servings, how much do I multiply ingredients?"
+→ 18 / 6
+
+"If a marathon is 26.2 miles and I run at 6.5 mph, how long will it take?"
+→ 26.2 / 6.5 hours to hours:minutes
+
+"If a pizza has a 14-inch diameter, what’s its area in square centimeters?"
+→ (pi * (14/2)^2) square inches to square cm
+
+"If a phone battery lasts 18 hours on 50% brightness, how long at 75% brightness (assuming linear drain)?"
+→ 18 * (50/75)
+
+"If a country’s population grows from 50M to 65M in 10 years, what’s the annual growth rate?"
+→ (65000000/50000000)^(1/10) - 1
+
+-----------------------------
+
+Financial Planning and Budgeting
+
+My salary is 5500 per month, I pay 2100 in rent, 300 in car payments, and 550 for groceries. I also earn extra 800. How much can I save in 10 years?
+
+Hissab Expression: ((5500 + 800) - (2100 + 300 + 550)) * 12 * 10
+
+
+I want to buy a house that costs 350,000. If I save 15% of my 6200 monthly income and invest with a 7% annual return, how long will it take to save for a 20% down payment?
+
+Hissab Expression: (350000 * 0.2) / ((6200 * 0.15) * (1 + 0.07)^(years)) to years
+
+
+Compare my monthly expenses in different currencies:
+
+My rent is $2100, converted to euros
+My car payment of 300 converted to British pounds
+My grocery bill of 550 converted to Canadian dollars
+Hissab Expression: 2100 usd to euro, 300 usd to gbp, 550 usd to cad
+
+
+
+Travel and Trip Planning
+
+I'm planning a trip from New York to Tokyo. Calculate the total travel time and distance:
+
+Distance in miles
+Flight time
+Time zone difference
+Hissab Expression: new york to tokyo to miles, new york to tokyo to flight time, new york to tokyo timezone difference
+
+
+If I travel from San Francisco to Sydney and my flight leaves on 2024.07.15 at 10:00 pm, when will I arrive local time?
+
+Hissab Expression: 2024.07.15 10:00 pm from san francisco to sydney timezone
+
+
+
+Health and Fitness Tracking
+
+Calculate my ideal daily calorie intake based on:
+
+Height: 175 cm
+Weight: 70 kg
+Age: 35
+Activity level: moderately active
+Hissab Expression: (70 * 10) + (175 * 6.25) - (35 * 5) + 5 * 1.55
+
+
+Track my weight loss progress:
+
+Starting weight: 90 kg
+Goal weight: 75 kg
+Current weight: 82 kg
+Calculate percentage of weight loss and remaining weight to lose
+Hissab Expression: ((90 - 82) / 90 * 100), (82 - 75) / 82 * 100
+
+
+
+Home and Energy Calculations
+
+Calculate my potential solar panel savings:
+
+Current monthly electricity bill: 250
+Solar panel system cost: 15000
+Annual energy production: 90% of my current usage
+Electricity rate increase per year: 3%
+Hissab Expression: (250 * 12 * 0.9) * (1.03^(years)) to years for system payback
+
+
+Compare energy consumption of different appliances:
+
+Refrigerator: 1.5 kWh per day
+Air conditioner: 3.2 kWh per hour
+TV: 0.1 kWh per hour
+Calculate monthly and yearly energy cost at $0.12 per kWh
+Hissab Expression: (1.5 * 30 + 3.2 * 8 * 30 + 0.1 * 4 * 30) * 0.12
+
+
+
+Investment and Retirement Planning
+
+Compare investment growth scenarios:
+
+Initial investment: 10000
+Monthly contribution: 500
+Investment options:
+a) 5% annual return
+b) 7% annual return
+c) 9% annual return
+Calculate total value after 20 years
+Hissab Expression: 10000 * (1 + 0.05)^20 + (500 * 12 * ((1 + 0.05)^20 - 1) / 0.05)
+
+
+
+Complex Conversion and Comparison Scenarios
+
+Recipe scaling and conversion:
+
+Original recipe: 2 cups flour, 250 ml milk, 3 eggs
+Convert to metric and imperial
+Scale recipe for 1.5x and 2.5x
+Hissab Expression: 2 cups to ml, 250 ml to cups, 3 eggs * 1.5, 3 eggs * 2.5
+
+
+International Project Cost Comparison:
+
+Project budget: 75000 USD
+Convert to:
+a) Euros
+b) Japanese Yen
+c) British Pounds
+Calculate potential currency fluctuation impact
+Hissab Expression: 75000 usd to euro, 75000 usd to jpy, 75000 usd to gbp
+
+
+
+Environmental and Sustainability Calculations
+
+Carbon Footprint Calculation:
+
+Monthly car mileage: 1200 miles
+Home electricity usage: 750 kWh
+Meat consumption: 2 kg per week
+Calculate approximate CO2 emissions
+Hissab Expression: (1200 * 0.404) + (750 * 0.5) + (2 * 6.61 * 4)
+
+
+
+Interesting Combination Calculations
+
+Birthday Numerology meets Financial Planning:
+
+Born on: 15.07.1990
+Calculate your "lucky" savings percentage based on birthday digits
+Apply this to monthly income of 5500
+Hissab Expression: ((1+5+7+1+9+9+0) / 100 * 5500)
+
+
+-----------------------------
+
+Finance & Budgeting
+
+User: My monthly salary is 5500. I pay 2100 in rent, 300 in car payments, and about 550 for groceries. I also earn an extra 800 most months from a side job. Approximately how much can I save in 5 years, assuming these amounts stay consistent?
+Hissab Expression: (5500 + 800 - 2100 - 300 - 550) * 12 * 5
+
+User: I want to buy a laptop that costs $1400. There's a 15% discount, but also an 8% sales tax applied after the discount. What's the final price?
+Response: {"expressions": ["1400 - 15%", "prev + 8%"]}
+(Alternative single expression if Hissab order of ops handles it correctly: (1400 - 15%) * (1 + 0.08) but using prev is safer)
+
+User: My current salary is 60,000 per year. If I get a 4% raise next year, and then a 5% raise the year after that, what will my annual salary be in two years?
+Response: {"expressions": ["60000 + 4%", "prev + 5%"]}
+
+User: I invested $5000. After one year, it grew by 12%. The next year, it unfortunately lost 5% of its current value. How much is my investment worth now?
+Response: {"expressions": ["5000 + 12%", "prev - 5%"]}
+
+User: I need to save $10,000 for a down payment in 3 years. How much do I need to save per month on average?
+Hissab Expression: 10000 / (3 * 12) or 10000 / 3 years to months (The second depends on Hissab interpreting division by duration like this)
+
+Travel & Time
+
+User: I'm planning a trip from London to Tokyo. The flight time is 12 hours and 30 minutes. If I leave London at 10:00 AM GMT, what time will I arrive in Tokyo local time (JST is GMT+9)?
+Hissab Expression: 10:00 am GMT + 12 hours + 30 minutes in JST
+(Note: Hissab needs robust timezone handling for this specific format. An alternative if it only converts points in time: Calculate arrival in GMT first, then convert)
+Alternative Response: {"expressions": ["10:00 am GMT + 12 hours + 30 minutes", "prev in JST"]}
+
+User: I'm driving 450 miles. My car averages 25 miles per gallon, and gas costs $3.80 per gallon. How much will the gas for the trip cost?
+Hissab Expression: (450 miles / 25 miles/gallon) * 3.80 (Assuming Hissab can parse 'miles/gallon' or implicitly understand the unit cancellation)
+Alternative Response: {"expressions": ["450 / 25", "prev * 3.80"]}
+
+User: I'm running a 10-kilometer race. My goal is to finish in under 50 minutes. What average speed do I need to maintain in miles per hour?
+Hissab Expression: 10 kilometers / 50 minutes to miles/hour
+
+User: A train leaves Station A at 8:15 AM and arrives at Station B at 11:45 AM. The distance is 165 kilometers. What was the average speed of the train in km/h?
+Response: {"expressions": ["11:45 am - 8:15 am to hours", "165 km / prev"]} (Assuming the output of the time difference is a numerical value in hours)
+
+Cooking & DIY
+
+User: A recipe calls for 250 grams of flour and serves 4 people. I need to make enough for 10 people. How many kilograms of flour do I need?
+Hissab Expression: (250 gram / 4) * 10 to kilograms
+
+User: I need to paint a wall that is 12 feet high and 25 feet long. One gallon of paint covers 400 square feet. How many gallons do I need? Will a single gallon be enough?
+Response: {"expressions": ["12 feet * 25 feet to square feet", "prev / 400"]} (The second expression gives the number of gallons. User infers if it's > 1)
+
+User: I'm mixing concrete. The ratio is 1 part cement, 2 parts sand, 3 parts gravel. If I use 5 kilograms of cement, how much sand and gravel do I need in total weight (kg)?
+Hissab Expression: (5 kg * 2) + (5 kg * 3)
+
+Science & Measurement
+
+User: Convert a temperature reading of 25 degrees Celsius to Fahrenheit and Kelvin.
+Hissab Expression: 25 Celsius to Fahrenheit, Kelvin
+
+User: A chemical solution has a concentration of 50 grams per liter. How many milligrams of the chemical are in 150 milliliters of the solution?
+Hissab Expression: (50 grams/litre) * 150 milliliters to milligrams (Requires robust unit parsing)
+Alternative Response: {"expressions": ["50 gram / 1 litre to milligrams/millilitre", "prev * 150"]}
+
+User: Sound travels at approximately 343 meters per second in air. If I see lightning and hear the thunder 5.5 seconds later, roughly how many miles away was the lightning strike?
+Hissab Expression: 343 meter/second * 5.5 second to miles
+
+Miscellaneous & Combined Operations
+
+User: I bought 5 items costing 12.50, 8.99, 23.00, 5.75, and 19.99. There's a 10% discount on the total. What is the average cost per item after the discount?
+Response: {"expressions": ["(12.50 + 8.99 + 23.00 + 5.75 + 19.99) - 10%", "prev / 5"]}
+
+User: Find the difference in age between someone born on June 15, 1985 and someone born on March 1, 2003. Give the answer in years, months, and days.
+Hissab Expression: 1 mar 2003 - 15 jun 1985 to years, months, days
+
+User: What's the total storage capacity in Gigabytes of 3 devices: one with 256 GB, one with 0.5 Terabytes, and one with 512000 Megabytes?
+Hissab Expression: 256 Gigabyte + 0.5 Terabyte + 512000 Megabyte to Gigabyte
+
+User: Calculate 2 raised to the power of 16, then find the square root of the result, and finally express that in hexadecimal.
+Response: {"expressions": ["2^16", "prev^(1/2)", "prev to hexadecimal"]}
+
+User: Find the LCM of 12, 18, and 30. Then calculate the GCD of the same numbers. What is the product of the LCM and GCD?
+Response: {"expressions": ["lcm(12, 18, 30)", "gcd(12, 18, 30)", "prev * prev"]} (This requires careful use of prev, maybe storing intermediate results or running sequentially)
+Better Response (if allowed): {"expressions": ["lcm(12, 18, 30)", "gcd(12, 18, 30)", "lcm(12, 18, 30) * gcd(12, 18, 30)"]} (Avoids ambiguity of prev * prev)
