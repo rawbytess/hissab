@@ -42,7 +42,7 @@ export default function PageOptions({
             key="rename"
             startContent={<Icon icon="mdi:rename" width="16" height="16" />}
           >
-            Rename Page
+            Rename {pageID.title}
           </DropdownItem>
           <DropdownItem
             key="delete"
@@ -57,7 +57,7 @@ export default function PageOptions({
               <Icon icon="fluent:delete-16-filled" width="16" height="16" />
             }
           >
-            Delete page
+            Delete {pageID.title}
           </DropdownItem>
         </DropdownSection>
       </DropdownMenu>

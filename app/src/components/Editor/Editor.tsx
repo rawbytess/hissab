@@ -4,11 +4,13 @@ import HissabEditor, {
 } from "@/lib/editor/editor";
 import { useContext, useEffect, useRef } from "react";
 import { PageContext } from "@/components/sidebar/pages/PagesProvider.tsx";
-import { PromptWrapper } from "@/components/prompt/PromptWrapper.tsx";
+import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
+import { ChatPage } from "@/components/sidebar/chat/ChatPage.tsx";
 
 export default function Editor() {
   const { updateNote, currentPage, setEditorOperations } =
     useContext(PageContext);
+  const { isPaid } = useContext(SessionContext);
   const heRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -21,7 +23,7 @@ export default function Editor() {
       retrievePage: null,
       isWritable: true,
       isDark: true,
-      isPro: true,
+      isPro: isPaid,
     };
 
     const he: HissabEditorType = new HissabEditor(
@@ -37,21 +39,22 @@ export default function Editor() {
         redo: he.redoEditor,
         clear: he.clearEditor,
         insertText: he.appendText,
+        getPositionofLastLine: he.getPositionofLastLine,
       });
     });
     return () => he.destroy();
   }, [currentPage]);
 
   if (!currentPage) return null;
+  if (currentPage.type === "chat") return <ChatPage page={currentPage} />;
 
   return (
-    <div className={"flex flex-col gap-4 w-full h-full"}>
+    <div className={"flex flex-col gap-4 w-full h-full overflow-y-auto"}>
       <div
         id="editor-root"
         className={"w-full font-normal bg-[#1c1c1c] "}
         ref={heRef}
       ></div>
-      <PromptWrapper />
     </div>
   );
 }

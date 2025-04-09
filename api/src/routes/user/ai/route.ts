@@ -8,6 +8,7 @@ import { userMetadata } from "../../../../../lib/types/userMetadata";
 import { isPremiumUser } from "../../../../../lib/getPremiumStatus";
 import { modelMap } from "@lib/utils";
 import { validator } from "hono/validator";
+import { AIResponseType } from "../../../../../lib/types/AIResponse";
 
 const app = new Hono<{
   Bindings: Bindings;
@@ -44,9 +45,15 @@ app.post(
       return c.json({ error: "Error" }, 400);
     }
     console.log("Prompt: ", prompt);
-    return c.json({ AIResponse: { expressions: ["Hello"] } });
+    return c.json({
+      AIResponse: {
+        naturalAnswer: "12 miles to km",
+        expressions: ["12 miles to km", "prev + 1200 meters", "total"],
+      },
+    } as AIResponseType);
     /*
     const geminiModel = new Gemini(c.env.GEMINI_API_KEY, modelName);
+    // await geminiModel.init();
     const AIResponse = await geminiModel.chat(prompt);
 
     if (!AIResponse || !AIResponse?.text) {

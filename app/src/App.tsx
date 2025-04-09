@@ -27,7 +27,7 @@ function App() {
               <Sidebar>
                 <div
                   className={
-                    "flex flex-col justify-between w-full rounded h-screen"
+                    "grid grid-rows-[auto_1fr_auto] grid-cols-1 justify-between w-full rounded h-screen"
                   }
                 >
                   <Header />

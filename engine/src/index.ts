@@ -55,14 +55,15 @@ async function doParse(
     (token) =>
       !(token instanceof UndefinedToken || token instanceof StringToken),
   );
-  const { result, isExplicit, convertTo } = await parse(cleanTokens, isPro);
+  const { result, isExplicit, convertTo } = await parse(cleanTokens, true);
+
   if (
     result instanceof NumberToken ||
     result instanceof DateToken ||
     result instanceof ColorToken ||
     result instanceof ResultToken
   ) {
-    if (isPro && !isExplicit && result instanceof NumberToken) {
+    if (!isExplicit && result instanceof NumberToken) {
       const humanized: string = humanize(result, convertTo);
       return {
         result: humanized,
@@ -71,7 +72,7 @@ async function doParse(
       };
     }
     return {
-      result: result.getString(isPro),
+      result: result.getString(true),
       resultToken: result,
       meta: { variableName: result.variableName },
     };

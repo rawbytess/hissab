@@ -30,7 +30,7 @@ export default function Pages() {
 
   return (
     <>
-      <div className="bg-purple-700">
+      <div className="bg-purple-700 flex justify-between h-11">
         <Button
           onPress={() => {
             const newNote: Page = createNote(getRandomPlaceholderName(), "");
@@ -45,6 +45,26 @@ export default function Pages() {
             icon="fluent:document-one-page-add-20-filled"
             width="20"
             height="20"
+          />
+        </Button>
+        <Button
+          onPress={() => {
+            const newNote: Page = createNote(
+              getRandomPlaceholderName(),
+              "",
+              "chat",
+            );
+            setCurrentPage(newNote);
+            setEditing(newNote);
+          }}
+          variant={"light"}
+          size={"md"}
+          className="m-2 w-fit text-gray-300 h-7"
+        >
+          <Icon
+            icon="material-symbols-light:chat-add-on-rounded"
+            width="24"
+            height="24"
           />
         </Button>
       </div>
@@ -96,7 +116,11 @@ export default function Pages() {
               <div className="flex items-center">
                 <div className={"flex p-1 items-center gap-2 cursor-pointer"}>
                   <Icon
-                    icon="emojione-v1:page"
+                    icon={
+                      page?.type === "chat"
+                        ? "material-symbols-light:chat"
+                        : "emojione-v1:page"
+                    }
                     width="16"
                     height="16"
                     className={

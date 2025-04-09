@@ -42,9 +42,10 @@ export default function AppSidebar({
           </SidebarGroup>
 
           <SidebarGroup
-            className={"fixed bottom-0 w-[--sidebar-width] my-4 h-9"}
+            className={
+              "fixed bottom-0 w-[--sidebar-width] h-12 bg-gray-950 pt-2"
+            }
           >
-            <Divider className={"mb-2"} />
             <ul className={"flex gap-4 justify-start mx-3"}>
               <li>
                 <a

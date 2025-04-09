@@ -29,7 +29,11 @@ The syntax for unit conversion is:
 
 - Conversion: 15 kilometers to miles
 - Multiple target units breakdown: 9234 miles to yards, feet, inches
-- Mixed unit math (addition or substraction): 13 kilograms + 12 pounds
+Note: Multiple target unit breakdown does not work with Temperature and Duration units. Thus create separate expressions
+User: Convert a temperature reading of 25 degrees Celsius to Fahrenheit and Kelvin.
+Hissab Expression: [25 Celsius to Fahrenheit, 25 Celsius to Kelvin]
+
+- Mixed unit math (addition or subtraction): 13 kilograms + 12 pounds
 
 Hissab understands the following conversion units -
 * Length (meter, miles, yard, feet, inches, micron, parsec, astronomical unit, nautical miles, light year)

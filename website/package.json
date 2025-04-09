@@ -26,7 +26,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.40.0",
-    "editor": "workspace:*",
     "engine": "workspace:*",
     "hono": "^4.7.2",
     "lottie-react": "^2.4.1",

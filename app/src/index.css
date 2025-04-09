@@ -58,10 +58,10 @@ body {
   }
 }
 .cm-ai-widget {
-    @apply bg-purple-700 text-[#efefef] rounded-l pl-1 py-[6px] uppercase cursor-pointer;
+    @apply bg-purple-700 text-[#efefef] rounded-l pl-1 py-1 uppercase cursor-pointer;
     font-family: "Inter", sans-serif;
 }
 .cm-prompt {
-  @apply text-[#efefef] ring-2 ring-purple-700 bg-gray-800 py-1 px-2 rounded-r;
+  @apply text-[#efefef] ring-purple-700 bg-gray-800 py-1 px-2 rounded-r font-extralight;
   font-family: "Inter", sans-serif;
 }

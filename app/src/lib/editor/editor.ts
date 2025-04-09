@@ -1,38 +1,29 @@
-import { EditorState, Range, StateEffect, StateField } from "@codemirror/state";
+import { EditorState, StateEffect } from "@codemirror/state";
 import {
-  Decoration,
-  DecorationSet,
   EditorView,
   highlightActiveLine,
   keymap,
   lineNumbers,
   placeholder,
-  tooltips,
-  ViewPlugin,
-  WidgetType,
 } from "@codemirror/view";
-import { prompt } from "./promptDecoration";
+import { prompt } from "./promptWidget";
 import { defaultKeymap, history, redo, undo } from "@codemirror/commands";
 import {
   bracketMatching,
   HighlightStyle,
   syntaxHighlighting,
 } from "@codemirror/language";
-import { autocompletion, closeBrackets } from "@codemirror/autocomplete";
+import { closeBrackets } from "@codemirror/autocomplete";
 
 import pkg from "lodash";
-import {
-  doLex,
-  doParse,
-  TokenBaseType,
-  tokenFactory,
-  TokenType,
-  Variables,
-  ReportError,
-} from "engine";
 
-import { getStreamLanguage, HissabHighlightStyle, hissabTheme } from "./theme";
-import autoComplete from "./autoComplete";
+import {
+  getStreamLanguage,
+  HissabHighlightStyle,
+} from "./syntaxHighlighting.ts";
+import { getResultExtension } from "@/lib/editor/resultWidget.ts";
+import { Results } from "@/lib/editor/getResults.ts";
+import { hissabTheme } from "@/lib/editor/cmTheme.ts";
 
 const { debounce } = pkg;
 
@@ -100,7 +91,8 @@ export default class HissabEditor {
     this.redoEditor = this.redoEditor.bind(this);
     this.hasFocus = this.hasFocus.bind(this);
     this.appendText = this.appendText.bind(this);
-    this.applyPromptDecoration = this.applyPromptDecoration.bind(this);
+    this.insertTextinLine = this.insertTextinLine.bind(this);
+    this.getPositionofLastLine = this.getPositionofLastLine.bind(this);
   }
 
   focusEditor() {
@@ -161,8 +153,21 @@ export default class HissabEditor {
     }
   }
 
-  applyPromptDecoration() {
-    // underlineSelection(this.view!);
+  getPositionofLastLine() {
+    if (!this.view) return 0;
+    const lastLine = this.view.state.doc.lines;
+    return this.view.state.doc.line(lastLine).from;
+  }
+
+  insertTextinLine(text: string, line: number) {
+    const doc = this.view!.state.doc.toString();
+    const docArray = doc.split("\n");
+    const newDocArray = [
+      ...docArray.slice(0, line),
+      text,
+      ...docArray.slice(line + 1),
+    ];
+    // this.updateEditor(newDocArray.join("\n"));
   }
 
   appendText(text: string) {
@@ -187,161 +192,17 @@ export default class HissabEditor {
     redo(this.view!);
   }
 
-  private async calculateTotal(index: number, variables: Variables) {
-    const tokens: TokenType[] = [];
-    try {
-      for (let i = 1; i < index; i++) {
-        if (variables[`line${i}`]) {
-          tokens.push(variables[`line${i}`]);
-          tokens.push(tokenFactory("+", TokenBaseType.SYMBOL) as TokenType);
-        }
-      }
-      tokens.pop();
-      if (tokens.length === 0) return;
-      const { resultToken } = await doParse(tokens);
-      variables[`total${index}`] = resultToken;
-    } catch {}
-  }
-
-  private calculatePrev(index: number, variables: Variables) {
-    for (let i = index; i > 1; i--) {
-      if (variables[`line${i - 1}`]) {
-        variables[`prev${index}`] = variables[`line${i - 1}`];
-        break;
-      }
-    }
-  }
-
-  getResult = async (state: EditorState) => {
-    const data = state.doc.toString();
-    const currentLine = state.doc.lineAt(state.selection.main.head).number;
-    const variables: Variables = {};
-    const results: Results[] = [];
-    const lines = data.split("\n");
-    this.storePage(data);
-    let ln = "";
-
-    for (const [index, line] of lines.entries()) {
-      try {
-        if (line.trim().startsWith("ai ")) {
-          const aiPrompt = line.trim().substring(2).trim();
-          console.log("AI Prompt: ", aiPrompt, index, currentLine - 1);
-          if (index === currentLine - 1 || aiPrompt.length === 0) {
-            console.log("AI 1: ");
-            results.push({
-              result: this.oldResults[index].result || "",
-              stale: true,
-              lineNumber: index,
-              error: false,
-              errorMessage: null,
-            });
-            continue;
-          }
-          results.push({
-            result: aiPrompt,
-            stale: false,
-            lineNumber: index,
-            error: false,
-            errorMessage: null,
-          });
-
-          console.log("AI 3: ");
-          continue;
-        }
-        [ln] = line.split("//");
-        ln = ln.trim();
-        await this.calculateTotal(index + 1, variables);
-        this.calculatePrev(index + 1, variables);
-        const tokens = doLex(ln, variables, index + 1);
-        const { result, meta, resultToken } = await doParse(tokens, this.isPro);
-        results.push({
-          result,
-          stale: false,
-          lineNumber: index,
-          error: false,
-          errorMessage: null,
-        });
-        if (meta.variableName) variables[meta.variableName] = resultToken;
-        variables[`line${index + 1}`] = resultToken;
-        variables[`l${index + 1}`] = resultToken;
-      } catch (e: any) {
-        if (this.oldResults && this.oldResults[index] && ln.length)
-          results.push({
-            result: this.oldResults[index].result,
-            error: true,
-            errorMessage: e,
-            stale: true,
-            lineNumber: index,
-          });
-        else
-          results.push({
-            result: "",
-            stale: true,
-            lineNumber: index,
-            error: true,
-            errorMessage: e,
-          });
-      }
-    }
-    this.oldResults = results;
-    return results;
-  };
-
-  async resultDOM(state: EditorState) {
-    const resultWidgets: Range<Decoration>[] = [];
-    const results = await this.getResult(state);
-    results.forEach((res: Results, index: number) => {
-      const deco = Decoration.widget({
-        widget: new ResultWidget(res, this.isPro),
-        side: 1,
-        block: false,
-      });
-      const { to } = state.doc.line(index + 1);
-      resultWidgets.push(deco.range(to));
-    });
-    return Decoration.set(resultWidgets);
-  }
-
   destroy() {
     this.view?.destroy();
   }
 
   async init() {
     const page = "";
-    const resultDOMBind = this.resultDOM.bind(this);
-
-    const resultPlugin = StateField.define({
-      create() {
-        return Decoration.none;
-      },
-      update(value, tr) {
-        for (const effect of tr.effects) {
-          if (effect.is(stateEffect)) {
-            value = effect.value?.decorations;
-          }
-        }
-        return value;
-      },
-      provide(f) {
-        return EditorView.decorations.from(f);
-      },
-    });
-    let stateEffect = StateEffect.define<{ decorations: DecorationSet }>({});
-    const viewPlugin = ViewPlugin.define(() => {
-      return {
-        update(update) {
-          if (update.state.doc.toString() === update.startState.doc.toString())
-            return;
-          resultDOMBind(update.state).then((deco) => {
-            update.view.dispatch({
-              effects: stateEffect.of({
-                decorations: deco,
-              }),
-            });
-          });
-        },
-      };
-    });
+    const { viewPlugin, resultPlugin } = await getResultExtension(
+      this.storePage,
+      this.oldResults,
+      this.isPro,
+    );
 
     const extensions = [
       lineNumbers(),
@@ -368,8 +229,6 @@ export default class HissabEditor {
       EditorView.updateListener.of((v) => {
         if (v.docChanged) {
           this.view = v.view;
-          //underlineSelection(v.view);
-          //this.applyPromptDecoration();
         }
       }),
       EditorView.focusChangeEffect.of((_, focusing) => {
@@ -380,22 +239,6 @@ export default class HissabEditor {
       resultPlugin,
       EditorView.editable.of(this.isWritable),
     ];
-
-    if (this.isPro) {
-      const proExtensions = [
-        tooltips({
-          position: "absolute",
-          parent: this.parent.parentNode as HTMLElement,
-        }),
-        /*autocompletion({
-          override: [autoComplete],
-          closeOnBlur: false,
-          tooltipClass: () => "autocomplete-position",
-        }),*/
-      ];
-
-      extensions.push(...proExtensions);
-    }
 
     if (this.storePage) debounce(this.storePage, 2000);
 
@@ -411,69 +254,4 @@ export default class HissabEditor {
   }
 }
 
-interface Results {
-  result: string;
-  error: boolean;
-  errorMessage: ReportError | null;
-  stale: boolean;
-  lineNumber: number;
-  ai?: {
-    expressions: string[];
-  };
-}
-
-const copiedDiv = document.createElement("div");
-copiedDiv.innerText = "Copied!";
-copiedDiv.className = "copied-div";
-
-class ResultWidget extends WidgetType {
-  constructor(
-    readonly result: Results,
-    readonly pro: boolean,
-  ) {
-    super();
-  }
-
-  toDOM() {
-    const wrap = document.createElement("span");
-    wrap.addEventListener("dblclick", async (e) => {
-      e.preventDefault();
-      await navigator.clipboard.writeText(wrap.innerText);
-      window.getSelection()?.removeAllRanges();
-      wrap.appendChild(copiedDiv);
-      setTimeout(() => {
-        wrap.removeChild(copiedDiv);
-      }, 1000);
-    });
-    wrap.setAttribute("aria-hidden", "true");
-    wrap.setAttribute("id", `result-element-${this.result.lineNumber}`);
-
-    wrap.className = this.result.stale
-      ? "cm-result cm-result-stale"
-      : "cm-result cm-result-fresh";
-    wrap.innerText = this.result.result;
-    if (
-      this.pro &&
-      this.result.error &&
-      this.result.errorMessage?.name === "ReportError"
-    ) {
-      const errorSpan = document.createElement("span");
-      errorSpan.setAttribute("id", `result-error-${this.result.lineNumber}`);
-      wrap.appendChild(errorSpan);
-      errorSpan.innerHTML = "<img src='../resources/caution.png' alt='error'/>";
-      errorSpan.className = "error-span";
-
-      const errortip = document.createElement("span");
-      errortip.setAttribute("id", `result-tip-${this.result.lineNumber}`);
-      errorSpan.appendChild(errortip);
-      errortip.innerText = this.result.errorMessage.message;
-      errortip.className = "error-tip";
-    }
-    return wrap;
-  }
-
-  ignoreEvent() {
-    return true;
-  }
-}
 export type { HissabEditor as HissabEditorType, hissabEditorIf };

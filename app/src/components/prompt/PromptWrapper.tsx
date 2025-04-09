@@ -5,13 +5,12 @@ import { cn } from "@heroui/react";
 
 import PromptInput from "./PromptInput.tsx";
 import { PageContext } from "@/components/sidebar/pages/PagesProvider.tsx";
-import { PromptHistory } from "@/components/prompt/PromptHistory.tsx";
 import { useAIPromptQuery } from "@/queries/useAIPromptQuery.tsx";
 import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
 
 export function PromptWrapper() {
   const [prompt, setPrompt] = React.useState<string>("");
-  const { editorOperations } = useContext(PageContext);
+  const { editorOperations, updateNote, currentPage } = useContext(PageContext);
   const { metadata, isPaid } = useContext(SessionContext);
 
   const AIResponse = useAIPromptQuery(prompt, editorOperations.insertText);
@@ -25,11 +24,29 @@ export function PromptWrapper() {
     }
     return 0;
   }, [metadata, isPaid]);
+  if (!currentPage) return null;
+
+  async function formSubmit(
+    e:
+      | React.FormEvent<HTMLFormElement>
+      | React.KeyboardEvent<HTMLInputElement>
+      | KeyboardEvent,
+  ) {
+    e.preventDefault();
+    if (prompt.length === 0) return;
+    updateNote(currentPage!.id, "", "chat", {
+      content: prompt,
+      createdAt: Date.now(),
+      role: "user",
+    });
+    await AIResponse.refetch();
+    setPrompt("");
+  }
 
   return (
-    <div className="flex h-full flex-col gap-8 items-center justify-end mx-5 mb-10">
+    <div className="flex flex-col gap-8 items-center justify-end mx-5 mb-10">
       <div className="flex flex-col gap-2 rounded-2xl max-w-[50em] w-full relative">
-        {prompt.length && (
+        {prompt.length > 0 && (
           <Tooltip
             showArrow
             offset={-5}
@@ -56,9 +73,7 @@ export function PromptWrapper() {
               isPaid ? "ring-purple-700" : "ring-gray-600",
             )}
             onSubmit={async (e) => {
-              e.preventDefault();
-              if (prompt.length === 0) return;
-              await AIResponse.refetch();
+              await formSubmit(e);
             }}
           >
             <PromptInput
@@ -71,76 +86,6 @@ export function PromptWrapper() {
               disabled={!isPaid}
               minRows={3}
               maxRows={10}
-              startContent={
-                <div className={"flex flex-col -ml-2"}>
-                  <Tooltip
-                    showArrow
-                    offset={-5}
-                    delay={500}
-                    content="Previous Prompt"
-                    className={"text-white bg-neutral-700 rounded-2xl"}
-                  >
-                    <Button
-                      isIconOnly
-                      variant={"light"}
-                      size={"sm"}
-                      className={
-                        "text-white disabled:cursor-not-allowed disabled:opacity-50"
-                      }
-                      disabled={!isPaid}
-                    >
-                      <Icon
-                        className={cn(
-                          "[&>path]:stroke-[2px]",
-                          !prompt
-                            ? "text-default-600"
-                            : "text-primary-foreground",
-                        )}
-                        icon="material-symbols-light:arrow-back-2"
-                        width={20}
-                      />
-                    </Button>
-                  </Tooltip>
-                  <Tooltip
-                    showArrow
-                    delay={500}
-                    offset={-5}
-                    content="See Prompts history"
-                    className={"text-white bg-neutral-700 rounded-2xl"}
-                  >
-                    <PromptHistory />
-                  </Tooltip>
-                  <Tooltip
-                    showArrow
-                    offset={-5}
-                    delay={500}
-                    content="Next Prompt"
-                    className={"text-white bg-neutral-700 rounded-2xl"}
-                  >
-                    <Button
-                      isIconOnly
-                      variant={"light"}
-                      size={"sm"}
-                      className={
-                        "text-white disabled:cursor-not-allowed disabled:opacity-50"
-                      }
-                      disabled={!isPaid}
-                    >
-                      <Icon
-                        className={cn(
-                          "[&>path]:stroke-[2px]",
-                          "scale-x-[-1]",
-                          !prompt
-                            ? "text-default-600"
-                            : "text-primary-foreground",
-                        )}
-                        icon="material-symbols-light:arrow-back-2"
-                        width={20}
-                      />
-                    </Button>
-                  </Tooltip>
-                </div>
-              }
               endContent={
                 <div className="flex flex-col items-end gap-2">
                   {AIResponse.isLoading ? (
@@ -184,9 +129,7 @@ export function PromptWrapper() {
               radius="lg"
               onKeyUp={async (e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  if (prompt.length === 0) return;
-                  await AIResponse.refetch();
+                  await formSubmit(e);
                 }
               }}
               value={prompt}

@@ -1,4 +1,4 @@
-import { doLex, doParse } from "engine/dist";
+import { doLex, doParse } from "engine";
 import { Hono } from "hono";
 
 const app = new Hono();

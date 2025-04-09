@@ -20,15 +20,7 @@ export type User = {
   status: string;
 };
 
-export const SessionContext = createContext<SessionContextType>({
-  session: null,
-  setSession: () => {},
-  logout: () => {},
-  verifyOTP: null,
-  signInWithOTP: null,
-  metadata: null,
-  isPaid: false,
-});
+export const SessionContext = createContext<SessionContextType>(undefined!);
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
