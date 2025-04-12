@@ -1,26 +1,18 @@
 import { createMiddleware } from "hono/factory";
-import { createClient, User } from "@supabase/supabase-js";
-import { Bindings } from "@lib/types/envTypes";
+import { Bindings, userVars } from "@lib/types/envTypes";
 import { HTTPException } from "hono/http-exception";
 
 export const supabaseAppAuth = createMiddleware<{
   Bindings: Bindings;
-  Variables: {
-    user: { user: User };
-  };
+  Variables: userVars;
 }>(async (c, next) => {
   const refresh_token = c.req.header("Refresh");
   const access_token = c.req.header("Authorization")?.split(" ")[1];
-
-  console.log("Access token: ", access_token);
-  const supabase = createClient(
-    c.env.SUPABASE_API_URL,
-    c.env.SUPABASE_ADMIN_KEY,
-  );
+  const { supabase } = c.var;
   const { data, error } = await supabase.auth.getUser(access_token);
 
   if (data.user) {
-    c.set("user", { user: data.user });
+    c.set("user", data.user);
   }
   // TODO: handle error properly
   if (error) {
@@ -42,9 +34,7 @@ export const supabaseAppAuth = createMiddleware<{
     }
 
     if (refreshed.user) {
-      c.set("user", {
-        user: refreshed.user,
-      });
+      c.set("user", refreshed.user);
     }
   }
 

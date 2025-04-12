@@ -42,12 +42,20 @@ export function hissabTheme(
       letterSpacing: "0.1em",
     },
     ".cm-result": {
+      display: "flex",
+      gap: "0.5em",
       float: "right",
       textAlign: "right",
       paddingRight: "10px",
       marginLeft: "4em",
       cursor: "pointer",
       position: "relative",
+    },
+    ".cm-ai-span": {
+      color: "#a955ed",
+    },
+    ".cm-ai-span:hover": {
+      color: "#efefef",
     },
     ".cm-result-fresh": {
       color: themeColors.resultText,

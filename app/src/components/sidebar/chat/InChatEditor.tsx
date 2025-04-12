@@ -31,7 +31,9 @@ export function InChatEditor({ expressions }: { expressions: string[] }) {
 
   return (
     <div
-      className={"ring-2 ring-gray-700  rounded-xl max-h-32 my-5 p-1 w-full"}
+      className={
+        "ring-2 ring-gray-700  rounded-xl max-w-[35em] max-h-[20em] my-5 mx-2 p-1 w-full overflow-y-auto"
+      }
       ref={heRef}
     ></div>
   );

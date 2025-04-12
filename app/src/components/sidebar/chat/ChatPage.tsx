@@ -1,4 +1,5 @@
 import {
+  ChatPage,
   Page,
   PageContext,
 } from "@/components/sidebar/pages/PagesProvider.tsx";
@@ -9,14 +10,16 @@ import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
 import { ScrollShadow } from "@heroui/react";
 import { InChatEditor } from "@/components/sidebar/chat/InChatEditor.tsx";
 
-export function ChatPage({ page }: { page: Page }) {
+export function ChatPage({ page }: { page: ChatPage }) {
   const { session } = useContext(SessionContext);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
-    }
+    setTimeout(() => {
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+      }
+    }, 10);
   }, [page]);
 
   if (!page.chats) return null;
@@ -26,9 +29,8 @@ export function ChatPage({ page }: { page: Page }) {
   return (
     <div className="flex flex-col max-w-[50em] w-full font-inter min-h-full mx-auto">
       <ScrollShadow
-        hideScrollBar
         size={100}
-        className="flex-grow w-full"
+        className="flex-grow w-full chat-scrollbar p-5 overscroll-auto"
         ref={messagesEndRef}
       >
         {messages.map((message, index) => (
@@ -36,9 +38,11 @@ export function ChatPage({ page }: { page: Page }) {
             key={index}
             className={`flex p-1 my-5 ${message.role === "user" ? "justify-end" : "justify-start"}`}
           >
-            <div className={"flex flex-row gap-2 items-center"}>
+            <div
+              className={`flex flex-row gap-2 items-center ${message.role === "hissab" ? "w-full" : ""}`}
+            >
               <div
-                className={`rounded py-1 px-2 text-[#efefef] ${
+                className={`rounded py-1 px-2 text-[#efefef] w-full ${
                   message.role === "user" ? "bg-gray-700 " : ""
                 }`}
               >

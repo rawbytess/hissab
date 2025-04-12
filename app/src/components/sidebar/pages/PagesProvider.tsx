@@ -1,22 +1,38 @@
 import { useLocalStorage } from "@uidotdev/usehooks";
 import React, { PropsWithChildren, useState } from "react";
 
-export type Messages = {
-  role: "user" | "hissab";
+export type userMessage = {
+  role: "user";
   content: string;
-  expressions?: string[];
   createdAt: number;
 };
 
-export type Page = {
+export type aiMessage = {
+  role: "hissab";
+  content: string;
+  expressions: string[];
+  createdAt: number;
+};
+
+export type Messages = userMessage | aiMessage;
+
+type notePage = {
   id: string;
   title: string;
-  type: "page" | "chat";
+  type: "page" | undefined;
   content: string;
-  chats?: {
+};
+
+export type ChatPage = {
+  id: string;
+  title: string;
+  type: "chat";
+  chats: {
     messages: Messages[];
   };
 };
+
+export type Page = notePage | ChatPage;
 
 export type EditorOperations = {
   undo: () => void;
@@ -62,40 +78,24 @@ const PagesProvider = ({ children }: PropsWithChildren) => {
     content: string,
     type: "page" | "chat" = "page",
   ) => {
-    const newNote: Page = {
-      id: crypto.randomUUID(),
-      title,
-      type,
-      content,
-      chats:
-        type === "chat"
-          ? {
-              messages: [
-                {
-                  role: "user",
-                  content: "What is the meaning of life?",
-                  createdAt: Date.now(),
-                },
-                {
-                  role: "hissab",
-                  content: "42",
-                  createdAt: Date.now(),
-                },
-                {
-                  role: "user",
-                  content: "Why is the sky blue?",
-                  createdAt: Date.now(),
-                },
-                {
-                  role: "hissab",
-                  content:
-                    "The sky appears blue due to Rayleigh scattering of sunlight.",
-                  createdAt: Date.now(),
-                },
-              ],
-            }
-          : undefined,
-    };
+    let newNote: Page;
+    if (type === "chat") {
+      newNote = {
+        id: crypto.randomUUID(),
+        title,
+        type,
+        chats: {
+          messages: [],
+        },
+      };
+    } else {
+      newNote = {
+        id: crypto.randomUUID(),
+        title,
+        type,
+        content: content,
+      };
+    }
     setNotes([...notes, newNote]);
     return newNote;
   };
@@ -105,15 +105,15 @@ const PagesProvider = ({ children }: PropsWithChildren) => {
     id: string,
     updatedContent: string,
     type: "chat" | "page" = "page",
-    chat: Messages,
+    chat?: Messages,
   ) => {
-    if (type === "chat") {
+    if (type === "chat" && chat) {
       const newNote = notes.map((note) =>
-        note.id === id
+        note.id === id && note.type === "chat"
           ? {
               ...note,
               chats: {
-                messages: [...(note.chats?.messages ?? []), chat],
+                messages: [...(note.chats.messages ?? []), chat],
               },
             }
           : note,

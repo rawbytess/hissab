@@ -1,7 +1,4 @@
-export type AICache = {
-  expressions: string[];
-  type: "inline" | "chat";
-};
+import { AIFormatResponseType, AIRequest } from "../../../lib/types/AITypes.ts";
 
 export class LRUCache<T extends object> {
   private cache: Map<string, T>;
@@ -106,4 +103,4 @@ export class LRUCache<T extends object> {
   }
 }
 
-export const aicache = new LRUCache<AICache>(500, "ai-cache");
+export const aicache = new LRUCache<AIFormatResponseType>(500, "ai-cache");

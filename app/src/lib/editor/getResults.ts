@@ -1,18 +1,18 @@
-import {
-  doLex,
-  doParse,
-  ReportError,
-  TokenBaseType,
-  tokenFactory,
-  TokenType,
-  Variables,
-} from "engine";
-import { EditorState } from "@codemirror/state";
+import { doLex, doParse, ReportError, Variables } from "engine";
+import { EditorState, Range, StateEffectType } from "@codemirror/state";
 import { getAIResult } from "@/queries/useAIPromptQuery.tsx";
+import {
+  calculatePrev,
+  calculateTotal,
+} from "../../../../lib/calculateExpressions.ts";
+import { AIRequest } from "../../../../lib/types/AITypes.ts";
+import { Decoration, DecorationSet, EditorView } from "@codemirror/view";
+import { ResultWidget } from "@/lib/editor/resultWidget.ts";
 
 export interface Results {
   result: string;
   error: boolean;
+  loading: boolean;
   errorMessage: ReportError | null;
   stale: boolean;
   lineNumber: number;
@@ -21,37 +21,15 @@ export interface Results {
   };
 }
 
-async function calculateTotal(index: number, variables: Variables) {
-  const tokens: TokenType[] = [];
-  try {
-    for (let i = 1; i < index; i++) {
-      if (variables[`line${i}`]) {
-        tokens.push(variables[`line${i}`]);
-        tokens.push(tokenFactory("+", TokenBaseType.SYMBOL) as TokenType);
-      }
-    }
-    tokens.pop();
-    if (tokens.length === 0) return;
-    const { resultToken } = await doParse(tokens);
-    variables[`total${index}`] = resultToken;
-  } catch {}
-}
-
-function calculatePrev(index: number, variables: Variables) {
-  for (let i = index; i > 1; i--) {
-    if (variables[`line${i - 1}`]) {
-      variables[`prev${index}`] = variables[`line${i - 1}`];
-      break;
-    }
-  }
-}
-
 export async function getResult(
-  state: EditorState,
+  view: EditorView,
+  stateEffect: StateEffectType<{ decorations: DecorationSet }>,
+  oldDeco: DecorationSet,
   storePage: (content: string) => void,
   oldResults: Results[],
   isPro: boolean,
 ) {
+  const state = view.state;
   const data = state.doc.toString();
   const currentLine = state.doc.lineAt(state.selection.main.head).number;
   const variables: Variables = {};
@@ -68,60 +46,66 @@ export async function getResult(
           results.push({
             result: oldResults[index].result || "",
             stale: true,
+            loading: false,
             lineNumber: index,
             error: false,
             errorMessage: null,
           });
           continue;
         }
-        const aiResult = await getAIResult(aiPrompt);
-        const localVariables: Variables = {};
-        if (aiResult) {
-          if (aiResult.AIResponse.expressions.length === 1) {
-            const exp = aiResult.AIResponse.expressions[0];
-            await calculateTotal(index + 1, variables);
-            calculatePrev(index + 1, variables);
-            const tokens = doLex(exp, variables, index + 1);
-            const { result, resultToken } = await doParse(tokens, isPro);
-            results.push({
-              result: result,
+        const req: AIRequest = {
+          inline: true,
+          lineNumber: currentLine,
+          prompt: aiPrompt,
+          expressions: lines.map((x, i) => ({
+            expression: `Line${i + 1}: ${x}`,
+            result: oldResults[i]?.result || "",
+          })),
+        };
+        getAIResult(req).then((res) => {
+          if (res) {
+            results[index] = {
+              result: res.naturalAnswer,
               stale: false,
+              loading: false,
               lineNumber: index,
               error: false,
               errorMessage: null,
+              ai: {
+                expressions: res.expressions.map((x) => x.expression),
+              },
+            };
+            const resultWidgets: Range<Decoration>[] = [];
+            results.forEach((res: Results, index: number) => {
+              const deco = Decoration.widget({
+                widget: new ResultWidget(res, isPro),
+                side: 1,
+                block: false,
+              });
+              const { to } = view.state.doc.line(index + 1);
+              resultWidgets.push(deco.range(to));
             });
-            variables[`line${index + 1}`] = resultToken;
-            variables[`l${index + 1}`] = resultToken;
-          } else if (aiResult.AIResponse.expressions.length > 1) {
-            const exps: string[] = [];
-            for (const [
-              ind,
-              exp,
-            ] of aiResult.AIResponse.expressions.entries()) {
-              await calculateTotal(ind + 1, localVariables);
-              calculatePrev(ind + 1, localVariables);
-              const tokens = doLex(exp, localVariables, ind + 1);
-              const { result, resultToken, meta } = await doParse(
-                tokens,
-                isPro,
-              );
-              if (meta.variableName)
-                localVariables[meta.variableName] = resultToken;
-              localVariables[`line${ind + 1}`] = resultToken;
-              localVariables[`l${ind + 1}`] = resultToken;
-              exps.push(`${exp}: ${result}`);
-            }
+            const deco = Decoration.set(resultWidgets);
 
-            results.push({
-              result: exps.join("\n"),
-              stale: false,
-              lineNumber: index,
-              error: false,
-              errorMessage: null,
+            view.dispatch({
+              effects: [
+                stateEffect.of({
+                  decorations: deco,
+                }),
+              ],
             });
           }
-          continue;
-        }
+        });
+
+        results.push({
+          result: oldResults[index].result || "",
+          stale: false,
+          loading: true,
+          lineNumber: index,
+          error: false,
+          errorMessage: null,
+        });
+        continue;
       }
       [ln] = line.split("//");
       ln = ln.trim();
@@ -132,6 +116,7 @@ export async function getResult(
       results.push({
         result,
         stale: false,
+        loading: false,
         lineNumber: index,
         error: false,
         errorMessage: null,
@@ -144,6 +129,7 @@ export async function getResult(
         results.push({
           result: oldResults[index].result,
           error: true,
+          loading: false,
           errorMessage: e,
           stale: true,
           lineNumber: index,
@@ -152,6 +138,7 @@ export async function getResult(
         results.push({
           result: "",
           stale: true,
+          loading: false,
           lineNumber: index,
           error: true,
           errorMessage: e,

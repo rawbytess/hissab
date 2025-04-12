@@ -1,12 +1,12 @@
 import { createMiddleware } from "hono/factory";
-import { Bindings } from "@lib/types/envTypes";
+import { Bindings, lsVars } from "@lib/types/envTypes";
 import { hexToUint8Array } from "@lib/utils";
+import { LSWebhook } from "@lib/types/lemonSqueezyTypes";
 
 export const lsWebhookAuth = createMiddleware<{
   Bindings: Bindings;
-  Variables: {
-    body: {};
-  }; // @ts-ignore
+  Variables: lsVars;
+  // @ts-ignore
 }>(async (c, next) => {
   const signature = c.req.header("X-Signature");
   const secret = c.env.LEMONSQUEEZY_SIGNING_SECRET;

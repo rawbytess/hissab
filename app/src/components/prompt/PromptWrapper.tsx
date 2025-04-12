@@ -4,16 +4,30 @@ import { Icon } from "@iconify/react";
 import { cn } from "@heroui/react";
 
 import PromptInput from "./PromptInput.tsx";
-import { PageContext } from "@/components/sidebar/pages/PagesProvider.tsx";
+import {
+  ChatPage,
+  PageContext,
+} from "@/components/sidebar/pages/PagesProvider.tsx";
 import { useAIPromptQuery } from "@/queries/useAIPromptQuery.tsx";
 import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
+import { AIRequestChat } from "../../../../lib/types/AITypes.ts";
 
 export function PromptWrapper() {
   const [prompt, setPrompt] = React.useState<string>("");
   const { editorOperations, updateNote, currentPage } = useContext(PageContext);
   const { metadata, isPaid } = useContext(SessionContext);
 
-  const AIResponse = useAIPromptQuery(prompt, editorOperations.insertText);
+  const currPage = currentPage as ChatPage;
+
+  const req: AIRequestChat = {
+    inline: false,
+    prompt: prompt,
+    history: currPage.chats.messages.map((message) => ({
+      role: message.role === "user" ? "user" : "assistant",
+      content: message.content,
+    })),
+  };
+  const AIResponse = useAIPromptQuery(req, editorOperations.insertText);
   const maxPromptLength = useMemo(() => {
     if (isPaid) {
       return metadata?.subscription?.product_name === "AI Lite"
@@ -44,7 +58,7 @@ export function PromptWrapper() {
   }
 
   return (
-    <div className="flex flex-col gap-8 items-center justify-end mx-5 mb-10">
+    <div className="flex flex-col gap-8 items-center justify-end mx-5 mb-10 bottom-0">
       <div className="flex flex-col gap-2 rounded-2xl max-w-[50em] w-full relative">
         {prompt.length > 0 && (
           <Tooltip

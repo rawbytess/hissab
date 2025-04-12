@@ -1,5 +1,9 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { AIResponseType } from "../../../lib/types/AIResponse.ts";
+import {
+  AIFormatResponseType,
+  AIRequest,
+  AIResponseType,
+} from "../../../lib/types/AITypes.ts";
 import { useContext, useEffect } from "react";
 import { supabase } from "@/lib/supabase/client.ts";
 import { aicache } from "@/lib/cache.ts";
@@ -11,28 +15,28 @@ import { chats } from "@/lib/editor/chatPromptWidget.ts";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export function useAIPromptQuery(
-  prompt: string,
+  req: AIRequest,
   insertText: (text: string) => void,
 ) {
   const queryClient = useQueryClient();
   const { currentPage, updateNote } = useContext(PageContext);
 
-  const AIResponse = useQuery<AIResponseType>({
-    queryKey: ["AIResponse", prompt],
+  const AIResponse = useQuery<AIFormatResponseType>({
+    queryKey: ["AIResponse", req.prompt],
     enabled: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
     retry: false,
-    queryFn: () => getAIResult(prompt),
+    queryFn: () => getAIResult(req),
   });
 
   useEffect(() => {
     if (AIResponse.data) {
       if (currentPage?.type === "chat") {
         updateNote(currentPage.id, "", "chat", {
-          content: AIResponse.data.AIResponse.naturalAnswer,
-          expressions: AIResponse.data.AIResponse.expressions,
+          content: AIResponse.data.naturalAnswer,
+          expressions: AIResponse.data.expressions.map((x) => x.expression),
           createdAt: Date.now(),
           role: "hissab",
         });
@@ -56,28 +60,25 @@ export function useAIPromptQuery(
   return AIResponse;
 }
 
-export async function getAIResult(prompt: string) {
+export async function getAIResult(req: AIRequest) {
   const { data, error } = await supabase.auth.getSession();
   if (!data || !data.session || !data.session.user)
     throw new Error("No session found");
+  if (error) {
+    throw new Error("Failed to get session" + error.message);
+  }
 
   if (!isPremiumUser(data.session.user.user_metadata as userMetadata))
     throw new Error("Not a premium user");
 
-  if (prompt.length === 0) {
+  if (req.prompt.length === 0) {
     throw new Error("Empty prompt");
   }
-  const cacheResult = aicache.get(prompt);
+  const cacheResult = aicache.get(req.prompt);
   if (cacheResult) {
-    return {
-      AIResponse: {
-        expressions: cacheResult.expressions,
-      },
-    };
+    return cacheResult;
   }
-  if (error) {
-    throw new Error("Failed to get session" + error.message);
-  }
+
   const response = await fetch(`${BACKEND_URL}/user/ai`, {
     method: "POST",
     headers: {
@@ -85,15 +86,15 @@ export async function getAIResult(prompt: string) {
       Authorization: `Bearer ${data?.session?.access_token}`,
       Refresh: data?.session?.refresh_token || "",
     },
-    body: JSON.stringify({ prompt: prompt }),
+    body: JSON.stringify(req),
   });
   if (!response.ok) {
     throw new Error("Failed to fetch AI response" + response.status);
   }
-  const AIResponse = (await response.json()) as AIResponseType;
-  aicache.set(prompt, {
-    expressions: AIResponse.AIResponse.expressions,
-    type: "inline",
+  const AIResponse = (await response.json()) as AIFormatResponseType;
+  aicache.set(req.prompt, {
+    naturalAnswer: AIResponse.naturalAnswer,
+    expressions: AIResponse.expressions,
   });
   return AIResponse;
 }

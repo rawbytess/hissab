@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@google/genai": "^0.7.0",
+    "@hono/zod-validator": "^0.4.3",
     "@supabase/supabase-js": "^2.49.1",
     "engine": "workspace:*",
     "hono": "^4.7.2",

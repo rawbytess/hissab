@@ -1,42 +1,42 @@
 import { Hono } from "hono";
 import { createClient } from "@supabase/supabase-js";
-import { Bindings } from "@lib/types/envTypes";
+import { Bindings, lsVars } from "@lib/types/envTypes";
 import {
+  LSWebhook,
+  OrderObject,
+  SubscriptionObject,
   zLSWebhook,
   zOrderObject,
   zSubscriptionObject,
 } from "@lib/types/lemonSqueezyTypes";
 import { lsWebhookAuth } from "@middlewares/lsWebhookAuth";
-import { z } from "zod";
 import { userMetadata } from "../../../../../lib/types/userMetadata";
+import { zValidator } from "@hono/zod-validator";
+import { createSupabaseClient } from "@middlewares/createSupabaseClient";
 
-type LSWebhook = z.infer<typeof zLSWebhook>;
 const app = new Hono<{
   Bindings: Bindings;
-  Variables: { body: LSWebhook };
+  Variables: lsVars;
 }>();
-app.use("/*", lsWebhookAuth);
+app.use(lsWebhookAuth);
+app.use(zValidator("json", zLSWebhook));
+app.use(createSupabaseClient);
 
-function isSubscriptionObject(
-  obj: LSWebhook,
-): obj is z.infer<typeof zSubscriptionObject> {
+function isSubscriptionObject(obj: LSWebhook): obj is SubscriptionObject {
   return obj.data.type === "subscriptions";
 }
 
-function isOrderObject(obj: LSWebhook): obj is z.infer<typeof zOrderObject> {
+function isOrderObject(obj: LSWebhook): obj is OrderObject {
   return obj.data.type === "orders";
 }
 
 app.post("/", async (c) => {
-  const bodyJson: LSWebhook = c.var.body;
-  console.log(bodyJson);
-  const supabase = createClient(
-    c.env.SUPABASE_API_URL,
-    c.env.SUPABASE_ADMIN_KEY,
-  );
+  const { body, supabase } = c.var;
+  console.log(body);
+
   if (
-    isSubscriptionObject(bodyJson) &&
-    bodyJson.meta.event_name === "subscription_updated"
+    isSubscriptionObject(body) &&
+    body.meta.event_name === "subscription_updated"
   ) {
     const {
       customer_id,
@@ -51,7 +51,7 @@ app.post("/", async (c) => {
       renews_at,
       updated_at,
       user_name,
-    } = bodyJson.data.attributes;
+    } = body.data.attributes;
 
     // console.log(bodyJson);
     console.log(user_email);

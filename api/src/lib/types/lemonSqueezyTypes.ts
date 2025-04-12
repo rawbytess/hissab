@@ -61,3 +61,6 @@ export const zOrderObject = z.object({
 });
 
 export const zLSWebhook = z.union([zSubscriptionObject, zOrderObject]);
+export type SubscriptionObject = z.infer<typeof zSubscriptionObject>;
+export type OrderObject = z.infer<typeof zOrderObject>;
+export type LSWebhook = z.infer<typeof zLSWebhook>;
