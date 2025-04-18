@@ -13,3 +13,13 @@ export const modelMap: {
   "AI Lite": "gemini-2.0-flash-lite",
   "AI Plus": "gemini-2.0-flash",
 };
+
+export function log(message: {}, type: "info" | "warn" | "error" = "error") {
+  if (type === "error") {
+    console.error(message);
+  } else if (type === "warn") {
+    console.warn(message);
+  } else {
+    console.log(message);
+  }
+}

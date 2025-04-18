@@ -7,6 +7,7 @@ import {
   TokenType,
   Variables,
 } from "../engine";
+import { run } from "./errors";
 
 export async function calculateTotal(index: number, variables: Variables) {
   const tokens: TokenType[] = [];
@@ -35,15 +36,24 @@ export function calculatePrev(index: number, variables: Variables) {
 
 export async function calculateExpressions(
   expressions: string[],
-  localVariables: Variables,
   isPro: boolean,
 ): Promise<ExpWithResult[]> {
   const expWRes: ExpWithResult[] = [];
+  const localVariables: Variables = {};
   for (const [ind, exp] of expressions.entries()) {
     await calculateTotal(ind + 1, localVariables);
     calculatePrev(ind + 1, localVariables);
     const tokens = doLex(exp, localVariables, ind + 1);
-    const { result, resultToken, meta } = await doParse(tokens, isPro);
+    const parseResult = await run(doParse(tokens, isPro));
+    if (parseResult.failed) {
+      expWRes.push({
+        expression: exp,
+        result: "",
+        error: true,
+      });
+      continue;
+    }
+    const { result, resultToken, meta } = parseResult.data;
     if (meta.variableName) localVariables[meta.variableName] = resultToken;
     localVariables[`line${ind + 1}`] = resultToken;
     localVariables[`l${ind + 1}`] = resultToken;

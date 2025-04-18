@@ -11,10 +11,12 @@ import {
 import { useAIPromptQuery } from "@/queries/useAIPromptQuery.tsx";
 import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
 import { AIRequestChat } from "../../../../lib/types/AITypes.ts";
+import { getMaxCharacterLimit } from "../../../../lib/getPremiumStatus.ts";
 
 export function PromptWrapper() {
   const [prompt, setPrompt] = React.useState<string>("");
-  const { editorOperations, updateNote, currentPage } = useContext(PageContext);
+  const { editorOperations, updateNote, currentPageNumber, currentPage } =
+    useContext(PageContext);
   const { metadata, isPaid } = useContext(SessionContext);
 
   const currPage = currentPage as ChatPage;
@@ -28,17 +30,11 @@ export function PromptWrapper() {
     })),
   };
   const AIResponse = useAIPromptQuery(req, editorOperations.insertText);
-  const maxPromptLength = useMemo(() => {
-    if (isPaid) {
-      return metadata?.subscription?.product_name === "AI Lite"
-        ? 500
-        : metadata?.subscription?.product_name === "AI Plus"
-          ? 2000
-          : 0;
-    }
-    return 0;
-  }, [metadata, isPaid]);
-  if (!currentPage) return null;
+  const maxPromptLength = useMemo(
+    () => getMaxCharacterLimit(metadata?.subscription.product_name ?? ""),
+    [metadata],
+  );
+  if (!currentPageNumber) return null;
 
   async function formSubmit(
     e:
@@ -48,7 +44,7 @@ export function PromptWrapper() {
   ) {
     e.preventDefault();
     if (prompt.length === 0) return;
-    updateNote(currentPage!.id, "", "chat", {
+    updateNote(currentPageNumber, "", "chat", {
       content: prompt,
       createdAt: Date.now(),
       role: "user",
@@ -97,7 +93,7 @@ export function PromptWrapper() {
                 input:
                   "pt-1 pl-2 pb-6 !pr-10 text-medium disabled:cursor-not-allowed disabled:opacity-50",
               }}
-              disabled={!isPaid}
+              disabled={!isPaid || AIResponse.isLoading}
               minRows={3}
               maxRows={10}
               endContent={
@@ -154,16 +150,21 @@ export function PromptWrapper() {
         </div>
         <div className={"flex flex-row justify-between items-center mx-2"}>
           {maxPromptLength && (
-            <p className="text-tiny text-default-400">
+            <p
+              className={cn(
+                "text-tiny",
+                prompt.length > maxPromptLength
+                  ? "text-red-400"
+                  : "text-default-400",
+              )}
+            >
               {prompt.length}/{maxPromptLength}
-            </p>
-          )}
-          {AIResponse.error && (
-            <p className={"text-tiny text-red-400"}>
-              {AIResponse.error.message +
-                AIResponse.error.message +
-                AIResponse.error.message +
-                AIResponse.error.message}
+              {prompt.length > maxPromptLength && (
+                <span className="ml-2">
+                  Exceeded max length of {maxPromptLength} characters. Excess
+                  characters will be ignored
+                </span>
+              )}
             </p>
           )}
         </div>

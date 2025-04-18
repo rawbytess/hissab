@@ -1,5 +1,6 @@
 import { useLocalStorage } from "@uidotdev/usehooks";
 import React, { PropsWithChildren, useState } from "react";
+import { Options, parseAsInteger, parseAsString, useQueryState } from "nuqs";
 
 export type userMessage = {
   role: "user";
@@ -10,13 +11,14 @@ export type userMessage = {
 export type aiMessage = {
   role: "hissab";
   content: string;
+  error: boolean;
   expressions: string[];
   createdAt: number;
 };
 
 export type Messages = userMessage | aiMessage;
 
-type notePage = {
+export type notePage = {
   id: string;
   title: string;
   type: "page" | undefined;
@@ -44,6 +46,7 @@ export type EditorOperations = {
 
 export type pageContextType = {
   notes: Page[];
+  currentPage: Page | undefined;
   createNote: (title: string, content: string, type?: "page" | "chat") => Page;
   updateNote: (
     id: string,
@@ -53,8 +56,8 @@ export type pageContextType = {
   ) => void;
   renameNote: (id: string, newTitle: string) => void;
   deleteNote: (id: string) => void;
-  currentPage?: Page;
-  setCurrentPage: React.Dispatch<React.SetStateAction<Page | undefined>>;
+  currentPageNumber: string;
+  setCurrentPageNumber: React.Dispatch<React.SetStateAction<string>>;
   editorOperations: EditorOperations;
   setEditorOperations: React.Dispatch<React.SetStateAction<EditorOperations>>;
 };
@@ -63,7 +66,15 @@ export const PageContext = React.createContext<pageContextType>(undefined!);
 
 const PagesProvider = ({ children }: PropsWithChildren) => {
   const [notes, setNotes] = useLocalStorage<Page[]>("hissab-pages", []);
-  const [currentPage, setCurrentPage] = useState<Page>();
+  // const [currentPage, setCurrentPage] = useState<Page>();
+  const [currentPageNumber, setCurrentPageNumber] = useQueryState(
+    "page",
+    parseAsString.withDefault(""),
+  );
+  const currentPage = notes.find((note) => note.id === currentPageNumber);
+  if (!currentPage) {
+    setCurrentPageNumber(notes[0]?.id ?? "");
+  }
   const [editorOperations, setEditorOperations] = useState<EditorOperations>({
     undo: () => {},
     redo: () => {},
@@ -119,7 +130,7 @@ const PagesProvider = ({ children }: PropsWithChildren) => {
           : note,
       );
       setNotes(newNote);
-      setCurrentPage(newNote.find((note) => note.id === id));
+      setCurrentPageNumber(id);
       return;
     }
 
@@ -142,19 +153,20 @@ const PagesProvider = ({ children }: PropsWithChildren) => {
   // Delete a note
   const deleteNote = (id: string) => {
     setNotes(notes.filter((note) => note.id !== id));
-    setCurrentPage(notes[0]);
+    setCurrentPageNumber(notes[0].id);
   };
 
   return (
     <PageContext.Provider
       value={{
         notes,
+        currentPage,
         createNote,
         updateNote,
         renameNote,
         deleteNote,
-        currentPage,
-        setCurrentPage,
+        currentPageNumber,
+        setCurrentPageNumber,
         editorOperations,
         setEditorOperations,
       }}

@@ -14,19 +14,19 @@ export default function Pages() {
     createNote,
     renameNote,
     deleteNote,
-    currentPage,
-    setCurrentPage,
+    currentPageNumber,
+    setCurrentPageNumber,
   } = useContext(PageContext);
   const [editing, setEditing] = useState<Page | undefined>(undefined);
   useEffect(() => {
     if (notes.length === 0) {
       const newNote: Page = createNote(getRandomPlaceholderName(), "");
-      setCurrentPage(newNote);
+      setCurrentPageNumber(newNote.id);
     }
-    if (currentPage === undefined) {
-      setCurrentPage(notes[0]);
+    if (currentPageNumber?.length === 0) {
+      setCurrentPageNumber(notes[0].id);
     }
-  }, [createNote, currentPage, notes, setCurrentPage]);
+  }, [createNote, notes, currentPageNumber, setCurrentPageNumber]);
 
   return (
     <>
@@ -34,7 +34,7 @@ export default function Pages() {
         <Button
           onPress={() => {
             const newNote: Page = createNote(getRandomPlaceholderName(), "");
-            setCurrentPage(newNote);
+            setCurrentPageNumber(newNote.id);
             setEditing(newNote);
           }}
           variant={"light"}
@@ -54,7 +54,7 @@ export default function Pages() {
               "",
               "chat",
             );
-            setCurrentPage(newNote);
+            setCurrentPageNumber(newNote.id);
             setEditing(newNote);
           }}
           variant={"light"}
@@ -75,12 +75,12 @@ export default function Pages() {
             key={index}
             className={cn(
               "p-1  hover:bg-stone-800 mx-2 rounded my-1",
-              page.id === currentPage?.id
+              page.id === currentPageNumber
                 ? "font-medium bg-stone-800 text-slate-200"
                 : "font-light text-slate-300",
             )}
             onClick={() => {
-              setCurrentPage(page);
+              setCurrentPageNumber(page.id);
             }}
             onDoubleClick={() => {
               setEditing(page);
@@ -124,17 +124,20 @@ export default function Pages() {
                     width="16"
                     height="16"
                     className={
-                      page.id === currentPage?.id ? "opacity-100" : "opacity-70"
+                      page.id === currentPageNumber
+                        ? "opacity-100"
+                        : "opacity-70"
                     }
                   />
                   <p className={"text-sm"}>{page.title}</p>
                 </div>
-                {page.id === currentPage?.id && (
+                {page.id === currentPageNumber && (
                   <PageOptions
-                    pageID={currentPage}
+                    pageID={currentPageNumber}
+                    page={page}
                     deletePage={deleteNote}
                     setEditing={setEditing}
-                    setCurrentPage={setCurrentPage}
+                    setCurrentPageNumber={setCurrentPageNumber}
                     notes={notes}
                     index={index}
                   />

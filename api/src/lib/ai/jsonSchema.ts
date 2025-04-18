@@ -1,5 +1,4 @@
 import { Schema, Type } from "@google/genai";
-import { z } from "zod";
 
 export const hissabExpSchema: Schema = {
   description: "List of Hissab Expressions",
@@ -29,14 +28,3 @@ export const naturalAnswerSchema: Schema = {
     },
   },
 };
-
-const zHissabExp = z.object({
-  expressions: z.array(z.string()),
-});
-
-const zNaturalAnswer = z.object({
-  naturalAnswer: z.string(),
-});
-
-export type HissabExpType = z.infer<typeof zHissabExp>;
-export type NaturalAnswerType = z.infer<typeof zNaturalAnswer>;

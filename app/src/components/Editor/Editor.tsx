@@ -3,22 +3,26 @@ import HissabEditor, {
   HissabEditorType,
 } from "@/lib/editor/editor";
 import { useContext, useEffect, useRef } from "react";
-import { PageContext } from "@/components/sidebar/pages/PagesProvider.tsx";
+import {
+  notePage,
+  PageContext,
+} from "@/components/sidebar/pages/PagesProvider.tsx";
 import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
-import { ChatPage } from "@/components/sidebar/chat/ChatPage.tsx";
+import { ChatPageWrapper } from "@/components/sidebar/chat/ChatPage.tsx";
 
 export default function Editor() {
-  const { updateNote, currentPage, setEditorOperations } =
+  const { updateNote, currentPageNumber, setEditorOperations, currentPage } =
     useContext(PageContext);
   const { isPaid } = useContext(SessionContext);
   const heRef = useRef<HTMLDivElement>(null);
+  const pg = currentPage as notePage;
 
   useEffect(() => {
-    if (!heRef.current || !currentPage) return;
+    if (!heRef.current || !currentPageNumber) return;
     const hissabEditorOptions: hissabEditorIf = {
-      currentPage: currentPage?.id ?? "",
+      currentPage: currentPageNumber ?? "",
       storePage: (content: string) => {
-        updateNote(currentPage?.id ?? "", content);
+        updateNote(currentPageNumber ?? "", content);
       },
       retrievePage: null,
       isWritable: true,
@@ -32,7 +36,7 @@ export default function Editor() {
     );
 
     he.init().then(async () => {
-      const page = currentPage?.content ?? "";
+      const page = pg.content ?? "";
       he.updateEditor(page);
       setEditorOperations({
         undo: he.undoEditor,
@@ -43,10 +47,11 @@ export default function Editor() {
       });
     });
     return () => he.destroy();
-  }, [currentPage]);
+  }, [currentPageNumber]);
 
-  if (!currentPage) return null;
-  if (currentPage.type === "chat") return <ChatPage page={currentPage} />;
+  if (!currentPageNumber) return null;
+  if (currentPage?.type === "chat")
+    return <ChatPageWrapper page={currentPage} />;
 
   return (
     <div className={"flex flex-col gap-4 w-full h-full overflow-y-auto"}>

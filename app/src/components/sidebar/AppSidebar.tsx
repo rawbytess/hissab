@@ -7,7 +7,6 @@ import {
 import Pages from "@/components/sidebar/pages/Pages.tsx";
 import UserDropdown from "@/components/user/UserDropdown.tsx";
 import GetStarted from "@/components/user/GetStarted.tsx";
-import { Divider } from "@heroui/react";
 import { ExternalLink } from "lucide-react";
 import { useContext } from "react";
 import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";

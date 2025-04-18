@@ -21,7 +21,10 @@ import {
   getStreamLanguage,
   HissabHighlightStyle,
 } from "./syntaxHighlighting.ts";
-import { getResultExtension } from "@/lib/editor/resultWidget.ts";
+import {
+  getResultExtension,
+  resultStateField,
+} from "@/lib/editor/resultWidget.ts";
 import { Results } from "@/lib/editor/getResults.ts";
 import { hissabTheme } from "@/lib/editor/cmTheme.ts";
 
@@ -198,7 +201,7 @@ export default class HissabEditor {
 
   async init() {
     const page = "";
-    const { viewPlugin, resultPlugin } = await getResultExtension(
+    const resultViewPlugin = await getResultExtension(
       this.storePage,
       this.oldResults,
       this.isPro,
@@ -235,8 +238,8 @@ export default class HissabEditor {
         if (this.setFocus) this.setFocus(focusing);
         return StateEffect.define(undefined).of(null);
       }),
-      viewPlugin,
-      resultPlugin,
+      resultViewPlugin,
+      resultStateField,
       EditorView.editable.of(this.isWritable),
     ];
 

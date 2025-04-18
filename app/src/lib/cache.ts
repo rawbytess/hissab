@@ -103,4 +103,6 @@ export class LRUCache<T extends object> {
   }
 }
 
-export const aicache = new LRUCache<AIFormatResponseType>(500, "ai-cache");
+export const aicache = new LRUCache<
+  AIFormatResponseType & { error: string | null }
+>(500, "ai-cache");

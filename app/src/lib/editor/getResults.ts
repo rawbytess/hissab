@@ -1,5 +1,5 @@
 import { doLex, doParse, ReportError, Variables } from "engine";
-import { EditorState, Range, StateEffectType } from "@codemirror/state";
+import { Range, StateEffectType } from "@codemirror/state";
 import { getAIResult } from "@/queries/useAIPromptQuery.tsx";
 import {
   calculatePrev,
@@ -23,8 +23,7 @@ export interface Results {
 
 export async function getResult(
   view: EditorView,
-  stateEffect: StateEffectType<{ decorations: DecorationSet }>,
-  oldDeco: DecorationSet,
+  resultStateEffect: StateEffectType<{ decorations: DecorationSet }>,
   storePage: (content: string) => void,
   oldResults: Results[],
   isPro: boolean,
@@ -37,19 +36,18 @@ export async function getResult(
   const lines = data.split("\n");
   storePage(data);
   let ln = "";
-
   for (const [index, line] of lines.entries()) {
     try {
       if (line.trim().startsWith("ai ")) {
         const aiPrompt = line.trim().substring(2).trim();
         if (index === currentLine - 1) {
           results.push({
-            result: oldResults[index].result || "",
+            result: oldResults[index]?.result || "",
             stale: true,
             loading: false,
             lineNumber: index,
-            error: false,
-            errorMessage: null,
+            error: oldResults[index]?.error || false,
+            errorMessage: oldResults[index]?.errorMessage || null,
           });
           continue;
         }
@@ -62,8 +60,9 @@ export async function getResult(
             result: oldResults[i]?.result || "",
           })),
         };
-        getAIResult(req).then((res) => {
-          if (res) {
+        getAIResult(req)
+          .then((res) => {
+            oldResults[index] = results[index];
             results[index] = {
               result: res.naturalAnswer,
               stale: false,
@@ -75,30 +74,24 @@ export async function getResult(
                 expressions: res.expressions.map((x) => x.expression),
               },
             };
-            const resultWidgets: Range<Decoration>[] = [];
-            results.forEach((res: Results, index: number) => {
-              const deco = Decoration.widget({
-                widget: new ResultWidget(res, isPro),
-                side: 1,
-                block: false,
-              });
-              const { to } = view.state.doc.line(index + 1);
-              resultWidgets.push(deco.range(to));
-            });
-            const deco = Decoration.set(resultWidgets);
-
-            view.dispatch({
-              effects: [
-                stateEffect.of({
-                  decorations: deco,
-                }),
-              ],
-            });
-          }
-        });
+          })
+          .catch((e) => {
+            results[index] = {
+              result:
+                oldResults[index]?.result || e.errorMessage?.message || "",
+              stale: false,
+              loading: false,
+              lineNumber: index,
+              error: true,
+              errorMessage: e.userMessage,
+            };
+          })
+          .finally(() => {
+            refreshResults(results, oldResults, view, resultStateEffect, isPro);
+          });
 
         results.push({
-          result: oldResults[index].result || "",
+          result: oldResults[index]?.result || "",
           stale: false,
           loading: true,
           lineNumber: index,
@@ -125,9 +118,9 @@ export async function getResult(
       variables[`line${index + 1}`] = resultToken;
       variables[`l${index + 1}`] = resultToken;
     } catch (e: any) {
-      if (oldResults && oldResults[index] && ln.length)
+      if (oldResults && ln.length)
         results.push({
-          result: oldResults[index].result,
+          result: oldResults[index]?.result ?? "",
           error: true,
           loading: false,
           errorMessage: e,
@@ -146,4 +139,33 @@ export async function getResult(
     }
   }
   return results;
+}
+
+export function refreshResults(
+  results: Results[],
+  oldResults: Results[],
+  view: EditorView,
+  resultStateEffect: StateEffectType<{ decorations: DecorationSet }>,
+  isPro: boolean,
+) {
+  const resultWidgets: Range<Decoration>[] = [];
+  console.log("refreshResults", results);
+  results.forEach((res: Results, index: number) => {
+    const deco = Decoration.widget({
+      widget: new ResultWidget(res, isPro, view),
+      side: 1,
+      block: false,
+    });
+    const { to } = view.state.doc.line(index + 1);
+    resultWidgets.push(deco.range(to));
+  });
+  const deco = Decoration.set(resultWidgets);
+
+  view.dispatch({
+    effects: [
+      resultStateEffect.of({
+        decorations: deco,
+      }),
+    ],
+  });
 }

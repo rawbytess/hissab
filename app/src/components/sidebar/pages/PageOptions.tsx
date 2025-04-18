@@ -12,16 +12,18 @@ import { Page } from "@/components/sidebar/pages/PagesProvider.tsx";
 
 export default function PageOptions({
   pageID,
+  page,
   deletePage,
   setEditing,
-  setCurrentPage,
+  setCurrentPageNumber,
   notes,
   index,
 }: {
-  pageID: Page;
+  pageID: string;
+  page: Page;
   deletePage: (id: string) => void;
   setEditing: Dispatch<SetStateAction<Page | undefined>>;
-  setCurrentPage: Dispatch<SetStateAction<Page | undefined>>;
+  setCurrentPageNumber: Dispatch<SetStateAction<string>>;
   notes: Page[];
   index: number;
 }) {
@@ -37,19 +39,19 @@ export default function PageOptions({
           <DropdownItem
             color={"primary"}
             onPress={() => {
-              setEditing(pageID);
+              setEditing(page);
             }}
             key="rename"
             startContent={<Icon icon="mdi:rename" width="16" height="16" />}
           >
-            Rename {pageID.title}
+            Rename {page.title}
           </DropdownItem>
           <DropdownItem
             key="delete"
             className="text-danger"
             onPress={() => {
-              deletePage(pageID.id);
-              setCurrentPage(notes[index - 1] ?? notes[index + 1]);
+              deletePage(pageID);
+              setCurrentPageNumber(notes[index - 1].id ?? notes[index + 1].id);
               setEditing(undefined);
             }}
             color="danger"
@@ -57,7 +59,7 @@ export default function PageOptions({
               <Icon icon="fluent:delete-16-filled" width="16" height="16" />
             }
           >
-            Delete {pageID.title}
+            Delete {page.title}
           </DropdownItem>
         </DropdownSection>
       </DropdownMenu>

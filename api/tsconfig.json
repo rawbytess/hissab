@@ -26,7 +26,8 @@
     "paths": {
         "@lib/*": ["lib/*"],
         "@middlewares/*": ["middlewares/*"],
-        "routes/*": ["routes/*"],
+        "@routes/*": ["routes/*"],
+        "~lib/*": ["../../lib/*"],
     }
   },
   "include": ["test/**/*", "playwright.config.ts", "src/**/*"],

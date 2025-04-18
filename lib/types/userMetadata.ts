@@ -9,7 +9,7 @@ export type userMetadata = {
       | "past_due"
       | "expired";
     renews_at: string;
-    ends_at: string;
+    ends_at: string | null;
     created_at: string;
     updated_at: string;
     product_name: "AI Lite" | "AI Plus" | string;

@@ -1,16 +1,13 @@
-import {
-  ChatPage,
-  Page,
-  PageContext,
-} from "@/components/sidebar/pages/PagesProvider.tsx";
+import { ChatPage } from "@/components/sidebar/pages/PagesProvider.tsx";
 import { PromptWrapper } from "@/components/prompt/PromptWrapper.tsx";
-import { Icon } from "@iconify/react";
 import { useContext, useEffect, useRef } from "react";
 import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
 import { ScrollShadow } from "@heroui/react";
 import { InChatEditor } from "@/components/sidebar/chat/InChatEditor.tsx";
+import { cn } from "@/lib/utils.ts";
+import { Icon } from "@iconify/react";
 
-export function ChatPage({ page }: { page: ChatPage }) {
+export function ChatPageWrapper({ page }: { page: ChatPage }) {
   const { session } = useContext(SessionContext);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -36,20 +33,38 @@ export function ChatPage({ page }: { page: ChatPage }) {
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`flex p-1 my-5 ${message.role === "user" ? "justify-end" : "justify-start"}`}
+            className={cn(
+              `flex p-1 my-5`,
+              message.role === "user" ? "justify-end" : "justify-start",
+            )}
           >
             <div
-              className={`flex flex-row gap-2 items-center ${message.role === "hissab" ? "w-full" : ""}`}
+              className={cn(
+                `flex flex-row gap-2 items-center`,
+                message.role === "hissab" ? "w-full" : "",
+              )}
             >
               <div
-                className={`rounded py-1 px-2 text-[#efefef] w-full ${
-                  message.role === "user" ? "bg-gray-700 " : ""
-                }`}
-              >
-                {message.content}
-                {message.role === "hissab" && message.expressions && (
-                  <InChatEditor expressions={message.expressions} />
+                className={cn(
+                  `rounded py-1 px-2 text-[#efefef] w-full`,
+                  message.role === "user" ? "bg-gray-700 " : "",
+                  message.role === "hissab" && message.error
+                    ? "text-red-500"
+                    : "",
                 )}
+              >
+                {message.role === "hissab" && message.error ? (
+                  <div className="flex gap-2 items-center">
+                    <Icon icon="bxs:error" width="24" height="24" />
+                    {message.content}
+                  </div>
+                ) : (
+                  message.content
+                )}
+                {message.role === "hissab" &&
+                  message.expressions.length > 0 && (
+                    <InChatEditor expressions={message.expressions} />
+                  )}
               </div>
               {message.role === "user" && (
                 <img

@@ -3,7 +3,7 @@ import { z } from "zod";
 export const zSubscriptionObject = z.object({
   meta: z.object({
     test_mode: z.boolean(),
-    webhook_id: z.string(),
+    webhook_id: z.string().uuid(),
     event_name: z.enum([
       "subscription_created",
       "subscription_updated",
@@ -34,7 +34,7 @@ export const zSubscriptionObject = z.object({
       ]),
       cancelled: z.boolean(),
       renews_at: z.string(),
-      ends_at: z.string(),
+      ends_at: z.string().nullable(),
       created_at: z.string(),
       updated_at: z.string(),
       first_subscription_item: z.object({

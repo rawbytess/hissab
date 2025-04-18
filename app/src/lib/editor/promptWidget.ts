@@ -47,19 +47,19 @@ export const prompt = ViewPlugin.fromClass(
         const current = view.state.selection.main.head;
         const currentLine = view.state.doc.lineAt(current);
 
-        let isPromptFocused = false;
-
         if (e.key === "Enter") {
           for (let iter = value!.iter(); iter.value !== null; iter.next()) {
-            if (current > iter.from && current < currentLine.to) {
-              isPromptFocused = true;
+            const decoLine = view.state.doc.lineAt(iter.from);
+
+            if (current >= iter.to && current <= decoLine.to) {
+              view.dispatch({
+                userEvent: "input",
+                selection: { anchor: currentLine.to + 1 },
+              });
+              e.stopPropagation();
+              e.preventDefault();
               break;
             }
-          }
-          if (isPromptFocused) {
-            view.dispatch({
-              selection: { anchor: currentLine.to },
-            });
           }
         }
       },

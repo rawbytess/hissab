@@ -1,17 +1,9 @@
 import { z } from "zod";
 
-export type AIExpressionsType = {
-  expressions: string[];
-};
-
-export type AIResponseType = {
-  naturalAnswer: string;
-  expressions: string[];
-};
-
 export type ExpWithResult = {
   expression: string;
   result: string;
+  error?: boolean;
 };
 
 export type AIFormatResponseType = {
@@ -44,6 +36,18 @@ export const zAIRequest = z.discriminatedUnion("inline", [
   zAIRequestInline,
   zAIRequestChat,
 ]);
+
+export const zHissabExp = z.object({
+  expressions: z.array(z.string()),
+});
+
+export const zNaturalAnswer = z.object({
+  naturalAnswer: z.string(),
+});
+
+export type HissabExpType = z.infer<typeof zHissabExp>;
+export type NaturalAnswerType = z.infer<typeof zNaturalAnswer>;
+export type AINaturelAnswerType = HissabExpType & NaturalAnswerType;
 
 export type AIRequest = z.infer<typeof zAIRequest>;
 export type AIRequestInline = z.infer<typeof zAIRequestInline>;

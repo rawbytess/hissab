@@ -117,7 +117,9 @@ export function hissabTheme(
     },
     ".cm-scroller": {
       lineHeight: "2",
+      overflow: "hidden",
       borderRadius: "inherit",
+      zIndex: "0",
     },
     ".cm-tooltip.cm-tooltip-autocomplete": {
       backgroundColor: "#4a4a4a",
@@ -148,34 +150,32 @@ export function hissabTheme(
       textDecoration: "none",
     },
     ".error-span": {
+      display: "flex",
+      alignItems: "center",
+      gap: "5px",
       fontStyle: "normal",
       marginLeft: "4px",
       padding: "2px 3px",
       overflow: "hidden",
+      color: "#dd0101",
     },
-    ".error-span .error-tip": {
-      visibility: "hidden",
-      display: "none",
-      width: "max-content",
-      backgroundColor: "black",
-      color: "#fff",
-      fontSize: "small",
-      textAlign: "center",
-      padding: "2px 5px",
-      borderRadius: "6px",
 
-      /* Position the tooltip text - see examples below! */
+    ".error-span[aria-label]:hover::after": {
+      content: "attr(aria-label)",
       position: "absolute",
-      zIndex: "100000",
-    },
-
-    /* Show the tooltip text when you mouse over the tooltip container */
-    ".error-span:hover .error-tip": {
-      visibility: "visible",
-      display: "inline",
+      width: "max-content",
+      backgroundColor: "#404040",
+      color: "#ff0000",
+      fontFamily: "inter",
+      fontSize: "0.7em",
+      padding: "2px 5px",
+      textAlign: "left",
+      borderRadius: "6px",
       top: "0px",
-      right: "40px",
-      color: "#fff",
+      left: "0px",
+      zIndex: "20",
+      transform: "translateX(-100%)",
+      transition: "transform 2s ease-in-out",
     },
   };
 }

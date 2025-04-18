@@ -1,18 +1,17 @@
 import { createMiddleware } from "hono/factory";
 import { Bindings, lsVars } from "@lib/types/envTypes";
 import { hexToUint8Array } from "@lib/utils";
-import { LSWebhook } from "@lib/types/lemonSqueezyTypes";
+import { HTTPException } from "hono/http-exception";
 
 export const lsWebhookAuth = createMiddleware<{
   Bindings: Bindings;
   Variables: lsVars;
-  // @ts-ignore
 }>(async (c, next) => {
   const signature = c.req.header("X-Signature");
   const secret = c.env.LEMONSQUEEZY_SIGNING_SECRET;
 
   if (!signature || !secret) {
-    return c.json({ error: "Unauthorized" }, 401);
+    throw new HTTPException(403, { message: "Invalid signature" });
   }
 
   const key = await crypto.subtle.importKey(
@@ -25,7 +24,7 @@ export const lsWebhookAuth = createMiddleware<{
 
   const body = await c.req.text();
   const rawBody = new TextEncoder().encode(body);
-  // console.log("Body: ", body);
+
   const verified = await crypto.subtle.verify(
     "HMAC",
     key,
@@ -34,12 +33,10 @@ export const lsWebhookAuth = createMiddleware<{
   );
   console.log("Verified: ", verified);
   if (!verified) {
-    return c.json({ error: "Unauthorized" }, 401);
+    throw new HTTPException(403, { message: "Invalid signature" });
   }
 
   const verifiedBody = JSON.parse(body);
-
   c.set("body", verifiedBody);
-
   await next();
 });

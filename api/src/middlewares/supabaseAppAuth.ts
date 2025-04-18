@@ -1,26 +1,27 @@
 import { createMiddleware } from "hono/factory";
 import { Bindings, userVars } from "@lib/types/envTypes";
 import { HTTPException } from "hono/http-exception";
+import { decode, sign, verify } from "hono/jwt";
+import { User } from "@supabase/supabase-js";
+import { userMetadata } from "~lib/types/userMetadata";
+import { run } from "~lib/errors";
 
 export const supabaseAppAuth = createMiddleware<{
   Bindings: Bindings;
   Variables: userVars;
 }>(async (c, next) => {
-  const refresh_token = c.req.header("Refresh");
   const access_token = c.req.header("Authorization")?.split(" ")[1];
-  const { supabase } = c.var;
-  const { data, error } = await supabase.auth.getUser(access_token);
-
-  if (data.user) {
-    c.set("user", data.user);
+  if (!access_token) {
+    throw new HTTPException(403, { message: "No access token" });
   }
-  // TODO: handle error properly
-  if (error) {
-    console.error("Error while getting user by access_token ", error);
+  const result = await run(verify(access_token, c.env.SUPABASE_JWT_SECRET));
+
+  if (result.failed) {
+    const refresh_token = c.req.header("Refresh");
     if (!refresh_token) {
       throw new HTTPException(403, { message: "No refresh token" });
     }
-
+    const { supabase } = c.var;
     const { data: refreshed, error: refreshError } =
       await supabase.auth.refreshSession({
         refresh_token,
@@ -34,9 +35,10 @@ export const supabaseAppAuth = createMiddleware<{
     }
 
     if (refreshed.user) {
-      c.set("user", refreshed.user);
+      c.set("user", refreshed.user.user_metadata as userMetadata);
     }
+  } else {
+    c.set("user", result.data.user_metadata as userMetadata);
   }
-
   await next();
 });
