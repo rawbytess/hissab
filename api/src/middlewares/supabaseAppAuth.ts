@@ -1,8 +1,7 @@
 import { createMiddleware } from "hono/factory";
 import { Bindings, userVars } from "@lib/types/envTypes";
 import { HTTPException } from "hono/http-exception";
-import { decode, sign, verify } from "hono/jwt";
-import { User } from "@supabase/supabase-js";
+import { verify } from "hono/jwt";
 import { userMetadata } from "~lib/types/userMetadata";
 import { run } from "~lib/errors";
 
@@ -35,10 +34,16 @@ export const supabaseAppAuth = createMiddleware<{
     }
 
     if (refreshed.user) {
-      c.set("user", refreshed.user.user_metadata as userMetadata);
+      c.set("user", {
+        ...(refreshed.user.user_metadata as userMetadata),
+        user_id: refreshed.user.id,
+      });
     }
   } else {
-    c.set("user", result.data.user_metadata as userMetadata);
+    c.set("user", {
+      ...(result.data.user_metadata as userMetadata),
+      user_id: result.data.id as string,
+    });
   }
   await next();
 });

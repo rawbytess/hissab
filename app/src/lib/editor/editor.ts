@@ -206,6 +206,23 @@ export default class HissabEditor {
       this.oldResults,
       this.isPro,
     );
+    const underlineKeymap = keymap.of([
+      {
+        key: "Mod-z",
+        preventDefault: true,
+        run: undo,
+      },
+      {
+        key: "Mod-y",
+        preventDefault: true,
+        run: redo,
+      },
+      {
+        key: "Mod-Shift-z",
+        preventDefault: true,
+        run: redo,
+      },
+    ]);
 
     const extensions = [
       lineNumbers(),
@@ -241,6 +258,7 @@ export default class HissabEditor {
       resultViewPlugin,
       resultStateField,
       EditorView.editable.of(this.isWritable),
+      underlineKeymap,
     ];
 
     if (this.storePage) debounce(this.storePage, 2000);

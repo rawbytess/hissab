@@ -7,16 +7,16 @@ import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
 
 export function InChatEditor({ expressions }: { expressions: string[] }) {
   const heRef = useRef<HTMLDivElement>(null);
-  const { isPaid } = useContext(SessionContext);
+  const { isPremium } = useContext(SessionContext);
   useEffect(() => {
     if (!heRef.current) return;
     const hissabEditorOptions: hissabEditorIf = {
       currentPage: "",
-      storePage: (content: string) => {},
+      storePage: () => {},
       retrievePage: null,
       isWritable: true,
       isDark: true,
-      isPro: isPaid,
+      isPro: !!isPremium,
     };
     const he: HissabEditorType = new HissabEditor(
       heRef.current,
@@ -27,7 +27,7 @@ export function InChatEditor({ expressions }: { expressions: string[] }) {
       he.updateEditor(expressions.join("\n"));
     });
     return () => he.destroy();
-  }, [expressions, isPaid]);
+  }, [expressions, isPremium]);
 
   return (
     <div

@@ -1,46 +1,61 @@
-import { CachedContent, GoogleGenAI } from "@google/genai";
-import systemInstructions from "@lib/ai/instructions/system-instructions";
-import documentation from "@lib/ai/instructions/documentation";
-import { naturalAnswerSchema, hissabExpSchema } from "./jsonSchema";
-import naturalResultInstructions from "@lib/ai/instructions/natural-result-instructions";
 import {
-  AIRequest,
-  ExpWithResult,
-  zHissabExp,
-  zNaturalAnswer,
-} from "~lib/types/AITypes";
+  createPartFromUri,
+  createUserContent,
+  GoogleGenAI,
+  Part,
+} from "@google/genai";
+import documentation from "@lib/ai/instructions/documentation";
+import { hissabExpFunction } from "./jsonSchema";
+import { AIFormatResponseType, inLineDefaultModel } from "~lib/types/AITypes";
 import { CustomError, run } from "~lib/errors";
+import { FileUpload } from "~lib/types/fileTypes";
+import { calculateExpressions } from "~lib/calculateExpressions";
+import { ProductNames } from "~lib/types/userMetadata";
 
+async function blobToBase64(blob: any) {
+  // Convert the Blob to an ArrayBuffer
+  const arrayBuffer = await blob.arrayBuffer();
+
+  // Convert the ArrayBuffer to a Uint8Array
+  const uint8Array = new Uint8Array(arrayBuffer);
+
+  // Convert the Uint8Array to a binary string
+  let binaryString = "";
+  for (let i = 0; i < uint8Array.length; i++) {
+    binaryString += String.fromCharCode(uint8Array[i]);
+  }
+
+  // Encode the binary string to Base64
+  return btoa(binaryString);
+}
 export class Gemini {
   private ai: GoogleGenAI;
   private hissabModel: string;
-  private naturalModel: string;
-  private cache: CachedContent;
 
   constructor(apiKey: string, model: string) {
     this.ai = new GoogleGenAI({ apiKey });
     this.hissabModel = model;
-    this.naturalModel = "gemini-1.5-flash-8b";
-  }
-  async init() {
-    this.cache = await this.ai.caches.create({
-      model: this.hissabModel,
-      config: {
-        displayName: "hissab-context-cache",
-        systemInstruction: systemInstructions + documentation,
-      },
-    });
   }
 
-  async getExpressions(prompt: string) {
+  async getExpressions(
+    systemInstructions: string,
+    prompt: string,
+    files:
+      | { url: string; mimeType: string; name: string }
+      | undefined = undefined,
+    isPremium: ProductNames | null = null,
+  ): Promise<AIFormatResponseType> {
+    const contents: (string | Part | {})[] = [prompt];
+    if (files && isPremium && isPremium === "AI Plus") {
+      contents.push(createPartFromUri(files.url, files.mimeType));
+    }
+
     const respResult = await run(
       this.ai.models.generateContent({
         model: this.hissabModel,
-        contents: prompt,
+        contents: createUserContent(contents),
         config: {
-          responseMimeType: "application/json",
-          responseSchema: hissabExpSchema,
-          // cachedContent: this.cache.name,
+          tools: [{ functionDeclarations: [hissabExpFunction] }],
           systemInstruction: systemInstructions + documentation,
         },
       }),
@@ -53,96 +68,83 @@ export class Gemini {
         "Something went wrong",
       );
     }
-    const aiResp = await run(() =>
-      zHissabExp.safeParse(JSON.parse(respResult.data.text ?? "")),
-    );
-    if (aiResp.failed) {
-      throw new CustomError(
-        "HissabExpJSON",
-        aiResp.error.message,
-        "Something went wrong",
-      );
-    }
-    if (aiResp.data.error) {
-      throw new CustomError(
-        "HissabExpJSON",
-        aiResp.data.error.message,
-        "Something went wrong",
-      );
-    }
 
-    if (aiResp.data.data.expressions.length === 0) {
-      throw new CustomError(
-        "HissabExpJSON",
-        "No expressions found",
-        "This prompt did not yield any expressions.",
-        400,
-      );
-    }
-    return aiResp.data;
-  }
+    if (
+      respResult.data.functionCalls &&
+      respResult.data.functionCalls.length > 0
+    ) {
+      const functionCall = respResult.data.functionCalls[0];
 
-  async getNaturalAnswer(prompt: string) {
-    const aiNaturalResp = await run(
-      this.ai.models.generateContent({
-        model: this.naturalModel,
-        contents: prompt,
+      const results = await run(
+        calculateExpressions(
+          functionCall.args!.expressions as string[],
+          !!isPremium,
+        ),
+      );
+      if (results.failed) {
+        throw new CustomError(
+          "Unknown",
+          "Something went wrong",
+          "Something went wrong",
+          500,
+        );
+      }
+      contents.push({
+        role: "model",
+        parts: [{ functionCall: functionCall }],
+      });
+
+      contents.push({
+        role: "user",
+        parts: [
+          {
+            functionResponse: {
+              name: hissabExpFunction.name,
+              response: { result: results.data },
+            },
+          },
+        ],
+      });
+
+      const final_response = await this.ai.models.generateContent({
+        model: inLineDefaultModel,
+        contents: contents,
         config: {
-          responseMimeType: "application/json",
-          responseSchema: naturalAnswerSchema,
-          systemInstruction: naturalResultInstructions,
+          tools: [{ functionDeclarations: [hissabExpFunction] }],
+          systemInstruction: systemInstructions,
         },
-      }),
-    );
-    if (aiNaturalResp.failed) {
-      throw new CustomError(
-        "NaturalAnswerJSON",
-        aiNaturalResp.error.message,
-        "Something went wrong",
-      );
+      });
+      if (!final_response.text)
+        throw new CustomError(
+          "GeminiGenContent",
+          "Something went wrong",
+          "Something went wrong",
+        );
+      return {
+        naturalAnswer: final_response.text,
+        expressions: results.data,
+      };
     }
 
-    const naturalAnswer = await run(() =>
-      zNaturalAnswer.parse(JSON.parse(aiNaturalResp.data.text ?? "")),
-    );
-    if (naturalAnswer.failed) {
+    if (!respResult.data.text)
       throw new CustomError(
-        "HissabExpJSON",
-        naturalAnswer.error.message,
+        "GeminiGenContent",
+        "Something went wrong",
         "Something went wrong",
       );
-    }
-    return naturalAnswer.data;
+    return {
+      naturalAnswer: respResult.data.text,
+      expressions: [],
+    };
   }
-}
 
-export function getPromptWithHistory(
-  body: AIRequest,
-  retry: ExpWithResult[] | null = null,
-) {
-  const finalPrompt = body.inline
-    ? `Note: This prompt is on line ${body.lineNumber}. All lines on the page are ${body.expressions
-        .map((x, i) => `Line ${i}: ${x.expression} :: Result: ${x.result}`)
-        .join("\n")}
-      If the prompt reference any previous lines or results please use the previous line numbers in the output expressions.
-
-      User Prompt: ${body.prompt}
-      `
-    : `Note: History of previous conversations: ${body.history}
-        User Prompt: ${body.prompt}
-    `;
-
-  if (retry) {
-    return `Your previous attempt generated some or all incorrect expressions that hissab could not parse.
-Previously generated expressions: 
-${JSON.stringify(
-  retry.map(
-    (x, i) =>
-      `Line${i + 1}: ${x.expression} :: Result: ${x.error ? "ERROR" : x.result}`,
-  ),
-)}
-Please try again. 
-${finalPrompt}`;
+  async uploadFile(file: FileUpload, fileBlob?: Blob) {
+    return await this.ai.files.upload({
+      file: fileBlob || file.url,
+      config: {
+        mimeType: file.mimeType,
+        displayName: file.name,
+      },
+    });
   }
-  return finalPrompt;
 }

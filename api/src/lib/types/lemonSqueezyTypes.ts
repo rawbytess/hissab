@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { zProductNames, zSubscriptionStatus } from "~lib/types/userMetadata";
 
 export const zSubscriptionObject = z.object({
   meta: z.object({
@@ -22,16 +23,9 @@ export const zSubscriptionObject = z.object({
       order_id: z.number(),
       user_email: z.string().email(),
       user_name: z.string(),
-      product_name: z.string(),
+      product_name: zProductNames,
       variant_name: z.string(),
-      status: z.enum([
-        "on_trial",
-        "active",
-        "paused",
-        "cancelled",
-        "past_due",
-        "expired",
-      ]),
+      status: zSubscriptionStatus,
       cancelled: z.boolean(),
       renews_at: z.string(),
       ends_at: z.string().nullable(),

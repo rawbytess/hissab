@@ -1,7 +1,10 @@
 import { createContext, useEffect, useMemo, useState } from "react";
 import { AuthOtpResponse, AuthResponse, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client.ts";
-import { userMetadata } from "../../../../../lib/types/userMetadata.ts";
+import {
+  ProductNames,
+  userMetadata,
+} from "../../../../../lib/types/userMetadata.ts";
 import { isPremiumUser } from "../../../../../lib/getPremiumStatus.ts";
 
 export type SessionContextType = {
@@ -11,7 +14,7 @@ export type SessionContextType = {
   verifyOTP: null | ((email: string, otp: string) => Promise<AuthResponse>);
   signInWithOTP: ((email: string) => Promise<AuthOtpResponse>) | null;
   metadata: userMetadata | null;
-  isPaid: boolean;
+  isPremium: ProductNames | null;
 };
 
 export type User = {
@@ -24,8 +27,10 @@ export const SessionContext = createContext<SessionContextType>(undefined!);
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
-  const metadata = (session?.user?.user_metadata || null) as userMetadata;
-
+  const metadata = useMemo(
+    () => session?.user?.user_metadata as userMetadata,
+    [session],
+  );
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN") {
@@ -39,18 +44,13 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
     supabase.auth.getSession().then((session) => {
       setSession(session.data.session);
-      console.log(session);
     });
 
     return () => {
       data.subscription.unsubscribe();
     };
   }, []);
-
-  const isPaid = useMemo(() => {
-    if (!session) return false;
-    return isPremiumUser(metadata);
-  }, [session, metadata]);
+  const isPremium = useMemo(() => isPremiumUser(metadata), [metadata]);
 
   async function logout() {
     await supabase.auth.signOut();
@@ -58,7 +58,6 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function verifyOTP(email: string, otp: string) {
-    console.log("Verifying OTP");
     return await supabase.auth.verifyOtp({
       email: email,
       token: otp,
@@ -67,7 +66,6 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function signInWithOTP(email: string) {
-    console.log("Sending email OTP");
     return await supabase.auth.signInWithOtp({
       email: email,
       options: {
@@ -84,8 +82,8 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         logout,
         verifyOTP,
         signInWithOTP,
-        metadata: (session?.user?.user_metadata ?? null) as userMetadata,
-        isPaid,
+        metadata,
+        isPremium,
       }}
     >
       {children}

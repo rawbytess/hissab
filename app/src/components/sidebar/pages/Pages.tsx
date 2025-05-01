@@ -61,11 +61,7 @@ export default function Pages() {
           size={"md"}
           className="m-2 w-fit text-gray-300 h-7"
         >
-          <Icon
-            icon="material-symbols-light:chat-add-on-rounded"
-            width="24"
-            height="24"
-          />
+          <Icon icon="lsicon:add-chat-two-filled" width="24" height="24" />
         </Button>
       </div>
       <Divider />
@@ -104,7 +100,7 @@ export default function Pages() {
                       "text-green-600 hover:bg-green-900 justify-end rounded-full"
                     }
                     size={"sm"}
-                    onClick={() => {
+                    onPress={() => {
                       setEditing(undefined);
                     }}
                   >
@@ -118,7 +114,7 @@ export default function Pages() {
                   <Icon
                     icon={
                       page?.type === "chat"
-                        ? "material-symbols-light:chat"
+                        ? "fluent:chat-24-filled"
                         : "emojione-v1:page"
                     }
                     width="16"

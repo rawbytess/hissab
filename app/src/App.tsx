@@ -1,15 +1,16 @@
 import Editor from "@/components/Editor/Editor.tsx";
 import Sidebar from "@/components/sidebar/AppSidebar.tsx";
-import PagesProvider from "@/components/sidebar/pages/PagesProvider.tsx";
+import PagesProvider, {
+  PageContext,
+} from "@/components/sidebar/pages/PagesProvider.tsx";
 import Header from "@/components/Editor/Header.tsx";
 import Footer from "@/components/Editor/Footer.tsx";
 import { SessionProvider } from "@/components/user/auth/SessionProvider.tsx";
-import { cn, HeroUIProvider } from "@heroui/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Chip, cn, HeroUIProvider, ToastProvider } from "@heroui/react";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import { infinity } from "ldrs";
-
-const queryClient = new QueryClient();
+import { Icon } from "@iconify/react";
+import { useContext } from "react";
 
 infinity.register();
 
@@ -22,28 +23,60 @@ function App() {
       )}
     >
       <NuqsAdapter>
-        <QueryClientProvider client={queryClient}>
-          <HeroUIProvider>
-            <SessionProvider>
-              <PagesProvider>
-                <Sidebar>
-                  <div
-                    className={
-                      "grid grid-rows-[auto_1fr_auto] grid-cols-1 justify-between w-full rounded h-screen"
-                    }
-                  >
-                    <Header />
-                    <Editor />
-                    <Footer />
-                  </div>
-                </Sidebar>
-              </PagesProvider>
-            </SessionProvider>
-          </HeroUIProvider>
-        </QueryClientProvider>
+        <HeroUIProvider>
+          <ToastProvider toastOffset={50} />
+          <SessionProvider>
+            <PagesProvider>
+              <Sidebar>
+                <div
+                  className={
+                    "grid grid-rows-[auto_auto_1fr_auto] grid-cols-1 justify-between w-full rounded"
+                  }
+                >
+                  <Header />
+                  <AttachmentBar />
+                  <Editor />
+                  <Footer />
+                </div>
+              </Sidebar>
+            </PagesProvider>
+          </SessionProvider>
+        </HeroUIProvider>
       </NuqsAdapter>
     </div>
   );
 }
 
 export default App;
+
+export function AttachmentBar() {
+  const { currentPage, updateNote } = useContext(PageContext);
+  if (!currentPage) return null;
+  const exptime = new Date(currentPage.file?.geminiFile?.expirationTime);
+  const now = new Date();
+
+  return (
+    <div
+      className={cn(
+        "flex flex-wrap gap-2 items-center justify-center w-fill text-[#dddddd] drop-shadow p-2 mt-11  fixed",
+        !currentPage.file ? "h-0 p-0" : "h-auto",
+      )}
+    >
+      {currentPage.file && (
+        <Chip
+          key={currentPage.file.name}
+          startContent={
+            <Icon className={"mx-1"} icon={"solar:paperclip-linear"} />
+          }
+          size={"sm"}
+          variant={exptime > now ? "solid" : "dot"}
+          onClose={() => {
+            updateNote(currentPage.id, "", currentPage?.type, null);
+          }}
+        >
+          {currentPage.file.name}
+        </Chip>
+      )}
+    </div>
+  );
+}

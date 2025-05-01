@@ -3,7 +3,7 @@ account_id = "a0609a9b2f23cde30f9f3a87339196b8"
 compatibility_flags = []
 workers_dev = true
 main = "src/index.ts"
-compatibility_date = "2023-03-14"
+compatibility_date = "2025-04-01"
 
 [build]
 command = "pnpm run build"
@@ -14,3 +14,11 @@ SECRET_AUTH_KEY = "k_MsDsY12Tblcbe4sJYSHaB9N8-IZv0jdU_OX6s9wIhCqpPP_VyHiPRgTS97i
 [env.production]
 workers_dev = false
 route = { pattern = "https://api.hissab.io", custom_domain = true }
+
+[[durable_objects.bindings]]
+name = "USER_RATE_LIMITER"
+class_name = "UserRateLimiter"
+
+[[migrations]]
+tag = "v1" # Should be unique for each entry
+new_sqlite_classes = ["UserRateLimiter"] # Array of new classes

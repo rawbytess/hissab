@@ -10,10 +10,10 @@ import {
 import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
 import { ChatPageWrapper } from "@/components/sidebar/chat/ChatPage.tsx";
 
-export default function Editor() {
+export default function Editor({ className }: { className?: string }) {
   const { updateNote, currentPageNumber, setEditorOperations, currentPage } =
     useContext(PageContext);
-  const { isPaid } = useContext(SessionContext);
+  const { isPremium } = useContext(SessionContext);
   const heRef = useRef<HTMLDivElement>(null);
   const pg = currentPage as notePage;
 
@@ -27,7 +27,7 @@ export default function Editor() {
       retrievePage: null,
       isWritable: true,
       isDark: true,
-      isPro: isPaid,
+      isPro: !!isPremium,
     };
 
     const he: HissabEditorType = new HissabEditor(
@@ -51,10 +51,14 @@ export default function Editor() {
 
   if (!currentPageNumber) return null;
   if (currentPage?.type === "chat")
-    return <ChatPageWrapper page={currentPage} />;
+    return (
+      <div className={"mt-16"}>
+        <ChatPageWrapper page={currentPage} />
+      </div>
+    );
 
   return (
-    <div className={"flex flex-col gap-4 w-full h-full overflow-y-auto"}>
+    <div className={"flex flex-col gap-4 w-full overflow-y-auto my-10"}>
       <div
         id="editor-root"
         className={"w-full font-normal bg-[#1c1c1c] "}

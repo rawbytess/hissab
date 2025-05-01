@@ -1,29 +1,20 @@
 import { Hono } from "hono";
-import { Gemini, getPromptWithHistory } from "@lib/ai/gemini";
+import { Gemini } from "@lib/ai/gemini";
 import { Bindings, userVars } from "@lib/types/envTypes";
 import { cors } from "hono/cors";
 import { supabaseAppAuth } from "@middlewares/supabaseAppAuth";
-import { User } from "@supabase/supabase-js";
-import { userMetadata } from "~lib/types/userMetadata";
 import { getMaxCharacterLimit, isPremiumUser } from "~lib/getPremiumStatus";
-import { modelMap } from "@lib/utils";
 import { zValidator } from "@hono/zod-validator";
 
-import {
-  AIFormatResponseType,
-  AIRequest,
-  HissabExpType,
-  zAIRequest,
-  zHissabExp,
-  zNaturalAnswer,
-} from "~lib/types/AITypes";
+import { Models, ModelsMap, zAIRequest } from "~lib/types/AITypes";
 import { createSupabaseClient } from "@middlewares/createSupabaseClient";
-import { Variables } from "engine";
-import { z } from "zod";
 import { run } from "~lib/errors";
-import { sleep } from "~lib/utils";
-import { calculateExpressions } from "~lib/calculateExpressions";
 import { ContentfulStatusCode } from "hono/dist/types/utils/http-status";
+import { sleep } from "~lib/utils";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { ProductNames } from "~lib/types/userMetadata";
+import { UserRateLimiter } from "@lib/durableObjects/UserRateLimiter";
+import systemInstructions from "@lib/ai/instructions/system-instructions";
 
 const app = new Hono<{
   Bindings: Bindings;
@@ -33,70 +24,125 @@ app.use(cors());
 app.use(createSupabaseClient);
 app.use(supabaseAppAuth);
 
-app.post("/", zValidator("json", zAIRequest), async (c) => {
-  const { user } = c.var;
-  const body = c.req.valid("json");
-  const isPremium = isPremiumUser(user);
-  if (!isPremium) {
-    return c.body("Not a subscribed user", 403);
-  }
-  const modelName = body.inline
-    ? "gemini-2.0-flash-lite"
-    : modelMap[user.subscription.product_name as "AI Lite" | "AI Plus"];
+app.post(
+  "/",
+  zValidator("json", zAIRequest, (result, c) => {
+    if (!result.success) return c.text("Invalid request", 400);
+    return;
+  }),
+  async (c) => {
+    const { user, supabase } = c.var;
+    const body = c.req.valid("json");
+    const isPremium = isPremiumUser(user);
+    if (!isPremium) {
+      return c.body("Not a subscribed user", 403);
+    }
+    const modelName = body.model;
 
-  const geminiModel = new Gemini(c.env.GEMINI_API_KEY, modelName);
-  const maxPromptLength = getMaxCharacterLimit(user.subscription.product_name);
-  if (body.prompt.length > maxPromptLength) {
-    body.prompt = body.prompt.slice(0, maxPromptLength);
-  }
-  const prompt = getPromptWithHistory(body);
-  const AIResponse = await run(geminiModel.getExpressions(prompt));
-  if (AIResponse.failed) {
-    console.error({ message: AIResponse.error.message });
-    return c.body(
-      AIResponse.error.userMessage,
-      AIResponse.error.statusCode as ContentfulStatusCode,
+    const id = c.env.USER_RATE_LIMITER.idFromName(user.user_id);
+    const rateLimiter = c.env.USER_RATE_LIMITER.get(id);
+
+    const hasRateLimit = await rateLimiter.checkRateLimit(
+      isPremium,
+      ModelsMap[modelName].size,
     );
-  }
-  // TODO Log prompt with AIResponse expressions
+    console.log(hasRateLimit);
+    if (!hasRateLimit) {
+      return c.body(
+        `Today's rate limit exceeded for ${ModelsMap[modelName].size} models`,
+        429,
+      );
+    }
+    const sysInst = systemInstructions(body.explain, body.fallback);
 
-  const results = await run(
-    calculateExpressions(AIResponse.data.data.expressions, isPremium),
-  );
-  if (results.failed) {
-    return c.body("Something went wrong", 500);
-  }
-  if (results.data.some((x) => x.error)) {
-    console.warn({ expressions: results.data, prompt: body.prompt });
-    return c.json(
-      {
-        naturalAnswer: "Some of the expressions did not produce results",
-        expressions: results.data,
+    const geminiModel = new Gemini(c.env.GEMINI_API_KEY, modelName);
+    const maxPromptLength = getMaxCharacterLimit(
+      user.subscription.product_name,
+    );
+    const sliced_prompt =
+      body.prompt.length > maxPromptLength
+        ? body.prompt.slice(0, maxPromptLength)
+        : body.prompt;
+
+    const prompt = body.inline
+      ? `Note: This prompt is on line ${body.lineNumber}. All lines on the page are ${body.expressions
+          .map((x, i) => `${x.expression} :: Result: ${x.result}`)
+          .join("\n")}
+      If the prompt reference any previous lines or results please use the previous line numbers in the output expressions.
+
+      User Prompt: ${sliced_prompt}
+      `
+      : `Note: History of previous conversations: ${body.history}
+        User Prompt: ${sliced_prompt}
+    `;
+
+    const AIResponse = await run(
+      geminiModel.getExpressions(sysInst, prompt, body.file, isPremium),
+    );
+    /* const AIResponse = {
+      data: {
+        naturalAnswer: "",
+        expressions: [],
       },
-      206,
-    );
-  }
-  const aiNaturalResp = await run(
-    geminiModel.getNaturalAnswer(
-      JSON.stringify(
-        results.data.map(
-          (x, i) => `Line${i + 1}: ${x.expression} :: Result: ${x.result}`,
+      failed: false,
+      error: { message: "Error", userMessage: "Error", statusCode: 500 },
+    }; */
+
+    if (AIResponse.failed) {
+      c.executionCtx.waitUntil(
+        logData(
+          supabase,
+          {
+            prompt: body.prompt,
+            history: body.inline ? body.expressions : body.history,
+            line_number: body.inline ? body.lineNumber : null,
+            results: null,
+            final_answer: null,
+          },
+          null,
+          isPremium,
+          modelName,
         ),
+      );
+      console.error({ message: AIResponse.error.message });
+      return c.body(
+        AIResponse.error.userMessage,
+        AIResponse.error.statusCode as ContentfulStatusCode,
+      );
+    }
+    c.executionCtx.waitUntil(
+      logData(
+        supabase,
+        {
+          prompt: body.prompt,
+          history: body.inline ? body.expressions : body.history,
+          line_number: body.inline ? body.lineNumber : null,
+          results: AIResponse.data.expressions,
+          final_answer: AIResponse.data.naturalAnswer,
+        },
+        rateLimiter,
+        isPremium,
+        modelName,
       ),
-    ),
-  );
-  if (aiNaturalResp.failed) {
-    console.error({ message: aiNaturalResp.error.message });
-    return c.body(
-      aiNaturalResp.error.userMessage,
-      aiNaturalResp.error.statusCode as ContentfulStatusCode,
     );
+
+    return c.json(AIResponse.data, 200);
+  },
+);
+
+async function logData(
+  supabase: SupabaseClient,
+  log: {},
+  rateLimiter: DurableObjectStub<UserRateLimiter> | null,
+  isPremium: ProductNames,
+  modelName: Models,
+) {
+  if (rateLimiter)
+    await rateLimiter.incrementRateLimit(isPremium, ModelsMap[modelName].size);
+  const { error } = await supabase.from("prompts").insert(log);
+  if (error) {
+    console.error(log, error);
   }
-  const response: AIFormatResponseType = {
-    naturalAnswer: aiNaturalResp.data.naturalAnswer,
-    expressions: results.data,
-  };
-  return c.json(response);
-});
+}
 
 export default app;

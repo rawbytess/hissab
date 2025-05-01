@@ -1,6 +1,7 @@
 import { createMiddleware } from "hono/factory";
 import { Bindings, supabaseVars } from "@lib/types/envTypes";
 import { createClient } from "@supabase/supabase-js";
+import { undefined } from "zod";
 
 export const createSupabaseClient = createMiddleware<{
   Bindings: Bindings;

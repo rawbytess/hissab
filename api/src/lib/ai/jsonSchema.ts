@@ -28,3 +28,9 @@ export const naturalAnswerSchema: Schema = {
     },
   },
 };
+
+export const hissabExpFunction = {
+  name: "calculate_with_hissab",
+  description: "Hissab expressions corresponding to the user prompt",
+  parameters: hissabExpSchema,
+};

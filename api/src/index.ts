@@ -3,6 +3,7 @@ import ai from "./routes/ai/route";
 import classic from "./routes/classic/route";
 import userAI from "./routes/user/ai/route";
 import lemonsqueezy from "./routes/webhook/lemonsqueezy/route";
+import userUpload from "./routes/user/upload/route";
 import { Bindings } from "@lib/types/envTypes";
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -14,6 +15,7 @@ app.get("/", (c) => c.text("Hissab API"));
 app.route("/classic", classic);
 app.route("/user/ai", userAI);
 app.route("/webhook/lemonsqueezy", lemonsqueezy);
+app.route("/user/upload", userUpload);
 
 app.notFound((c) => c.json({ message: "Not Found", ok: false }, 404));
 
@@ -24,3 +26,4 @@ export default {
 };
 
 export { app };
+export { UserRateLimiter } from "@lib/durableObjects/UserRateLimiter";

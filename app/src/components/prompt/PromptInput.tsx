@@ -7,7 +7,7 @@ import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
 
 const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ({ classNames = {}, ...props }, ref) => {
-    const { isPaid } = useContext(SessionContext);
+    const { isPremium } = useContext(SessionContext);
     return (
       <Textarea
         ref={ref}
@@ -19,7 +19,9 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
           input: cn("py-0", classNames?.input),
         }}
         minRows={1}
-        placeholder={isPaid ? "Enter a prompt here" : "Upgrade now to use AI"}
+        placeholder={
+          isPremium ? "Enter your prompt here" : "Upgrade now to use AI"
+        }
         radius="lg"
         variant="bordered"
         {...props}

@@ -6,14 +6,6 @@ export function hexToUint8Array(hex: string) {
   return new Uint8Array(x.map((byte) => parseInt(byte, 16)));
 }
 
-export const modelMap: {
-  "AI Lite": string;
-  "AI Plus": string;
-} = {
-  "AI Lite": "gemini-2.0-flash-lite",
-  "AI Plus": "gemini-2.0-flash",
-};
-
 export function log(message: {}, type: "info" | "warn" | "error" = "error") {
   if (type === "error") {
     console.error(message);

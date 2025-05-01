@@ -7,26 +7,46 @@ import {
   ViewUpdate,
   WidgetType,
 } from "@codemirror/view";
+import { aicache } from "@/lib/cache.ts";
 
 class PromptWidget extends WidgetType {
   value: string;
-  constructor(value: string) {
+  view: EditorView;
+  pos: number;
+  constructor(value: string, view: EditorView, pos: number) {
     super();
     this.value = value;
+    this.view = view;
+    this.pos = pos;
   }
   toDOM(): HTMLElement {
     const span = document.createElement("span");
     span.textContent = this.value;
     span.className = "cm-ai-widget";
+    span.title = "Double click to refresh";
+    span.addEventListener("dblclick", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      window.getSelection()?.removeAllRanges();
+
+      // const current = this.view.state.selection.main.head;
+      const currentLn = this.view.state.doc.lineAt(this.pos);
+      const aiPrompt = currentLn.text.trim().substring(2).trim();
+
+      aicache.delete(aiPrompt);
+      this.view.dispatch({
+        selection: { anchor: currentLn.to + 1 },
+      });
+    });
     return span;
   }
 }
 
 const promptMatcher = new MatchDecorator({
   regexp: /ai\s(.*?)/gi,
-  decoration: (match) =>
+  decoration: (match, view, pos) =>
     Decoration.replace({
-      widget: new PromptWidget(match[0]),
+      widget: new PromptWidget(match[0], view, pos),
     }),
 });
 
@@ -52,10 +72,20 @@ export const prompt = ViewPlugin.fromClass(
             const decoLine = view.state.doc.lineAt(iter.from);
 
             if (current >= iter.to && current <= decoLine.to) {
-              view.dispatch({
-                userEvent: "input",
-                selection: { anchor: currentLine.to + 1 },
-              });
+              if (view.state.doc.length === currentLine.to) {
+                view.dispatch({
+                  changes: {
+                    from: view.state.doc.length,
+                    to: view.state.doc.length,
+                    insert: "\n",
+                  },
+                  selection: { anchor: currentLine.to + 1 },
+                });
+              } else {
+                view.dispatch({
+                  selection: { anchor: currentLine.to + 1 },
+                });
+              }
               e.stopPropagation();
               e.preventDefault();
               break;

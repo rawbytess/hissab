@@ -11,7 +11,7 @@ import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
 import { Icon } from "@iconify/react";
 
 export default function UserDropdown() {
-  const { session, logout, metadata, isPaid } = useContext(SessionContext);
+  const { session, logout, isPremium } = useContext(SessionContext);
 
   return (
     <div className="flex items-center gap-4 mt-10">
@@ -26,15 +26,13 @@ export default function UserDropdown() {
               fallback: session?.user.email,
             }}
             className="transition-transform "
-            description={
-              isPaid ? metadata?.subscription?.product_name : "Free Plan"
-            }
+            description={isPremium ?? "Free Plan"}
             name={session?.user?.email}
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" className={"text-gray-300"}>
           <DropdownSection showDivider>
-            {isPaid ? (
+            {isPremium ? (
               <DropdownItem key="manage_account" textValue={"Manage Account"}>
                 <a
                   href={"https://hissab.io/faqs"}

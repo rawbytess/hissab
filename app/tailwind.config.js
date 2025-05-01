@@ -56,6 +56,16 @@ export default {
           4: "hsl(var(--chart-4))",
           5: "hsl(var(--chart-5))",
         },
+        width: {
+          fill: "fill-available",
+          "webkit-fill": "-webkit-fill-available",
+          "moz-fill": "-moz-available",
+        },
+        height: {
+          fill: "fill-available",
+          "webkit-fill": "-webkit-fill-available",
+          "moz-fill": "-moz-available",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

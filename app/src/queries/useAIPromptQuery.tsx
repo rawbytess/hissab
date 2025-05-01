@@ -1,6 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AIFormatResponseType, AIRequest } from "../../../lib/types/AITypes.ts";
-import { useContext, useEffect } from "react";
 import { supabase } from "@/lib/supabase/client.ts";
 import { aicache } from "@/lib/cache.ts";
 import {
@@ -8,62 +6,8 @@ import {
   isPremiumUser,
 } from "../../../lib/getPremiumStatus.ts";
 import { userMetadata } from "../../../lib/types/userMetadata.ts";
-import { PageContext } from "@/components/sidebar/pages/PagesProvider.tsx";
 import { CustomError, fetchPost, run } from "../../../lib/errors.ts";
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-
-export function useAIPromptQuery(
-  req: AIRequest,
-  insertText: (text: string) => void,
-) {
-  const queryClient = useQueryClient();
-  const { currentPage, updateNote } = useContext(PageContext);
-
-  const AIResponse = useQuery<AIFormatResponseType, CustomError>({
-    queryKey: ["AIResponse", req.prompt],
-    enabled: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    retry: false,
-    queryFn: () => getAIResult(req),
-  });
-
-  useEffect(() => {
-    if (AIResponse.data) {
-      if (currentPage?.type === "chat") {
-        updateNote(currentPage.id, "", "chat", {
-          content: AIResponse.data.naturalAnswer,
-          expressions: AIResponse.data.expressions.map((x) => x.expression),
-          createdAt: Date.now(),
-          role: "hissab",
-          error: false,
-        });
-      }
-    } else if (AIResponse.error) {
-      if (currentPage?.type === "chat") {
-        updateNote(currentPage.id, "", "chat", {
-          content: AIResponse.error.userMessage,
-          expressions: [],
-          createdAt: Date.now(),
-          role: "hissab",
-          error: true,
-        });
-      }
-    }
-    queryClient.removeQueries({ queryKey: ["AIResponse", prompt] });
-    return;
-  }, [
-    AIResponse.data,
-    AIResponse.error,
-    currentPage?.type,
-    insertText,
-    queryClient,
-  ]);
-
-  return AIResponse;
-}
+import { BACKEND_URL } from "@/lib/utils.ts";
 
 export async function getAIResult(req: AIRequest) {
   const { data, error } = await supabase.auth.getSession();
@@ -121,10 +65,11 @@ export async function getAIResult(req: AIRequest) {
     );
   }
   const AIResponse = responseResult.data as AIFormatResponseType;
-  aicache.set(req.prompt, {
-    naturalAnswer: AIResponse.naturalAnswer,
-    expressions: AIResponse.expressions,
-    error: null,
-  });
+  if (req.inline)
+    aicache.set(req.prompt, {
+      naturalAnswer: AIResponse.naturalAnswer,
+      expressions: AIResponse.expressions,
+      error: null,
+    });
   return AIResponse;
 }

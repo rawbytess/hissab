@@ -1,19 +1,24 @@
-import { doLex, doParse, ReportError, Variables } from "engine";
+import { doLex, doParse, Variables } from "engine";
 import { Range, StateEffectType } from "@codemirror/state";
 import { getAIResult } from "@/queries/useAIPromptQuery.tsx";
 import {
   calculatePrev,
   calculateTotal,
 } from "../../../../lib/calculateExpressions.ts";
-import { AIRequest } from "../../../../lib/types/AITypes.ts";
+import {
+  AIRequest,
+  inLineDefaultModel,
+} from "../../../../lib/types/AITypes.ts";
 import { Decoration, DecorationSet, EditorView } from "@codemirror/view";
 import { ResultWidget } from "@/lib/editor/resultWidget.ts";
+import { aicache } from "@/lib/cache.ts";
+import { CustomError } from "../../../../lib/errors.ts";
 
 export interface Results {
   result: string;
   error: boolean;
   loading: boolean;
-  errorMessage: ReportError | null;
+  errorMessage: CustomError | null;
   stale: boolean;
   lineNumber: number;
   ai?: {
@@ -43,7 +48,7 @@ export async function getResult(
         if (index === currentLine - 1) {
           results.push({
             result: oldResults[index]?.result || "",
-            stale: true,
+            stale: !aicache.has(aiPrompt),
             loading: false,
             lineNumber: index,
             error: oldResults[index]?.error || false,
@@ -55,11 +60,34 @@ export async function getResult(
           inline: true,
           lineNumber: currentLine,
           prompt: aiPrompt,
+          fallback: true,
+          explain: false,
+          model: inLineDefaultModel,
           expressions: lines.map((x, i) => ({
             expression: `Line${i + 1}: ${x}`,
-            result: oldResults[i]?.result || "",
+            result:
+              oldResults[i] && oldResults[i].error
+                ? ""
+                : oldResults[i]?.result || "",
           })),
         };
+        const aires = aicache.get(aiPrompt);
+        if (aires) {
+          results.push({
+            result: aires.naturalAnswer,
+            stale: false,
+            loading: false,
+            lineNumber: index,
+            error: !!aires.error,
+            errorMessage: aires.error
+              ? new CustomError("Unknown", aires.error, aires.error)
+              : null,
+            ai: {
+              expressions: aires.expressions.map((x) => x.expression),
+            },
+          });
+          continue;
+        }
         getAIResult(req)
           .then((res) => {
             oldResults[index] = results[index];
@@ -77,13 +105,12 @@ export async function getResult(
           })
           .catch((e) => {
             results[index] = {
-              result:
-                oldResults[index]?.result || e.errorMessage?.message || "",
+              result: oldResults[index]?.result || e.userMessage || "",
               stale: false,
               loading: false,
               lineNumber: index,
               error: true,
-              errorMessage: e.userMessage,
+              errorMessage: e,
             };
           })
           .finally(() => {
@@ -117,13 +144,13 @@ export async function getResult(
       if (meta.variableName) variables[meta.variableName] = resultToken;
       variables[`line${index + 1}`] = resultToken;
       variables[`l${index + 1}`] = resultToken;
-    } catch (e: any) {
+    } catch (e) {
       if (oldResults && ln.length)
         results.push({
           result: oldResults[index]?.result ?? "",
           error: true,
           loading: false,
-          errorMessage: e,
+          errorMessage: e as CustomError,
           stale: true,
           lineNumber: index,
         });
@@ -134,14 +161,14 @@ export async function getResult(
           loading: false,
           lineNumber: index,
           error: true,
-          errorMessage: e,
+          errorMessage: e as CustomError,
         });
     }
   }
   return results;
 }
 
-export function refreshResults(
+export async function refreshResults(
   results: Results[],
   oldResults: Results[],
   view: EditorView,
@@ -149,7 +176,7 @@ export function refreshResults(
   isPro: boolean,
 ) {
   const resultWidgets: Range<Decoration>[] = [];
-  console.log("refreshResults", results);
+
   results.forEach((res: Results, index: number) => {
     const deco = Decoration.widget({
       widget: new ResultWidget(res, isPro, view),

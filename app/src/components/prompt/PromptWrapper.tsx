@@ -1,5 +1,5 @@
-import React, { useContext, useMemo } from "react";
-import { Button, Tooltip } from "@heroui/react";
+import React, { useContext } from "react";
+import { addToast, Button, Tooltip } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { cn } from "@heroui/react";
 
@@ -8,35 +8,47 @@ import {
   ChatPage,
   PageContext,
 } from "@/components/sidebar/pages/PagesProvider.tsx";
-import { useAIPromptQuery } from "@/queries/useAIPromptQuery.tsx";
+import { getAIResult } from "@/queries/useAIPromptQuery.tsx";
 import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
 import { AIRequestChat } from "../../../../lib/types/AITypes.ts";
-import { getMaxCharacterLimit } from "../../../../lib/getPremiumStatus.ts";
+import { PromptButtons } from "@/components/prompt/PromptButtons.tsx";
+import { run } from "../../../../lib/errors.ts";
+import { sleep } from "../../../../lib/utils.ts";
 
 export function PromptWrapper() {
   const [prompt, setPrompt] = React.useState<string>("");
-  const { editorOperations, updateNote, currentPageNumber, currentPage } =
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  const { updateNote, currentPageNumber, currentPage } =
     useContext(PageContext);
-  const { metadata, isPaid } = useContext(SessionContext);
+  const { isPremium } = useContext(SessionContext);
 
   const currPage = currentPage as ChatPage;
 
   const req: AIRequestChat = {
     inline: false,
+    explain: currPage.explain,
+    fallback: currPage.fallback,
     prompt: prompt,
-    history: currPage.chats.messages.map((message) => ({
-      role: message.role === "user" ? "user" : "assistant",
-      content: message.content,
-    })),
+    model: currPage.model,
+    file: currPage.file
+      ? {
+          url: currPage.file?.geminiFile?.uri ?? "",
+          name: currPage.file?.name ?? "",
+          mimeType: currPage.file?.mimeType ?? "",
+        }
+      : undefined,
+    history: currPage.chats.messages
+      .filter((message) => message.role === "user" || message.role === "hissab")
+      .map((message) => ({
+        role: message.role === "user" ? "user" : "assistant",
+        content: message.content,
+      })),
   };
-  const AIResponse = useAIPromptQuery(req, editorOperations.insertText);
-  const maxPromptLength = useMemo(
-    () => getMaxCharacterLimit(metadata?.subscription.product_name ?? ""),
-    [metadata],
-  );
+
   if (!currentPageNumber) return null;
 
-  async function formSubmit(
+  function formSubmit(
     e:
       | React.FormEvent<HTMLFormElement>
       | React.KeyboardEvent<HTMLInputElement>
@@ -44,18 +56,43 @@ export function PromptWrapper() {
   ) {
     e.preventDefault();
     if (prompt.length === 0) return;
-    updateNote(currentPageNumber, "", "chat", {
+    updateNote(currPage.id, "", "chat", undefined, {
       content: prompt,
       createdAt: Date.now(),
       role: "user",
     });
-    await AIResponse.refetch();
-    setPrompt("");
+    setLoading(true);
+    getAIResult(req)
+      .then((data) => {
+        if (!data) return;
+        updateNote(currPage.id, "", "chat", undefined, {
+          content: data.naturalAnswer,
+          expressions: data.expressions.map((x) => x.expression),
+          createdAt: Date.now(),
+          role: "hissab",
+          error: false,
+        });
+      })
+      .catch((err) => {
+        addToast({
+          title: "Error",
+          description: `${err.userMessage}`,
+          timeout: 5000,
+          shouldShowTimeoutProgress: true,
+          variant: "flat",
+          color: "danger",
+          icon: <Icon icon="bxs:error" width="20" height="20" />,
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+        setPrompt("");
+      });
   }
 
   return (
-    <div className="flex flex-col gap-8 items-center justify-end mx-5 mb-10 bottom-0">
-      <div className="flex flex-col gap-2 rounded-2xl max-w-[50em] w-full relative">
+    <div className="flex flex-col gap-8 items-center justify-end pb-10 fixed bottom-10 z-50 max-w-[50em] px-4 w-fill bg-[#1c1c1c]">
+      <div className="flex flex-col gap-2 rounded-2xl w-full">
         {prompt.length > 0 && (
           <Tooltip
             showArrow
@@ -67,7 +104,7 @@ export function PromptWrapper() {
             <Icon
               className={cn(
                 "[&>path]:stroke-[2px]",
-                "absolute -top-3 -left-3 ring-2 ring-stone-800 rounded-full bg-stone-900 text-stone-400 cursor-pointer",
+                "absolute -top-3 left-1 ring-2 ring-stone-800 rounded-full bg-stone-900 text-stone-400 cursor-pointer",
               )}
               onClick={() => setPrompt("")}
               icon="mdi:clear-circle"
@@ -79,11 +116,10 @@ export function PromptWrapper() {
           <form
             className={cn(
               "flex flex-col items-start rounded-medium text-white  transition-colors  bg-[#1c1c1c]  ring-2",
-              AIResponse.error ? "ring-red-500 " : "ring-purple-700",
-              isPaid ? "ring-purple-700" : "ring-gray-600",
+              isPremium ? "ring-purple-700" : "ring-gray-600",
             )}
-            onSubmit={async (e) => {
-              await formSubmit(e);
+            onSubmit={(e) => {
+              formSubmit(e);
             }}
           >
             <PromptInput
@@ -93,12 +129,12 @@ export function PromptWrapper() {
                 input:
                   "pt-1 pl-2 pb-6 !pr-10 text-medium disabled:cursor-not-allowed disabled:opacity-50",
               }}
-              disabled={!isPaid || AIResponse.isLoading}
+              disabled={!isPremium || loading}
               minRows={3}
               maxRows={10}
               endContent={
                 <div className="flex flex-col items-end gap-2">
-                  {AIResponse.isLoading ? (
+                  {loading ? (
                     <div className={"mt-1"}>
                       {/** eslint-disable-next-line @typescript-eslint/ban-ts-comment
                    @ts-expect-error **/}
@@ -137,7 +173,7 @@ export function PromptWrapper() {
                 </div>
               }
               radius="lg"
-              onKeyUp={async (e) => {
+              onKeyDown={async (e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   await formSubmit(e);
                 }
@@ -146,27 +182,8 @@ export function PromptWrapper() {
               variant="flat"
               onValueChange={setPrompt}
             />
+            <PromptButtons prompt={prompt} />
           </form>
-        </div>
-        <div className={"flex flex-row justify-between items-center mx-2"}>
-          {maxPromptLength && (
-            <p
-              className={cn(
-                "text-tiny",
-                prompt.length > maxPromptLength
-                  ? "text-red-400"
-                  : "text-default-400",
-              )}
-            >
-              {prompt.length}/{maxPromptLength}
-              {prompt.length > maxPromptLength && (
-                <span className="ml-2">
-                  Exceeded max length of {maxPromptLength} characters. Excess
-                  characters will be ignored
-                </span>
-              )}
-            </p>
-          )}
         </div>
       </div>
     </div>

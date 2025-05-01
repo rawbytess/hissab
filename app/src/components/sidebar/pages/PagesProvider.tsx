@@ -1,6 +1,12 @@
-import { useLocalStorage } from "@uidotdev/usehooks";
 import React, { PropsWithChildren, useState } from "react";
-import { Options, parseAsInteger, parseAsString, useQueryState } from "nuqs";
+import { parseAsString, useQueryState } from "nuqs";
+import { FileUpload } from "../../../../../lib/types/fileTypes.ts";
+import { useLocalStorage } from "@/hooks/useLocalStorage.tsx";
+import {
+  chatDefaultModel,
+  inLineDefaultModel,
+  Models,
+} from "../../../../../lib/types/AITypes.ts";
 
 export type userMessage = {
   role: "user";
@@ -23,12 +29,18 @@ export type notePage = {
   title: string;
   type: "page" | undefined;
   content: string;
+  model: Models;
+  file?: FileUpload | null;
 };
 
 export type ChatPage = {
   id: string;
   title: string;
   type: "chat";
+  file?: FileUpload | null;
+  model: Models;
+  explain: boolean;
+  fallback: boolean;
   chats: {
     messages: Messages[];
   };
@@ -46,16 +58,22 @@ export type EditorOperations = {
 
 export type pageContextType = {
   notes: Page[];
+  setNotes: React.Dispatch<React.SetStateAction<Page[]>>;
   currentPage: Page | undefined;
   createNote: (title: string, content: string, type?: "page" | "chat") => Page;
   updateNote: (
     id: string,
     updatedContent: string,
     type?: "page" | "chat",
+    file?: FileUpload | null,
     chat?: Messages,
   ) => void;
   renameNote: (id: string, newTitle: string) => void;
   deleteNote: (id: string) => void;
+  deleteChatMessage: (id: string, index: number) => void;
+  updateModel: (id: string, model: Models) => void;
+  toggleExplain: (id: string) => void;
+  toggleFallback: (id: string) => void;
   currentPageNumber: string;
   setCurrentPageNumber: React.Dispatch<React.SetStateAction<string>>;
   editorOperations: EditorOperations;
@@ -66,7 +84,7 @@ export const PageContext = React.createContext<pageContextType>(undefined!);
 
 const PagesProvider = ({ children }: PropsWithChildren) => {
   const [notes, setNotes] = useLocalStorage<Page[]>("hissab-pages", []);
-  // const [currentPage, setCurrentPage] = useState<Page>();
+
   const [currentPageNumber, setCurrentPageNumber] = useQueryState(
     "page",
     parseAsString.withDefault(""),
@@ -79,7 +97,7 @@ const PagesProvider = ({ children }: PropsWithChildren) => {
     undo: () => {},
     redo: () => {},
     clear: () => {},
-    insertText: (text) => {},
+    insertText: () => {},
     getPositionofLastLine: () => 0,
   });
 
@@ -95,6 +113,9 @@ const PagesProvider = ({ children }: PropsWithChildren) => {
         id: crypto.randomUUID(),
         title,
         type,
+        model: chatDefaultModel,
+        explain: false,
+        fallback: true,
         chats: {
           messages: [],
         },
@@ -104,6 +125,7 @@ const PagesProvider = ({ children }: PropsWithChildren) => {
         id: crypto.randomUUID(),
         title,
         type,
+        model: inLineDefaultModel,
         content: content,
       };
     }
@@ -111,37 +133,98 @@ const PagesProvider = ({ children }: PropsWithChildren) => {
     return newNote;
   };
 
-  // Update a note's content
   const updateNote = (
     id: string,
     updatedContent: string,
     type: "chat" | "page" = "page",
+    file?: FileUpload | null,
     chat?: Messages,
   ) => {
     if (type === "chat" && chat) {
-      const newNote = notes.map((note) =>
-        note.id === id && note.type === "chat"
-          ? {
-              ...note,
-              chats: {
-                messages: [...(note.chats.messages ?? []), chat],
-              },
-            }
-          : note,
+      setNotes((notes) =>
+        notes.map((note) =>
+          note.id === id && note.type === "chat"
+            ? {
+                ...note,
+                file: file === undefined ? note.file : file,
+                chats: {
+                  messages: [...note.chats.messages, chat],
+                },
+              }
+            : note,
+        ),
       );
-      setNotes(newNote);
       setCurrentPageNumber(id);
       return;
     }
 
-    setNotes(
+    setNotes((notes) =>
       notes.map((note) =>
-        note.id === id ? { ...note, content: updatedContent } : note,
+        note.id === id
+          ? {
+              ...note,
+              content: updatedContent,
+              file: file === undefined ? note.file : file,
+            }
+          : note,
       ),
     );
   };
 
-  // Rename a note
+  const deleteChatMessage = (id: string, index: number) => {
+    setNotes((notes) =>
+      notes.map((note) =>
+        note.id === id && note.type === "chat"
+          ? {
+              ...note,
+              chats: {
+                messages: note.chats.messages.filter((_, i) => i !== index),
+              },
+            }
+          : note,
+      ),
+    );
+  };
+
+  const updateModel = (id: string, model: Models) => {
+    setNotes((notes) =>
+      notes.map((note) =>
+        note.id === id
+          ? {
+              ...note,
+              model: model,
+            }
+          : note,
+      ),
+    );
+  };
+
+  const toggleExplain = (id: string) => {
+    setNotes((notes) =>
+      notes.map((note) =>
+        note.id === id && note.type === "chat"
+          ? {
+              ...note,
+              explain: !note.explain,
+            }
+          : note,
+      ),
+    );
+  };
+
+  const toggleFallback = (id: string) => {
+    setNotes((notes) =>
+      notes.map((note) =>
+        note.id === id && note.type === "chat"
+          ? {
+              ...note,
+              fallback: !note.fallback,
+            }
+          : note,
+      ),
+    );
+  };
+
   const renameNote = (id: string, newTitle: string) => {
     setNotes(
       notes.map((note) =>
@@ -150,7 +233,6 @@ const PagesProvider = ({ children }: PropsWithChildren) => {
     );
   };
 
-  // Delete a note
   const deleteNote = (id: string) => {
     setNotes(notes.filter((note) => note.id !== id));
     setCurrentPageNumber(notes[0].id);
@@ -160,11 +242,16 @@ const PagesProvider = ({ children }: PropsWithChildren) => {
     <PageContext.Provider
       value={{
         notes,
+        setNotes,
         currentPage,
         createNote,
         updateNote,
         renameNote,
         deleteNote,
+        deleteChatMessage,
+        toggleExplain,
+        toggleFallback,
+        updateModel,
         currentPageNumber,
         setCurrentPageNumber,
         editorOperations,

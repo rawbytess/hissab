@@ -57,6 +57,18 @@ body {
     scrollbar-width: none;  /* Firefox */
   }
 }
+@layer utilities {
+  .w-fill {
+    width: -webkit-fill-available;
+    width: -moz-available;
+    width: stretch;
+  }
+  .h-fill {
+    height: -webkit-fill-available;
+    height: -moz-available;
+    height: stretch;
+  }
+}
 .cm-ai-widget {
     @apply bg-purple-700 text-[#efefef] rounded-l pl-1 py-1 uppercase cursor-pointer;
     font-family: "Inter", sans-serif;
