@@ -6,7 +6,7 @@ import {
 } from "@google/genai";
 import documentation from "@lib/ai/instructions/documentation";
 import { hissabExpFunction } from "./jsonSchema";
-import { AIFormatResponseType, inLineDefaultModel } from "~lib/types/AITypes";
+import { AIFormatResponseType, inLineDefaultModel, Models, ModelsMap } from "~lib/types/AITypes";
 import { CustomError, run } from "~lib/errors";
 import { FileUpload } from "~lib/types/fileTypes";
 import { calculateExpressions } from "~lib/calculateExpressions";
@@ -30,9 +30,9 @@ async function blobToBase64(blob: any) {
 }
 export class Gemini {
   private ai: GoogleGenAI;
-  private hissabModel: string;
+  private hissabModel: Models;
 
-  constructor(apiKey: string, model: string) {
+  constructor(apiKey: string, model: Models) {
     this.ai = new GoogleGenAI({ apiKey });
     this.hissabModel = model;
   }
@@ -49,12 +49,14 @@ export class Gemini {
     if (files && isPremium && isPremium === "AI Plus") {
       contents.push(createPartFromUri(files.url, files.mimeType));
     }
+    const thinkingConfig = ModelsMap[this.hissabModel].canThink ? {thinkingBudget: 0} : undefined;
 
     const respResult = await run(
       this.ai.models.generateContent({
         model: this.hissabModel,
         contents: createUserContent(contents),
         config: {
+          thinkingConfig: thinkingConfig,
           tools: [{ functionDeclarations: [hissabExpFunction] }],
           systemInstruction: systemInstructions + documentation,
         },

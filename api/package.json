@@ -25,7 +25,9 @@
     "supabase:db:reset": "supabase db reset",
     "supabase:login": "supabase login",
     "supabase:link": "supabase link",
-    "supabase:db:prod:push": "supabase db push"
+    "supabase:db:prod:push": "supabase db push",
+    "d1:migrate:apply:dev": "wrangler d1 migrations apply dev-logs --local",
+    "d1:migrate:apply:prod": "wrangler d1 migrations apply prod-logs --remote"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250224.0",

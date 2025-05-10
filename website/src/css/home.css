@@ -7,13 +7,16 @@ section h2 {
   font-weight: normal;
 }
 
-.hero-text-size {
-  font-size: clamp(3em, 7vw, 7em);
+.hero-text-size-sm {
+  font-size: clamp(3em, 3vw, 7em);
   line-height: 1.2;
 }
-
+.hero-text-size-lg {
+  font-size: clamp(3em, 5vw, 7em);
+  line-height: 1.2;
+}
 .sub-hero-text {
-  font-size: clamp(1em, 1.5vw, 2.5em);
+  font-size: clamp(1em, 1.3vw, 2.5em);
   line-height: 1.5;
 }
 

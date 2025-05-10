@@ -3,8 +3,9 @@ import "../css/index.css";
 import "../css/home.css";
 import "../css/custom.css";
 import "../css/tailwind.css";
-import Header from "../components/Header.tsx";
+import Header from "../components/Head.tsx";
 import Footer from "../components/Footer.tsx";
+import {HeroUIProvider } from "@heroui/react";
 ---
 <!doctype html>
 <html lang="en">
@@ -21,9 +22,11 @@ import Footer from "../components/Footer.tsx";
 		<script defer src="https://analytics.rawbytes.com/script.js" data-website-id="19ee36c5-98a3-48d8-bf85-8ebfb5f6c17d"></script>
 	</head>
 	<body>
-	<Header />
+  <HeroUIProvider client:load>
+	<Header client:load />
 		<slot />
 	<Footer />
+  </HeroUIProvider>
 	</body>
 </html>
 

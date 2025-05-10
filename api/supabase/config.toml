@@ -146,6 +146,10 @@ pass = "BEAAVP6MDhH/sfqO4o/wLdxKH7Z796O/axUE6GPcc9aW"
 admin_email = "no-reply@hissab.io"
 sender_name = "Hissab"
 
+[auth.email.template.magic_link]
+subject = "Your Hissab OTP"
+content_path = "./supabase/email/otp.html"
+
 # Uncomment to customize email template
 # [auth.email.template.invite]
 # subject = "You have been invited"

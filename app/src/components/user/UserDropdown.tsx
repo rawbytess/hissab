@@ -11,7 +11,7 @@ import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
 import { Icon } from "@iconify/react";
 
 export default function UserDropdown() {
-  const { session, logout, isPremium } = useContext(SessionContext);
+  const { session, logout, isPremium, metadata } = useContext(SessionContext);
 
   return (
     <div className="flex items-center gap-4 mt-10">
@@ -23,19 +23,19 @@ export default function UserDropdown() {
               className: "bg-purple-700 border-2 border-purple-500",
               isBordered: true,
               src: `https://robohash.org/${session?.user.email}.png`,
-              fallback: session?.user.email,
+              fallback: metadata?.user_name || session?.user.email,
             }}
             className="transition-transform "
             description={isPremium ?? "Free Plan"}
-            name={session?.user?.email}
+            name={metadata?.user_name || session?.user?.email}
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" className={"text-gray-300"}>
-          <DropdownSection showDivider>
+          <DropdownSection showDivider={!!isPremium}>
             {isPremium ? (
               <DropdownItem key="manage_account" textValue={"Manage Account"}>
                 <a
-                  href={"https://hissab.io/faqs"}
+                  href={"https://hissab.lemonsqueezy.com/billing"}
                   target={"_blank"}
                   className="flex items-center justify-start gap-2"
                 >
@@ -53,42 +53,7 @@ export default function UserDropdown() {
                   />
                 </a>
               </DropdownItem>
-            ) : (
-              <>
-                <DropdownItem key="learn_hissab_ai" textValue={"Learn More"}>
-                  <a
-                    href={"https://hissab.io/faqs"}
-                    target={"_blank"}
-                    className="flex items-center justify-start gap-2"
-                  >
-                    <Icon icon="mdi:learn-outline" width="16" height="16" />
-                    <p className="text-xs">Learn More about Hissab AI</p>
-                    <Icon
-                      icon="lets-icons:external"
-                      className={"ml-auto"}
-                      width="16"
-                      height="16"
-                    />
-                  </a>
-                </DropdownItem>
-                <DropdownItem key="but_hissab_ai" textValue={"Buy Hissab AI"}>
-                  <a
-                    href={"https://hissab.io/faqs"}
-                    target={"_blank"}
-                    className="flex items-center justify-start gap-2"
-                  >
-                    <Icon icon="icon-park-outline:buy" width="16" height="16" />
-                    <p>Buy Hissab AI</p>
-                    <Icon
-                      icon="lets-icons:external"
-                      className={"ml-auto"}
-                      width="16"
-                      height="16"
-                    />
-                  </a>
-                </DropdownItem>
-              </>
-            )}
+            ) : null}
           </DropdownSection>
           <DropdownSection>
             <DropdownItem

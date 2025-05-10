@@ -20,7 +20,7 @@ const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         }}
         minRows={1}
         placeholder={
-          isPremium ? "Enter your prompt here" : "Upgrade now to use AI"
+          isPremium ? "Enter your prompt here" : "Subscribe to use AI features"
         }
         radius="lg"
         variant="bordered"

@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { Gemini } from "@lib/ai/gemini";
-import { Bindings, userVars } from "@lib/types/envTypes";
+import { Bindings, LogData, MetaBindings, userVars } from "@lib/types/envTypes";
 import { cors } from "hono/cors";
 import { supabaseAppAuth } from "@middlewares/supabaseAppAuth";
 import { getMaxCharacterLimit, isPremiumUser } from "~lib/getPremiumStatus";
@@ -16,10 +16,7 @@ import { ProductNames } from "~lib/types/userMetadata";
 import { UserRateLimiter } from "@lib/durableObjects/UserRateLimiter";
 import systemInstructions from "@lib/ai/instructions/system-instructions";
 
-const app = new Hono<{
-  Bindings: Bindings;
-  Variables: userVars;
-}>();
+const app = new Hono<MetaBindings>();
 app.use(cors());
 app.use(createSupabaseClient);
 app.use(supabaseAppAuth);
@@ -45,8 +42,9 @@ app.post(
     const hasRateLimit = await rateLimiter.checkRateLimit(
       isPremium,
       ModelsMap[modelName].size,
+      user.timezone,
+      user.user_id,
     );
-    console.log(hasRateLimit);
     if (!hasRateLimit) {
       return c.body(
         `Today's rate limit exceeded for ${ModelsMap[modelName].size} models`,
@@ -79,19 +77,21 @@ app.post(
     const AIResponse = await run(
       geminiModel.getExpressions(sysInst, prompt, body.file, isPremium),
     );
-    /* const AIResponse = {
+    /*const AIResponse = {
       data: {
-        naturalAnswer: "",
+        naturalAnswer: "My answer is this",
         expressions: [],
       },
       failed: false,
       error: { message: "Error", userMessage: "Error", statusCode: 500 },
-    }; */
+    };*/
+    const db =
+      c.env.IS_PROD === "true" ? c.env.PROD_LOGS_DB : c.env.DEV_LOGS_DB;
 
     if (AIResponse.failed) {
       c.executionCtx.waitUntil(
         logData(
-          supabase,
+          db,
           {
             prompt: body.prompt,
             history: body.inline ? body.expressions : body.history,
@@ -102,6 +102,7 @@ app.post(
           null,
           isPremium,
           modelName,
+          user.timezone,
         ),
       );
       console.error({ message: AIResponse.error.message });
@@ -112,17 +113,21 @@ app.post(
     }
     c.executionCtx.waitUntil(
       logData(
-        supabase,
+        db,
         {
           prompt: body.prompt,
           history: body.inline ? body.expressions : body.history,
           line_number: body.inline ? body.lineNumber : null,
-          results: AIResponse.data.expressions,
+          results:
+            AIResponse.data.expressions.length > 0
+              ? AIResponse.data.expressions
+              : null,
           final_answer: AIResponse.data.naturalAnswer,
         },
         rateLimiter,
         isPremium,
         modelName,
+        user.timezone,
       ),
     );
 
@@ -131,18 +136,33 @@ app.post(
 );
 
 async function logData(
-  supabase: SupabaseClient,
-  log: {},
+  db: D1Database,
+  log: LogData,
   rateLimiter: DurableObjectStub<UserRateLimiter> | null,
   isPremium: ProductNames,
   modelName: Models,
+  timezone: string,
 ) {
   if (rateLimiter)
-    await rateLimiter.incrementRateLimit(isPremium, ModelsMap[modelName].size);
-  const { error } = await supabase.from("prompts").insert(log);
-  if (error) {
-    console.error(log, error);
-  }
+    await rateLimiter.incrementRateLimit(
+      isPremium,
+      ModelsMap[modelName].size,
+      timezone,
+    );
+  await db
+    .prepare(
+      `INSERT INTO interactions (model, prompt, history, line_number, results, final_answer)
+    VALUES (?, ?, ?, ?, ?, ?)`,
+    )
+    .bind(
+      modelName,
+      log.prompt,
+      log.history ? JSON.stringify(log.history) : null,
+      log.line_number,
+      log.results ? JSON.stringify(log.results) : null,
+      log.final_answer,
+    )
+    .run();
 }
 
 export default app;

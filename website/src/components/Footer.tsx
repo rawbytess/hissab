@@ -2,7 +2,7 @@ import { ExternalLink } from "lucide-react";
 
 export default function Footer() {
   return (
-    <div className="inset-x-0 bottom-0 bg-black w-full">
+    <div className="bg-black w-full">
       <footer className={"text-white max-w-[60em] mx-auto py-6"}>
         <div className="container flex flex-col md:flex-row justify-around items-center">
           <div className="mb-4 md:mb-0 flex flex-col items-center gap-2">

@@ -12,14 +12,14 @@ export async function uploadFile(file: FileUpload) {
     throw new CustomError(
       "NotLoggedIn",
       error?.message ?? "No session found",
-      "Please log in to use AI features",
+      "Subscribe to use AI features",
     );
   const user = isPremiumUser(data.session.user.user_metadata as userMetadata);
   if (!user && user !== "AI Plus")
     throw new CustomError(
       "NotSubscribed",
       "User not subscribed to AI Plus",
-      "Please Subscribe to AI Plus to use this feature",
+      "Subscribe to use AI features",
     );
 
   const responseResult = await run(

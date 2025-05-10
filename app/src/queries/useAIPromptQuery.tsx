@@ -15,14 +15,14 @@ export async function getAIResult(req: AIRequest) {
     throw new CustomError(
       "NotLoggedIn",
       error?.message ?? "No session found",
-      "Please log in to use AI features",
+      "Subscribe to use AI features",
     );
 
   if (!isPremiumUser(data.session.user.user_metadata as userMetadata))
     throw new CustomError(
       "NotSubscribed",
       "User not subscribed",
-      "Please Subscribe to use AI features",
+      "Subscribe to use AI features",
     );
 
   if (req.prompt.length === 0)
@@ -53,11 +53,12 @@ export async function getAIResult(req: AIRequest) {
     }),
   );
   if (responseResult.failed) {
-    aicache.set(req.prompt, {
-      naturalAnswer: "",
-      expressions: [],
-      error: responseResult.error.userMessage,
-    });
+    if (req.inline)
+      aicache.set(req.prompt, {
+        naturalAnswer: "",
+        expressions: [],
+        error: responseResult.error.userMessage,
+      });
     throw new CustomError(
       "FetchResponse",
       responseResult.error.message,

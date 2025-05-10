@@ -43,10 +43,12 @@ export function PromptButtons({ prompt }: { prompt: string }) {
         <UploadModal />
         <Button
           size="sm"
-          disabled={isPremium !== "AI Plus"}
+          isDisabled={isPremium !== "AI Plus"}
           startContent={
             <Icon
-              className={currPage?.explain ? "text-purple-300" : "text-white"}
+              className={cn(
+                currPage?.explain ? "text-purple-300" : "text-white",
+              )}
               icon="fluent:apps-list-detail-20-filled"
               width={16}
             />
@@ -54,43 +56,13 @@ export function PromptButtons({ prompt }: { prompt: string }) {
           onPress={() => {
             toggleExplain(currentPage?.id ?? "");
           }}
-          className={currPage?.explain ? "bg-purple-700" : ""}
-          variant="solid"
+          className={cn(currPage?.explain ? "bg-purple-700" : "")}
+          variant={"solid"}
         >
           Explain
         </Button>
-        <Tooltip
-          content={
-            <div>
-              Hybrid Mode on: Use Hissab + LLMs to compute expressions. When
-              Hybrid mode is off, only Hissab is used for calculations.
-            </div>
-          }
-          className={"text-gray-300 bg-stone-800"}
-        >
-          <Button
-            size="sm"
-            disabled={isPremium !== "AI Plus"}
-            startContent={
-              <Icon
-                className={
-                  currPage?.fallback ? "text-purple-300" : "text-white"
-                }
-                icon="fluent:apps-list-detail-20-filled"
-                width={16}
-              />
-            }
-            onPress={() => {
-              toggleFallback(currentPage?.id ?? "");
-            }}
-            className={currPage?.fallback ? "bg-purple-700" : ""}
-            variant="solid"
-          >
-            Hybrid Mode
-          </Button>
-        </Tooltip>
       </div>
-      {maxPromptLength && (
+      {maxPromptLength ? (
         <p
           className={cn(
             "text-tiny",
@@ -107,16 +79,12 @@ export function PromptButtons({ prompt }: { prompt: string }) {
             </span>
           )}
         </p>
-      )}
+      ) : null}
     </div>
   );
 }
 
-export default function ModelListDropdown({
-  isPremium,
-}: {
-  isPremium?: string | null;
-}) {
+function ModelListDropdown({ isPremium }: { isPremium?: string | null }) {
   const { currentPage, updateModel, currentPageNumber } =
     useContext(PageContext);
 
@@ -132,7 +100,7 @@ export default function ModelListDropdown({
       <DropdownTrigger>
         <Button
           size="sm"
-          disabled={isPremium !== "AI Plus"}
+          isDisabled={isPremium !== "AI Plus" && isPremium !== "AI Lite"}
           startContent={
             <Icon
               className="text-white"
@@ -159,6 +127,9 @@ export default function ModelListDropdown({
               <DropdownItem
                 key={model}
                 description={`${modelRateLimits["small"][isPremium as ProductNames]} prompts per day`}
+                isDisabled={
+                  modelRateLimits["small"][isPremium as ProductNames] === 0
+                }
                 startContent={
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -184,6 +155,9 @@ export default function ModelListDropdown({
               <DropdownItem
                 key={model}
                 description={`${modelRateLimits["medium"][isPremium as ProductNames]} prompts per day`}
+                isDisabled={
+                  modelRateLimits["medium"][isPremium as ProductNames] === 0
+                }
                 startContent={
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -208,7 +182,14 @@ export default function ModelListDropdown({
             .map((model) => (
               <DropdownItem
                 key={model}
-                description={`${modelRateLimits["large"][isPremium as ProductNames]} prompts per day`}
+                description={
+                  modelRateLimits["large"][isPremium as ProductNames] > 0
+                    ? `${modelRateLimits["large"][isPremium as ProductNames]} prompts per day`
+                    : "Upgrade to AI Plus to use this model"
+                }
+                isDisabled={
+                  modelRateLimits["large"][isPremium as ProductNames] === 0
+                }
                 startContent={
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

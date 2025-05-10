@@ -2,6 +2,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { LSWebhook } from "@lib/types/lemonSqueezyTypes";
 import { userMetadata } from "~lib/types/userMetadata";
 import { UserRateLimiter } from "@lib/durableObjects/UserRateLimiter";
+import { ModelSize } from "~lib/types/AITypes";
 
 export type Bindings = {
   GEMINI_API_KEY: string;
@@ -13,6 +14,9 @@ export type Bindings = {
   SUPABASE_PUBLIC_KEY: string;
   SUPABASE_JWT_SECRET: string;
   USER_RATE_LIMITER: DurableObjectNamespace<UserRateLimiter>;
+  DEV_LOGS_DB: D1Database;
+  PROD_LOGS_DB: D1Database;
+  IS_PROD: string;
 };
 export type supabaseVars = {
   supabase: SupabaseClient;
@@ -24,3 +28,22 @@ export type userVars = {
 export type lsVars = {
   body: LSWebhook;
 } & userVars;
+
+export type MetaBindings = {
+  Bindings: Bindings;
+  Variables: userVars;
+};
+
+export interface LogData {
+  prompt: string;
+  history: any | null;
+  line_number: number | null;
+  results: any[] | null;
+  final_answer: string | null;
+}
+
+export type RateLimitStorage = {
+  model: ModelSize;
+  count: number;
+  timezone: string;
+};

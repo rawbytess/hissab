@@ -15,6 +15,7 @@ export type SubscriptionStatus = z.infer<typeof zSubscriptionStatus>;
 
 export type userMetadata = {
   user_name: string;
+  timezone: string;
   subscription: {
     status: SubscriptionStatus;
     renews_at: string;

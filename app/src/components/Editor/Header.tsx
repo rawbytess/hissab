@@ -13,12 +13,8 @@ export default function Header() {
     <header className=" h-11 w-fill flex items-center justify-between px-4 bg-purple-700 text-[#dddddd] drop-shadow fixed z-40">
       <SidebarTrigger />
       <div className="flex flex-col items-center absolute left-1/2 -translate-x-1/2">
-        <img src="/logo_blk.svg" alt="logo" className="h-9 drop-shadow-lg" />
-        <p
-          className={
-            "text-[9px] uppercase text-purple-300 tracking-wider -mt-2"
-          }
-        >
+        <img src="/logo_blk.svg" alt="logo" className="h-9" />
+        <p className={"text-[8px] uppercase font-medium tracking-widest -mt-3"}>
           {isPremium ? isPremium.slice(3) : "Free"}
         </p>
       </div>

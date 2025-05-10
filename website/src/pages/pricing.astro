@@ -1,6 +1,6 @@
 ---
-import Main from '../components/Main';
 import Layout from '../layouts/Layout.astro';
+import Pricing from '../components/Pricing/Pricing';
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import '../globals.css';
 import "../css/index.css";
@@ -13,7 +13,7 @@ import "../css/custom.css";
 ---
 
 <Layout>
-	<Main client:load />
+  <Pricing client:load />
 </Layout>
 
 

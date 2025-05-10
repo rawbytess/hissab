@@ -206,7 +206,7 @@ export default class HissabEditor {
       this.oldResults,
       this.isPro,
     );
-    const underlineKeymap = keymap.of([
+    const undoRedoKeymap = keymap.of([
       {
         key: "Mod-z",
         preventDefault: true,
@@ -245,7 +245,7 @@ export default class HissabEditor {
         ),
       ),
       EditorView.lineWrapping,
-      getStreamLanguage(this),
+      getStreamLanguage(),
       EditorView.updateListener.of((v) => {
         if (v.docChanged) {
           this.view = v.view;
@@ -258,7 +258,7 @@ export default class HissabEditor {
       resultViewPlugin,
       resultStateField,
       EditorView.editable.of(this.isWritable),
-      underlineKeymap,
+      undoRedoKeymap,
     ];
 
     if (this.storePage) debounce(this.storePage, 2000);

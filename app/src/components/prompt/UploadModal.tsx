@@ -84,15 +84,10 @@ export default function UploadModal() {
     <>
       <Button
         size="sm"
-        disabled={isPremium !== "AI Plus"}
         onPress={onOpen}
-        startContent={
-          <Icon
-            className="text-white"
-            icon="solar:paperclip-linear"
-            width={16}
-          />
-        }
+        startContent={<Icon icon="solar:paperclip-linear" width={16} />}
+        disableAnimation={isPremium !== "AI Plus"}
+        isDisabled={isPremium !== "AI Plus"}
         variant="solid"
       >
         Attach

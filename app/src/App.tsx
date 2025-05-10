@@ -24,7 +24,7 @@ function App() {
     >
       <NuqsAdapter>
         <HeroUIProvider>
-          <ToastProvider toastOffset={50} />
+          <ToastProvider toastOffset={50} disableAnimation />
           <SessionProvider>
             <PagesProvider>
               <Sidebar>

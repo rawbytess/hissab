@@ -8,7 +8,7 @@ export default function LoginModal() {
     <>
       <Button
         className="text-white bg-violet-800 w-full mx-auto drop-shadow-lg"
-        radius="lg"
+        radius="sm"
         size="md"
         variant="flat"
         onPress={onOpen}

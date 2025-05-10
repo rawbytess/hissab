@@ -1,6 +1,6 @@
 import { Tag } from "@lezer/highlight";
 import { StreamLanguage, StringStream, TagStyle } from "@codemirror/language";
-import { doLex } from "engine";
+import { doLex, Variables } from "engine";
 import pkg from "lodash";
 const { sortedIndexBy } = pkg;
 
@@ -19,8 +19,8 @@ export function HissabHighlightStyle(isDark: boolean): TagStyle[] {
       color: isDark ? "#f984e1" : "#754103",
       fontStyle: "bold",
     },
-    { tag: hissabTags.undefinedToken, color: isDark ? "#999999" : "#999999" },
-    { tag: hissabTags.stringToken, color: isDark ? "#f984e1" : "#999999" },
+    { tag: hissabTags.undefinedToken, color: isDark ? "#f984e1" : "#999999" },
+    { tag: hissabTags.stringToken, color: isDark ? "#D4F984" : "#999999" },
     {
       tag: hissabTags.comment,
       color: isDark ? "#93A1A1" : "#93A1A1",
@@ -50,7 +50,8 @@ export const hissabTags = {
   prompt: Tag.define(),
 };
 
-export function getStreamLanguage(ed: any) {
+// TODO Optimize this function
+export function getStreamLanguage() {
   return StreamLanguage.define({
     token(stream: StringStream) {
       if (stream.match("ai ")) {
@@ -61,7 +62,7 @@ export function getStreamLanguage(ed: any) {
         stream.skipToEnd();
         return "comment";
       }
-      const tokens = doLex(stream.string, ed.variables, 0);
+      const tokens = doLex(stream.string, {}, 0);
       const currTokens: CurrTokensType[] = [];
       for (const token of tokens) {
         currTokens.splice(
@@ -83,14 +84,14 @@ export function getStreamLanguage(ed: any) {
         );
       }
       for (const tkn of currTokens) {
-        if (stream.match("total")) return "variableToken";
-        if (stream.match("prev")) return "variableToken";
+        if (stream.match("total*")) return "variableToken";
+        if (stream.match("prev*")) return "variableToken";
         if (stream.match(/[лв₺₴₪₦č£₾ł₽元₹¥$₱৳₩₫฿₿ɱŁΞ€]/))
           return "operatorToken";
         if (stream.match(tkn.token)) return tkn.style;
       }
       stream.next();
-      return null;
+      return "stringToken";
     },
     tokenTable: hissabTags,
   });

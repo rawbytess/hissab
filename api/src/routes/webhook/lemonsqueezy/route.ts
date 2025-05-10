@@ -48,6 +48,7 @@ app.post("/", async (c) => {
       updated_at,
       user_name,
     } = body.data.attributes;
+    let newUser;
 
     const { data, error } = await supabase
       .from("users")
@@ -55,15 +56,21 @@ app.post("/", async (c) => {
       .eq("email", user_email)
       .single();
     if (error) {
-      console.error(
-        `Error fetching user with email ${user_email}`,
-        error.message,
-        body,
-      );
-      return c.json({ ok: true });
+      newUser = await supabase.auth.admin.createUser({
+        email: user_email,
+      });
+
+      if (newUser.error) {
+        console.error(
+          `Error creating user with email ${user_email}`,
+          newUser.error.message,
+          body,
+        );
+        return c.json({ ok: true });
+      }
     }
 
-    const user_id = data.id;
+    const user_id = data?.id ?? newUser?.data?.user?.id;
     const { subscription_id } = first_subscription_item;
     const { error: insertError } = await supabase.from("user_plan").insert({
       user_id,
@@ -81,6 +88,7 @@ app.post("/", async (c) => {
 
     const userMetadata: userMetadata = {
       user_name,
+      timezone: "",
       subscription: {
         status,
         renews_at,

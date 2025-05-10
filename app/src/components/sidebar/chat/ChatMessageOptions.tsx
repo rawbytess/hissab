@@ -14,11 +14,13 @@ export default function ChatMessageOptions({
   role,
   email,
   message,
+  expressions,
 }: {
   index: number;
   role: "hissab" | "user";
   email: string;
   message: string;
+  expressions?: string[];
 }) {
   const { currentPageNumber, deleteChatMessage } = useContext(PageContext);
 
@@ -28,7 +30,7 @@ export default function ChatMessageOptions({
         {role === "hissab" ? (
           <img
             src="/icons/32.png"
-            className={"w-6 h-6 mt-1 cursor-pointer rounded-full shadow"}
+            className={"w-6 h-6 cursor-pointer rounded-full shadow"}
           />
         ) : (
           <img
