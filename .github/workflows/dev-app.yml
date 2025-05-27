@@ -2,8 +2,6 @@ name: Deploy App on Dev Push
 
 on:
   push:
-    branches:
-      - '*'
     branches-ignore:
       - main
 
