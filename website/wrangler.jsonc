@@ -13,14 +13,14 @@
     "prod": {
       "workers_dev": false,
       "route": {
-        "pattern": "https://hissab.io",
+        "pattern": "hissab.io",
         "custom_domain": true
       }
     },
     "dev": {
       "workers_dev": true,
       "route": {
-        "pattern": "https://dev.hissab.io",
+        "pattern": "dev.hissab.io",
         "custom_domain": true
       }
     }

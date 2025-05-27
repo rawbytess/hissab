@@ -34,7 +34,7 @@
     "prod": {
       "workers_dev": false,
       "route": {
-        "pattern": "https://api.hissab.io",
+        "pattern": "api.hissab.io",
         "custom_domain": true
       },
       "d1_databases": [
@@ -63,7 +63,7 @@
     "dev": {
       "workers_dev": true,
       "route": {
-        "pattern": "https://dev.api.hissab.io",
+        "pattern": "dev.api.hissab.io",
         "custom_domain": true
       },
       "d1_databases": [
