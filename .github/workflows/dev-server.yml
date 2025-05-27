@@ -36,7 +36,6 @@ jobs:
 
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
-        working-directory: ./api
         with:
           version: latest
 
