@@ -42,7 +42,7 @@ jobs:
       - name: Run Supabase Migrations
         working-directory: ./api
         run: |
-          supabase link --project-ref $PROJECT_ID
+          supabase link --project-ref $SUPABASE_PROJECT_ID
           supabase config push
           pnpm supabase:migrate:up
         env:
