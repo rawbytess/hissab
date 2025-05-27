@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - '*'
-      - '!main'
+    branches-ignore:
+      - main
 
 jobs:
   setup:
@@ -39,8 +40,8 @@ jobs:
 
       - name: Deploy Website
         uses: cloudflare/wrangler-action@v3
-        working-directory: ./website
         with:
+          workingDirectory: website
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           packageManager: pnpm
           environment: dev
