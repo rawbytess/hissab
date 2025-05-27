@@ -6,6 +6,7 @@ import {
   chatDefaultModel,
   inLineDefaultModel,
   Models,
+  ModelSize,
 } from "../../../../../lib/types/AITypes.ts";
 
 export type userMessage = {
@@ -29,7 +30,7 @@ export type notePage = {
   title: string;
   type: "page" | undefined;
   content: string;
-  model: Models;
+  model: ModelSize;
   file?: FileUpload | null;
 };
 
@@ -38,7 +39,7 @@ export type ChatPage = {
   title: string;
   type: "chat";
   file?: FileUpload | null;
-  model: Models;
+  model: ModelSize;
   explain: boolean;
   fallback: boolean;
   chats: {
@@ -71,7 +72,7 @@ export type pageContextType = {
   renameNote: (id: string, newTitle: string) => void;
   deleteNote: (id: string) => void;
   deleteChatMessage: (id: string, index: number) => void;
-  updateModel: (id: string, model: Models) => void;
+  updateModel: (id: string, model: ModelSize) => void;
   toggleExplain: (id: string) => void;
   toggleFallback: (id: string) => void;
   currentPageNumber: string;
@@ -113,7 +114,7 @@ const PagesProvider = ({ children }: PropsWithChildren) => {
         id: crypto.randomUUID(),
         title,
         type,
-        model: chatDefaultModel,
+        model: "medium",
         explain: false,
         fallback: true,
         chats: {
@@ -125,7 +126,7 @@ const PagesProvider = ({ children }: PropsWithChildren) => {
         id: crypto.randomUUID(),
         title,
         type,
-        model: inLineDefaultModel,
+        model: "small",
         content: content,
       };
     }
@@ -186,7 +187,7 @@ const PagesProvider = ({ children }: PropsWithChildren) => {
     );
   };
 
-  const updateModel = (id: string, model: Models) => {
+  const updateModel = (id: string, model: ModelSize) => {
     setNotes((notes) =>
       notes.map((note) =>
         note.id === id

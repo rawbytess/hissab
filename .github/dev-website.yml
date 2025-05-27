@@ -1,0 +1,46 @@
+name: Deploy Website on Dev Push
+
+on:
+  push:
+    branches:
+      - '*'
+      - '!main'
+
+jobs:
+  setup:
+    name: Setup Environment
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+          run_install: false
+
+      - name: Setup Node.js v22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build and Deploy Website
+        working-directory: ./website
+        run: pnpm build
+        env:
+          PUBLIC_HISSAB_APP_URL: ${{ secrets.HISSAB_APP_URL }}
+
+      - name: Deploy Website
+        uses: cloudflare/wrangler-action@v3
+        working-directory: ./website
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          packageManager: pnpm
+          environment: dev

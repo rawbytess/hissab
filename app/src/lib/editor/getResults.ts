@@ -62,7 +62,7 @@ export async function getResult(
           prompt: aiPrompt,
           fallback: true,
           explain: false,
-          model: inLineDefaultModel,
+          model: "small",
           expressions: lines.map((x, i) => ({
             expression: `Line${i + 1}: ${x}`,
             result:

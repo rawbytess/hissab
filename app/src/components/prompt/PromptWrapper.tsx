@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react";
 import { cn } from "@heroui/react";
 
 import PromptInput from "./PromptInput.tsx";
+import { Infinity } from "ldrs/react";
 import {
   ChatPage,
   PageContext,
@@ -136,16 +137,14 @@ export function PromptWrapper() {
                 <div className="flex flex-col items-end gap-2">
                   {loading ? (
                     <div className={"mt-1"}>
-                      {/** eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                   @ts-expect-error **/}
-                      <l-infinity
+                      <Infinity
                         size="40"
                         stroke="4"
                         stroke-length="0.15"
                         bg-opacity="0.2"
                         speed="1.3"
                         color="#8100ff"
-                      ></l-infinity>
+                      ></Infinity>
                     </div>
                   ) : (
                     <Tooltip

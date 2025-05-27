@@ -19,14 +19,16 @@ import {HeroUIProvider } from "@heroui/react";
 			content="A simple and intuitive calculator, unit-convertor and productivity application. Just type and calculate anything."
 		/>
 		<title>Hissab - Calculator with Superpowers</title>
-		<script defer src="https://analytics.rawbytes.com/script.js" data-website-id="19ee36c5-98a3-48d8-bf85-8ebfb5f6c17d"></script>
+
 	</head>
-	<body>
+	<body class="dark">
   <HeroUIProvider client:load>
+    <div class="grid grid-cols-1 grid-rows-[auto_1fr_auto] min-h-screen">
 	<Header client:load />
 		<slot />
-	<Footer />
+	<Footer client:load />
   </HeroUIProvider>
+  </div>
 	</body>
 </html>
 

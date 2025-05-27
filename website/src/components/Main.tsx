@@ -1,181 +1,219 @@
 import { useState } from "react";
-import { Tooltip } from "@heroui/react";
+import { Button, Tooltip } from "@heroui/react";
 import { cn } from "@/lib/utils";
+import { Icon } from "@iconify/react";
+import Classic from "@/components/Home/Classic.tsx";
+import AISection from "@/components/Home/AISection.tsx";
+import ApiSection from "@/components/Home/APISection.tsx";
 
 const firstPromo = "/resources/home/first-promo.png";
 const freePromo = "/resources/home/free-promo.png";
 const proPromo = "/resources/home/pro-promo.png";
+const sample1 = "/screens/sample1.jpg";
+const sample2 = "/screens/sample2.jpg";
+const hero = "/screens/hero.png";
 
 export default function Main() {
-  const [fnlHovered, setFnlHovered] = useState(false);
-  const [hissabHovered, setHissabHovered] = useState(false);
-  const [uxHovered, setUxHovered] = useState(false);
-  const [noExaggerationHovered, setNoExaggerationHovered] = useState(false);
-
   return (
     <>
       <section>
-        <div className="flex flex-col items-center drop-shadow-2xl tracking-widest">
-          <h2
+        <div className="flex flex-col gap-2 items-center drop-shadow-2xl tracking-widest">
+          <div
             className={
-              "hero-text-size-sm text-cyan-300 hover:text-cyan-500 cursor-pointer font-black"
+              "flex flex-row align-baseline items-center gap-0 font-thin"
             }
-            onMouseEnter={() => setFnlHovered(true)}
-            onMouseLeave={() => setFnlHovered(false)}
           >
-            Full Natural Language
-          </h2>
+            <div className={"hero-text-size-sm text-cyan-500 max-w-[5em]"}>
+              Natural Language
+            </div>
+            <Icon icon={"ph:plus-thin"} width={30} color="#efefef" />
+            <div className={"hero-text-size-sm text-amber-500 max-w-[5em]"}>
+              Hissab Engine
+            </div>
+            <Icon icon={"ph:plus-thin"} width={30} color="#efefef" />
+            <div className={"hero-text-size-sm text-emerald-500 max-w-[5em]"}>
+              Functional Design
+            </div>
+          </div>
 
-          <p
-            className={cn(
-              "text-cyan-500 text-lg max-w-[50em]",
-              fnlHovered ? "visible" : "invisible",
-            )}
-          >
-            Enhanced by AI & LLMs to understand your queries. No need to learn
-            any new syntax, just type your queries in natural language and get
-            results instantly
-          </p>
-
-          <p className={"text-2xl text-white"}>+</p>
-
-          <h2
-            className={
-              "hero-text-size-sm text-lime-300 hover:text-lime-500 cursor-pointer  font-black"
-            }
-            onMouseEnter={() => setHissabHovered(true)}
-            onMouseLeave={() => setHissabHovered(false)}
-          >
-            Powerful Hissab Engine
-          </h2>
-
-          <p
-            className={cn(
-              "text-lime-500 text-lg",
-              hissabHovered ? "visible" : "invisible",
-            )}
-          >
-            Your queries are converted to hissab expressions which are
-            calculated by
-            <br /> hissab engine to ensure accurate answers without
-            hallucinations
-          </p>
-
-          <p className={"text-2xl text-white"}> +</p>
-
-          <h2
-            className={
-              "hero-text-size-sm text-emerald-300 hover:text-emerald-500 cursor-pointer  font-black"
-            }
-            onMouseEnter={() => setUxHovered(true)}
-            onMouseLeave={() => setUxHovered(false)}
-          >
-            Streamlined UX
-          </h2>
-
-          <p
-            className={cn(
-              "text-emerald-500 text-lg",
-              uxHovered ? "visible" : "invisible",
-            )}
-          >
-            Designed to be intuitive, fast and flexible. <br /> You can perform
-            quick calculations or have complex planning and brainstorming
-            sessions.
-          </p>
-
-          <p className={"text-2xl text-white"}> =</p>
+          <Icon
+            icon={"streamline:equal-sign"}
+            width={30}
+            className="my-5"
+            color="#efefef"
+          />
 
           <h1
             className={
-              "hero-text-size-lg text-purple-300 hover:text-purple-500 cursor-pointer  font-black"
+              "hero-text-size-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-violet via-purple-500 to-indigo-500"
             }
-            onMouseEnter={() => setNoExaggerationHovered(true)}
-            onMouseLeave={() => setNoExaggerationHovered(false)}
           >
-            World's most powerful calculator
+            World's Most <br /> Powerful Calculator
           </h1>
 
-          <p
-            className={cn(
-              "text-purple-500 text-2xl",
-              noExaggerationHovered ? "visible" : "invisible",
-            )}
-          >
-            No Exaggeration, Really
-          </p>
+          <p className={cn("text-zinc-400")}>(No Exaggeration, Really)</p>
         </div>
+
+        <ul className={"flex flex-row gap-10 text-gray-300 mt-10"}>
+          <li className={"flex flex-row gap-2 items-center"}>
+            <Icon icon={"hugeicons:artificial-intelligence-04"} width={20} />
+            <p>AI Powered</p>
+          </li>
+          <li className={"flex flex-row gap-2 items-center"}>
+            <Icon icon={"octicon:goal-24"} width={20} />
+            <p>Accurate Results</p>
+          </li>
+          <li className={"flex flex-row gap-2 items-center"}>
+            <Icon icon={"lets-icons:lightning-duotone"} width={20} />
+            <p>Lightning Fast</p>
+          </li>
+          <li className={"flex flex-row gap-2 items-center"}>
+            <Icon icon={"pajamas:false-positive"} width={20} />
+            <p>No Hallucination</p>
+          </li>
+          <li className={"flex flex-row gap-2 items-center"}>
+            <Icon icon={"fluent:coin-multiple-24-filled"} width={20} />
+            <p>Wide range of operations</p>
+          </li>
+        </ul>
+
+        <img src={hero} className={"promo-imgs"} />
         <h4
           className={
-            "sub-hero-text text-stone-300 tracking-wider whitespace-pre-line my-12 max-w-[40em]"
+            "sub-hero-text text-stone-300 tracking-wider whitespace-pre-line mt-12 max-w-[40em]"
           }
         >
-          Hissab is an AI enhanced, accurate and powerful natural language
-          calculator app that does way more than calculations. <br />
-          Hissab is useful for performing quick calculations as well as complex
-          brainstorming and planning.
+          Hissab is an AI enhanced natural language calculator that ensures
+          accuracy and does way more than calculations. <br />
+          Hissab is useful for performing quick day-to-day calculations as well
+          as complex brainstorming and planning.
         </h4>
-        <p className={"text-white"}></p>
       </section>
       <section>
         <h2
           className={
-            "text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-cyan to-teal-500"
+            "text-transparent bg-clip-text bg-gradient-to-r from-[#1d4ed8] via-[#1e40af] to-blue-500"
           }
         >
-          Intuitive, Powerful & Versatile
+          Available on all platforms
         </h2>
-        <ul className={"promo-list"}>
-          <li>Supports wide range of operations</li>
-          <li>Plan, Estimate & Compare numbers in a breeze</li>
-          <li>Available on the Web, mobile, desktop and browser platforms</li>
-        </ul>
-        <p className={"promo-p"}>Ultimate platform for all your calculations</p>
-        <img src={firstPromo} className={"promo-imgs"} />
+        <div className={"flex flex-row flex-wrap gap-5 mt-5"}>
+          <Tooltip
+            content={"Web"}
+            showArrow
+            offset={0}
+            closeDelay={0}
+            delay={0}
+            disableAnimation
+            className={"text-white bg-neutral-700 rounded-2xl"}
+          >
+            <Icon icon={"streamline:web-solid"} width={30} color="#efefef" />
+          </Tooltip>
+          <div></div>
+          <Tooltip
+            content={"iOS as PWA"}
+            showArrow
+            offset={0}
+            closeDelay={0}
+            delay={0}
+            disableAnimation
+            className={"text-white bg-neutral-700 rounded-2xl"}
+          >
+            <Icon icon={"lineicons:ios"} width={30} color="#efefef" />
+          </Tooltip>
+          <Tooltip
+            content={"Android as PWA"}
+            showArrow
+            offset={0}
+            closeDelay={0}
+            delay={0}
+            disableAnimation
+            className={"text-white bg-neutral-700 rounded-2xl"}
+          >
+            <Icon icon={"uil:android"} width={30} color="#efefef" />
+          </Tooltip>
+          <div></div>
+          <Tooltip
+            content={"MacOS as PWA"}
+            showArrow
+            offset={0}
+            closeDelay={0}
+            delay={0}
+            disableAnimation
+            className={"text-white bg-neutral-700 rounded-2xl"}
+          >
+            <Icon icon={"wpf:mac-os"} width={30} color="#efefef" />
+          </Tooltip>
+          <Tooltip
+            content={"Windows as PWA"}
+            showArrow
+            offset={0}
+            closeDelay={0}
+            delay={0}
+            disableAnimation
+            className={"text-white bg-neutral-700 rounded-2xl"}
+          >
+            <Icon icon={"bi:windows"} width={30} color="#efefef" />
+          </Tooltip>
+          <Tooltip
+            content={"Linux as PWA"}
+            showArrow
+            offset={0}
+            closeDelay={0}
+            delay={0}
+            disableAnimation
+            className={"text-white bg-neutral-700 rounded-2xl"}
+          >
+            <Icon
+              icon={"ant-design:linux-outlined"}
+              width={30}
+              color="#efefef"
+            />
+          </Tooltip>
+          <div></div>
+          <Tooltip
+            content={"Chrome Extension & ChromeOS"}
+            showArrow
+            offset={0}
+            closeDelay={0}
+            delay={0}
+            disableAnimation
+            className={"text-white bg-neutral-700 rounded-2xl"}
+          >
+            <Icon icon={"teenyicons:chrome-solid"} width={30} color="#efefef" />
+          </Tooltip>
+          <Tooltip
+            content={"Chrome Extension on Edge"}
+            showArrow
+            offset={0}
+            closeDelay={0}
+            delay={0}
+            disableAnimation
+            className={"text-white bg-neutral-700 rounded-2xl"}
+          >
+            <Icon icon={"ri:edge-new-fill"} width={35} color="#efefef" />
+          </Tooltip>
+        </div>
+        <Button className="mt-10 bg-blue-700">
+          <a href="/installation" className="flex flex-col">
+            <p>See how to install</p>
+          </a>
+        </Button>
       </section>
+      <Classic />
+      <AISection />
+      <ApiSection />
       <section>
         <h2
           className={
-            "text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-red-200 to-yellow-100"
+            "text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-200 via-slate-300 to-orange-200 mb-5 text-3xl max-w-[30em]"
           }
         >
-          Free, No Signups, No Ads, No BS
+          Is Hissab a calculator app, planning & productivity tool, an AI
+          assistant or a platform for developers?
+          <span className={"text-gray-300 ml-3"}>🤔</span>
         </h2>
-
-        <ul className={"promo-list "}>
-          <li>Basic Math and Percentage operations</li>
-          <li>
-            Reference previous lines' results or Save results in a variable to
-            use them later
-          </li>
-          <li>Helpful date, time and timezone calculations</li>
-          <li>Unit Conversion and seamless operations with different units</li>
-          <li>Support for alternate number systems and binary operations</li>
-        </ul>
-
-        <img src={freePromo} className={"promo-imgs"} />
-      </section>
-      <section>
-        <h2
-          className={
-            "text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-red-200 to-yellow-100"
-          }
-        >
-          Even more advanced features, <br />
-          faster workflow, smarter results
-        </h2>
-        <ul className={"promo-list"}>
-          <li>Autocomplete suggestions as you type</li>
-          <li>Organize calculations into multiple pages</li>
-          <li>Breakdown large unit values into multiple units</li>
-          <li>
-            Logarithms, Trigonometry, Statistics, LCM, GCD, Digital colors
-            operations and several advanced Math and computer science
-            calculations
-          </li>
-        </ul>
-
-        <img src={proPromo} className={"promo-imgs"} />
+        <p className={"text-stone-300 text-2xl"}>😎 YES!</p>
       </section>
     </>
   );

@@ -6,7 +6,7 @@ import { supabaseAppAuth } from "@middlewares/supabaseAppAuth";
 import { getMaxCharacterLimit, isPremiumUser } from "~lib/getPremiumStatus";
 import { zValidator } from "@hono/zod-validator";
 
-import { Models, ModelsMap, zAIRequest } from "~lib/types/AITypes";
+import { Models, ModelsList, ModelsMap, zAIRequest } from "~lib/types/AITypes";
 import { createSupabaseClient } from "@middlewares/createSupabaseClient";
 import { run } from "~lib/errors";
 import { ContentfulStatusCode } from "hono/dist/types/utils/http-status";
@@ -34,20 +34,20 @@ app.post(
     if (!isPremium) {
       return c.body("Not a subscribed user", 403);
     }
-    const modelName = body.model;
+    const modelName = ModelsList[body.model].id;
 
     const id = c.env.USER_RATE_LIMITER.idFromName(user.user_id);
     const rateLimiter = c.env.USER_RATE_LIMITER.get(id);
 
     const hasRateLimit = await rateLimiter.checkRateLimit(
       isPremium,
-      ModelsMap[modelName].size,
+      body.model,
       user.timezone,
       user.user_id,
     );
     if (!hasRateLimit) {
       return c.body(
-        `Today's rate limit exceeded for ${ModelsMap[modelName].size} models`,
+        `Today's rate limit exceeded for ${body.model} models`,
         429,
       );
     }
@@ -85,8 +85,7 @@ app.post(
       failed: false,
       error: { message: "Error", userMessage: "Error", statusCode: 500 },
     };*/
-    const db =
-      c.env.IS_PROD === "true" ? c.env.PROD_LOGS_DB : c.env.DEV_LOGS_DB;
+    const db = c.env.LOGS_DB;
 
     if (AIResponse.failed) {
       c.executionCtx.waitUntil(

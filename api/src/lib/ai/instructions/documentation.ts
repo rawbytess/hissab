@@ -51,6 +51,8 @@ yocto, zepto, atto, femto, pico, nano, micro, milli, centi, deci, deka, hecto, k
 septillion, sextillion, quintillion, quadrillion, trillion, billion, million , thousand, hundred, ten, deca, tenth, hundredth,
 thousandth, millionth, billionth, trillionth, quadrillionth, quintillionth, sextillionth, septillionth
 
+Hissab does not yet support compound units like m/s, kg/m^2, miles/gallon etc. You can use separate expressions for each unit and then do the math.
+
 ## Set Operations
 - Maximum: max(10m,30k,7.7m,123123121234)
 - Minimum: min(10m,30k,7.7m,123123121234)
@@ -189,7 +191,7 @@ label them all appropriately. Use snake case for label names.
 
 Example: 
 User: "My monthly income is 1000, expenses are 200 and savings are 50. What is my yearly expense?"
-Response: {"expressions": ["monthly_expense = 1000 + 200 - 50", "yearly expense = monthly expense to yearly"]}
+Response: {"expressions": ["monthly_expense = 1000 + 200 - 50", "yearly_expense = monthly_expense monthly to yearly"]}
 
 You can also refer to the result of the previous calculation using the keyword "prev". "prev" will only refer to the 
 immediate previous expression in the array. Thus for any further previous expressions, you must use the label.
@@ -198,6 +200,5 @@ User: "Convert 78 kilometers to miles and compare with 45 miles"
 Response: {"expressions": ["78 kilometers to miles", "prev - 45 miles"]}
 
 `;
-// TODO: Add documentation for monthly, quarterly, yearly
 
 export default documentation;

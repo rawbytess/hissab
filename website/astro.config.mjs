@@ -3,11 +3,13 @@ import cloudflare from "@astrojs/cloudflare";
 import react from "@astrojs/react";
 
 import tailwind from "@astrojs/tailwind";
-
+import starlightLlmsTxt from "starlight-llms-txt";
+import starlightNextjsTheme from "starlight-nextjs-theme";
 import starlight from "@astrojs/starlight";
 
 export default defineConfig({
   output: "static",
+  site: "https://hissab.io/",
   adapter: cloudflare({
     platformProxy: {
       enabled: true,
@@ -20,6 +22,7 @@ export default defineConfig({
       title: "Hissab",
       customCss: [
         // Relative path to your custom CSS file
+        "./src/css/tailwind.css",
         "./src/css/custom.css",
         "./src/css/index.css",
         "./src/css/home.css",
@@ -27,6 +30,7 @@ export default defineConfig({
       favicon: "/img/favicon.ico",
       lastUpdated: true,
       tagline: "Calculator with superpowers",
+      plugins: [starlightLlmsTxt(), starlightNextjsTheme()],
       head: [
         {
           tag: "script",
@@ -39,7 +43,7 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          label: "FAQS",
+          label: "FAQs",
           link: "/faqs",
         },
         {
@@ -47,15 +51,11 @@ export default defineConfig({
           link: "/installation",
         },
         {
-          label: "Pricing",
-          link: "/pricing",
+          label: "API (Coming Soon)",
+          link: "/api",
         },
         {
-          label: "Roadmap",
-          link: "/roadmap",
-        },
-        {
-          label: "Guide",
+          label: "Classic",
           items: [
             {
               label: "Introduction",
@@ -86,6 +86,24 @@ export default defineConfig({
               autogenerate: {
                 directory: "Guide/Digital Data",
               },
+            },
+          ],
+        },
+        {
+          label: "LLMs",
+          collapsed: true,
+          items: [
+            {
+              label: "llms.txt",
+              link: "/llms.txt",
+            },
+            {
+              label: "llms-small.txt",
+              link: "/llms-small.txt",
+            },
+            {
+              label: "llms-full.txt",
+              link: "/llms-full.txt",
             },
           ],
         },

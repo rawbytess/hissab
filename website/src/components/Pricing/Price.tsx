@@ -1,16 +1,23 @@
-import { Card, CardBody, CardFooter, CardHeader, Divider } from "@heroui/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Divider,
+} from "@heroui/react";
 import { Icon } from "@iconify/react";
-import { modelRateLimits, ModelsMap } from "../../../../lib/types/AITypes.ts";
+import { modelRateLimits } from "../../../../lib/types/AITypes.ts";
 
-export default function Pricing() {
+export default function Price() {
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full mt-5 text-[#efefef]">
+    <div className="flex flex-col items-center w-full mt-5 text-[#efefef]">
       <h1 className="text-4xl font-bold">App Subscriptions</h1>
       <p className="mt-4 text-lg">Choose a plan that suits your needs.</p>
       <div className={"flex flex-row flex-wrap gap-8 m-5"}>
         <Card
           className={
-            "w-[25em] h-[35em] shadow bg-stone-700 p-4 rounded-xl ring-2 ring-purple-700"
+            "w-[25em] h-[40em] shadow bg-stone-900 p-4 rounded-xl ring-2 ring-stone-600"
           }
         >
           <CardHeader>
@@ -51,18 +58,12 @@ export default function Pricing() {
             </ul>
           </CardBody>
           <CardFooter className={"mt-auto"}>
-            <div
-              className={
-                "mx-auto bg-[#1c1c1c] p-2 rounded-lg w-[80%] text-center drop-shadow-2xl"
-              }
-            >
-              Free
-            </div>
+            <Button className={"mx-auto w-full"}>Free</Button>
           </CardFooter>
         </Card>
         <Card
           className={
-            "w-[25em] h-[35em]  shadow-xl bg-cyan-950 p-4 rounded-xl ring-2 ring-purple-700"
+            "w-[25em] h-[40em]  shadow-xl bg-cyan-950 p-4 rounded-xl ring-2 ring-cyan-700"
           }
         >
           <CardHeader>
@@ -125,43 +126,36 @@ export default function Pricing() {
                 />
                 <p>
                   {modelRateLimits["medium"]["AI Lite"]} prompts / day using
-                  Medium size LLM models
+                  medium size LLM models
                 </p>
               </li>
               <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
+                <Icon
+                  icon="meteor-icons:check-double"
+                  color={"green"}
+                  width={20}
+                />
+                <p>Text prompts</p>
+              </li>
+              <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
                 <Icon icon="entypo:cross" color={"red"} width={20} />
-                <p>No access to Large size LLM models.</p>
+                <p>No access to large size LLM models.</p>
               </li>
               <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
                 <Icon icon="entypo:cross" color={"red"} width={20} />
                 <p>No file attachments</p>
               </li>
-              <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
-                <Icon icon="entypo:cross" color={"red"} width={20} />
-                <p>Only text prompts</p>
-              </li>
             </ul>
           </CardBody>
           <CardFooter className={"mt-auto flex flex-col gap-2"}>
-            <div
-              className={
-                "mx-auto bg-cyan-800 p-2 rounded-lg w-[80%] text-center drop-shadow-2xl"
-              }
-            >
-              $8 / month
-            </div>
-            <div
-              className={
-                "mx-auto bg-cyan-700 p-2 rounded-lg w-[80%] text-center drop-shadow-2xl"
-              }
-            >
-              $50 / year
-            </div>
+            <Button className={"mx-auto w-full bg-cyan-700"}>$8 / month</Button>
+            <Button className={"mx-auto w-full bg-cyan-700"}>$50 / year</Button>
+            <p className={"text-xs text-gray-400"}>Cancel Anytime</p>
           </CardFooter>
         </Card>
         <Card
           className={
-            "w-[25em] h-[35em]  shadow bg-teal-950 p-4 rounded-xl ring-2 ring-purple-700"
+            "w-[25em] h-[40em]  shadow bg-fuchsia-950 p-4 rounded-xl ring-2 ring-fuchsia-700"
           }
         >
           <CardHeader>
@@ -224,7 +218,7 @@ export default function Pricing() {
                 />
                 <p>
                   {modelRateLimits["medium"]["AI Plus"]} prompts / day using
-                  Medium size LLM models
+                  medium size LLM models
                 </p>
               </li>
               <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
@@ -235,7 +229,7 @@ export default function Pricing() {
                 />
                 <p>
                   {modelRateLimits["large"]["AI Plus"]} prompts / day using
-                  Large size LLM models
+                  large size LLM models
                 </p>
               </li>
               <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
@@ -254,33 +248,40 @@ export default function Pricing() {
                 />
                 <p>File attachments</p>
               </li>
-              <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
-                <Icon
-                  icon="meteor-icons:check-double"
-                  color={"green"}
-                  width={20}
-                />
-                <p>Detail explanation for prompts</p>
-              </li>
             </ul>
           </CardBody>
           <CardFooter className={"mt-auto flex flex-col gap-2"}>
-            <div
-              className={
-                "mx-auto bg-teal-800 p-2 rounded-lg w-[80%] text-center drop-shadow-2xl"
-              }
-            >
+            <Button className={"mx-auto bg-fuchsia-700 w-full"}>
               $15 / month
-            </div>
-            <div
-              className={
-                "mx-auto bg-teal-700 p-2 rounded-lg w-[80%] text-center drop-shadow-2xl"
-              }
-            >
+            </Button>
+            <Button className={"mx-auto bg-fuchsia-700 w-full"}>
               $100 / year
-            </div>
+            </Button>
+            <p className={"text-xs text-gray-400"}>Cancel Anytime</p>
           </CardFooter>
         </Card>
+      </div>
+      <div className="text-sm text-gray-400">
+        <p>
+          *Small LLMs are used for inline AI prompts and chat. They are fast and
+          good for small prompts.
+        </p>
+        <p>*Medium LLMs are good for medium complexity prompts.</p>
+        <p>
+          *Large LLMs should be used for large, complex prompts. They involve
+          thinking and chain of thought.
+        </p>
+        <br />
+        <p>
+          *The LLMs can make mistake in producing the correct hissab expression.
+          Always check the generated expressions.
+        </p>
+        <p>
+          *If the prompt needs calculations that hissab does not support, the
+          LLMs will try to calculate themselves.
+          <br /> This can also happen if the wrong expressions were generated
+          and hissab engine was not able to calculate those expressions.
+        </p>
       </div>
     </div>
   );

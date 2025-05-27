@@ -1,0 +1,93 @@
+{
+  "name": "hissab-api",
+  "account_id": "a0609a9b2f23cde30f9f3a87339196b8",
+  "compatibility_flags": [],
+  "workers_dev": true,
+  "main": "src/index.ts",
+  "compatibility_date": "2025-04-01",
+  "build": {
+    "command": "pnpm run build"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "USER_RATE_LIMITER",
+        "class_name": "UserRateLimiter"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1", // Should be unique for each entry
+      "new_sqlite_classes": ["UserRateLimiter"] // Array of new classes
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "LOGS_DB", // available in your Worker on env.DB
+      "database_name": "dev-logs",
+      "database_id": "b09e290c-7458-4f9c-9c24-5c2bc4f53a50",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "env": {
+    "prod": {
+      "workers_dev": false,
+      "route": {
+        "pattern": "https://api.hissab.io",
+        "custom_domain": true
+      },
+      "d1_databases": [
+        {
+          "binding": "LOGS_DB", // available in your Worker on env.DB
+          "database_name": "prod-logs",
+          "database_id": "3a00b3d0-98ad-4c7c-abbb-5aebcdf46104",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "USER_RATE_LIMITER",
+            "class_name": "UserRateLimiter"
+          }
+        ]
+      },
+      "migrations": [
+        {
+          "tag": "v1", // Should be unique for each entry
+          "new_sqlite_classes": ["UserRateLimiter"] // Array of new classes
+        }
+      ]
+    },
+    "dev": {
+      "workers_dev": true,
+      "route": {
+        "pattern": "https://dev.api.hissab.io",
+        "custom_domain": true
+      },
+      "d1_databases": [
+        {
+          "binding": "LOGS_DB", // available in your Worker on env.DB
+          "database_name": "dev-logs",
+          "database_id": "b09e290c-7458-4f9c-9c24-5c2bc4f53a50",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "USER_RATE_LIMITER",
+            "class_name": "UserRateLimiter"
+          }
+        ]
+      },
+      "migrations": [
+        {
+          "tag": "v1", // Should be unique for each entry
+          "new_sqlite_classes": ["UserRateLimiter"] // Array of new classes
+        }
+      ]
+    }
+  }
+}

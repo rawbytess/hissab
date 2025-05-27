@@ -9,14 +9,12 @@ export type Bindings = {
   OPENAI_API_KEY: string;
   DEEPSEEK_API_KEY: string;
   LEMONSQUEEZY_SIGNING_SECRET: string;
-  SUPABASE_API_URL: string;
+  SUPABASE_PROJECT_URL: string;
   SUPABASE_ADMIN_KEY: string;
-  SUPABASE_PUBLIC_KEY: string;
+  SUPABASE_PROJECT_ANON_KEY: string;
   SUPABASE_JWT_SECRET: string;
   USER_RATE_LIMITER: DurableObjectNamespace<UserRateLimiter>;
-  DEV_LOGS_DB: D1Database;
-  PROD_LOGS_DB: D1Database;
-  IS_PROD: string;
+  LOGS_DB: D1Database;
 };
 export type supabaseVars = {
   supabase: SupabaseClient;

@@ -24,7 +24,7 @@ export default function Header(props: NavbarProps) {
       {...props}
       className={"bg-[#530e97]"}
       classNames={{
-        base: cn("border-default-100 text-white h-12", {
+        base: cn("border-default-100 text-light h-12", {
           "bg-[#530e97]": isMenuOpen,
         }),
         wrapper: "w-full justify-around",
@@ -48,17 +48,17 @@ export default function Header(props: NavbarProps) {
       {/* Center Content */}
       <NavbarContent justify="center" className={"gap-5"}>
         <NavbarItem>
-          <Link className="text-default-300" href="/docs" size="sm">
+          <Link className="text-light" href="/faqs" size="sm">
             Docs
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link className="text-default-300" href="/pricing" size="sm">
+          <Link className="text-light" href="/pricing" size="sm">
             Pricing
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link className="text-default-300" href="/roadmap" size="sm">
+          <Link className="text-light" href="/roadmap" size="sm">
             Roadmap
           </Link>
         </NavbarItem>

@@ -12,7 +12,9 @@ const featuresCategories = [
   {
     key: "capabilities",
     title: "Capabilities",
-    icon: <Icon icon="solar:magic-stick-3-linear" color="#8100ff" width={30} />,
+    icon: (
+      <Icon icon="solar:magic-stick-3-linear" color="SlateBlue" width={30} />
+    ),
     descriptions: [
       "All sorts of general calculations, unit conversions, date and time calculations, and so much more.",
       "Multimodal with file attachments",
@@ -22,7 +24,7 @@ const featuresCategories = [
   {
     key: "examples",
     title: "Examples",
-    icon: <Icon icon="solar:mask-happly-linear" color="cyan" width={30} />,
+    icon: <Icon icon="solar:mask-happly-linear" color="DarkCyan" width={30} />,
     descriptions: [
       "My monthly income is $6,200. I spend $1,800 on rent, $400 on utilities, $600 on food, and $350 on transportation. I also have a student loan payment of $200 per month. If I save 15% of my remaining income, how much will I have saved in 5 years?",
       "I'm planning a trip from London to Tokyo. If the flight time is 12 hours and 30 minutes, and I leave London at 10:00 AM GMT, what time will I arrive in Tokyo local time?",
@@ -33,7 +35,7 @@ const featuresCategories = [
     key: "limitations",
     title: "Limitations",
     icon: (
-      <Icon icon="solar:shield-warning-outline" color="yellow" width={30} />
+      <Icon icon="solar:shield-warning-outline" color="LimeGreen" width={30} />
     ),
     descriptions: [
       "May occassionaly generate incorrect hissab expressions. Please verify the expressions.",
@@ -156,16 +158,21 @@ export type FeatureCardProps = CardProps & {
 const FeatureCard = forwardRef<HTMLDivElement, FeatureCardProps>(
   ({ title, descriptions = [], icon, ...props }, ref) => {
     return (
-      <Card ref={ref} className="bg-content2" shadow="none" {...props}>
+      <Card
+        ref={ref}
+        className="bg-stone-800 ring-2 ring-stone-600"
+        shadow="none"
+        {...props}
+      >
         <CardHeader className="flex flex-col gap-2 px-4 pb-4 pt-6">
           {icon}
-          <p className="text-sm text-gray-300">{title}</p>
+          <p className="text-sm text-stone-400">{title}</p>
         </CardHeader>
         <CardBody className="flex flex-col gap-2">
           {descriptions.map((description, index) => (
             <div
               key={index}
-              className="flex min-h-[50px] rounded-medium bg-content3 px-3 py-2 text-gray-400"
+              className="flex min-h-[50px] rounded-medium bg-stone-600 px-3 py-2 text-stone-400"
             >
               <p className="text-xs">{description}</p>
             </div>

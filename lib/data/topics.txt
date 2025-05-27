@@ -1,0 +1,59 @@
+elementary: Elementary basic Math: Add, subtract, multiply, divide
+
+power: Root and Exponent
+
+factorial: factorial of a number
+
+modulo: modulo of a number with another
+
+absolute: absolute of a value
+
+percentage: percent of value, discount, 	add/subtract percent, of what is
+
+unit_conversion:
+	simple conversion
+	add, subtract units
+	units breakdown
+	unit prefixes
+
+min_max: Max, Min
+
+lcm_gcd: LCM, GCD
+
+perm_comb: Permutation, combination
+
+log
+
+statistics:
+	Average
+	Harmonic mean
+	Geometric mean
+	standard deviation
+	variance
+	median
+	range
+
+trigonometric: Trigonometric functions
+
+date_time:
+	date formats
+	add, subtract dates/time
+	difference between dates
+	age calculation
+	unit timestamp, epoch
+	current time, date, tomorrow, yesterday
+
+timezone:
+	time in city
+	convert timezone for specific time
+
+duration: weekly, yearly, monthly, hourly etc.
+
+number_system:
+	number system conversion
+	add, subtract numbers with different base
+
+bitwise: Bitwise operations
+
+color: Color operations
+

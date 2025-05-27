@@ -6,7 +6,12 @@ import {
 } from "@google/genai";
 import documentation from "@lib/ai/instructions/documentation";
 import { hissabExpFunction } from "./jsonSchema";
-import { AIFormatResponseType, inLineDefaultModel, Models, ModelsMap } from "~lib/types/AITypes";
+import {
+  AIFormatResponseType,
+  inLineDefaultModel,
+  Models,
+  ModelsMap,
+} from "~lib/types/AITypes";
 import { CustomError, run } from "~lib/errors";
 import { FileUpload } from "~lib/types/fileTypes";
 import { calculateExpressions } from "~lib/calculateExpressions";
@@ -49,7 +54,9 @@ export class Gemini {
     if (files && isPremium && isPremium === "AI Plus") {
       contents.push(createPartFromUri(files.url, files.mimeType));
     }
-    const thinkingConfig = ModelsMap[this.hissabModel].canThink ? {thinkingBudget: 0} : undefined;
+    const thinkingConfig = ModelsMap[this.hissabModel].canThink
+      ? { thinkingBudget: 0 }
+      : undefined;
 
     const respResult = await run(
       this.ai.models.generateContent({
@@ -109,7 +116,7 @@ export class Gemini {
       });
 
       const final_response = await this.ai.models.generateContent({
-        model: inLineDefaultModel,
+        model: this.hissabModel,
         contents: contents,
         config: {
           tools: [{ functionDeclarations: [hissabExpFunction] }],

@@ -50,6 +50,52 @@ xlarge -
  */
 export type Models = z.infer<typeof zModels>;
 
+export const ModelsList: {
+  [key in ModelSize]: {
+    id: Models;
+    name: string;
+    family: ModelFamily;
+    description: string;
+    canThink: boolean;
+  };
+} = {
+  mini: {
+    id: "gemini-2.0-flash-lite",
+    name: "Gemini 2.0 Flash Lite",
+    family: "gemini",
+    description: "Gemini 2.0 Flash Lite",
+    canThink: false,
+  },
+  small: {
+    id: "gemini-2.0-flash",
+    name: "Gemini 2.0 Flash",
+    family: "gemini",
+    description: "Gemini 2.0 Flash",
+    canThink: false,
+  },
+  medium: {
+    id: "gemini-2.5-flash-preview-04-17",
+    name: "Gemini 2.5 Flash",
+    family: "gemini",
+    description: "Gemini 2.5 Flash",
+    canThink: true,
+  },
+  large: {
+    id: "gemini-2.5-pro-preview-05-06",
+    name: "Gemini 2.5 Pro",
+    family: "gemini",
+    description: "Gemini 2.5 Pro",
+    canThink: true,
+  },
+  xlarge: {
+    id: "gemini-2.5-pro-preview-05-06",
+    name: "Gemini 2.5 Pro",
+    family: "gemini",
+    description: "Gemini 2.5 Pro",
+    canThink: true,
+  },
+};
+
 export const ModelsMap: {
   [key in Models]: {
     name: string;
@@ -57,7 +103,6 @@ export const ModelsMap: {
     description: string;
     size: ModelSize;
     canThink: boolean;
-  
   };
 } = {
   "gemini-2.0-flash-lite": {
@@ -127,7 +172,7 @@ const zAIRequestInline = z.object({
   expressions: z.array(z.custom<ExpWithResult>()),
   explain: z.boolean().default(false),
   fallback: z.boolean().default(true),
-  model: zModels,
+  model: zModelSize,
   file: z
     .object({
       name: z.string(),
@@ -140,7 +185,7 @@ const zAIRequestInline = z.object({
 const zAIRequestChat = z.object({
   prompt: z.string(),
   inline: z.literal(false),
-  model: zModels,
+  model: zModelSize,
   explain: z.boolean().default(false),
   fallback: z.boolean().default(true),
   file: z

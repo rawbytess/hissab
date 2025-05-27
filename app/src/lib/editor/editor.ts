@@ -78,7 +78,7 @@ export default class HissabEditor {
     this.setFocus = options.setFocus ?? null;
     this.isDark = options.isDark ?? true;
     this.isWritable = options.isWritable ?? true;
-    this.isPro = options.isPro ?? false;
+    this.isPro = options.isPro ?? true;
     this.editorBackground = options.editorBackground ?? "#1c1c1c";
     this.borderRadius = options.borderRadius ?? "none";
     this.innerPadding = options.innerPadding ?? "0px";
@@ -230,7 +230,9 @@ export default class HissabEditor {
       bracketMatching(),
       closeBrackets(),
       highlightActiveLine(),
-      placeholder(" Type your expressions here..."),
+      placeholder(
+        "Type your expressions here...\nWrite AI prompts by tying 'ai ' followed by your prompt.",
+      ),
       prompt,
       keymap.of(defaultKeymap),
       syntaxHighlighting(

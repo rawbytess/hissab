@@ -178,38 +178,7 @@ Expression: "10 gigabytes to megabytes"
 -----------------------------
 
 Personal Finance
-"My salary is
-5
-,
-500
-/
-m
-o
-n
-t
-h
-.
-I
-p
-a
-y
-5,500/month.Ipay2,100 in rent,
-300
-i
-n
-c
-a
-r
-p
-a
-y
-m
-e
-n
-t
-s
-,
-300incarpayments,550 for groceries, and earn an extra $800/month. How much can I save in 10 years?"
+"My salary is 5,500/month.I pay 2,100 in rent, 300 in car payments, 550 for groceries, and earn an extra $800/month. How much can I save in 10 years?"
 → (5500 - 2100 - 300 - 550 + 800) * 12 * 10
 
 "If I invest $300 monthly at 7% annual return, compounded monthly, how much will I have after 20 years?"
@@ -220,62 +189,18 @@ s
 → Loan = 350000 - 20% → PMT = (Loan * (0.045/12)) / (1 - (1 + 0.045/12)^(-12*30))
 (If Hissab supports pmt(rate, nper, pv), it could be pmt(0.045/12, 30*12, 350000 - 20%))
 
-"If I spend
-120
-o
-n
-g
-r
-o
-c
-e
-r
-i
-e
-s
-,
-120ongroceries,80 on dining,
-60
-o
-n
-g
-a
-s
-,
-a
-n
-d
-60ongas,and200 on entertainment per week, how much do I spend yearly?"
+"If I spend 120 on groceries, 80 on dining, 60 on gas, and 200 on entertainment per week, how much do I spend yearly?"
 → (120 + 80 + 60 + 200) * 52
 
-"I have a
-15
-,
-000
-l
-o
-a
-n
-a
-t
-6
 15,000loanat6400 monthly, how long until it’s paid off?"
 → nper(0.06/12, -400, 15000) (if financial functions are supported)
 
 Business & Investments
-"If a stock grows from
-120
-t
-o
-120to185 in 3 years, what’s the annualized return?"
+
+"If a stock grows from 120 to 185 in 3 years, what’s the annualized return?"
 → (185/120)^(1/3) - 1
 
-"A startup’s revenue grows from
-50
-k
-t
-o
-50kto200k in 4 years. What’s the CAGR?"
+"A startup’s revenue grows from 50k to 200k in 4 years. What’s the CAGR?"
 → (200000/50000)^(1/4) - 1
 
 "If a company’s profit margin is 15% and revenue is $1.2M, what’s the net profit?"
@@ -586,3 +511,16 @@ Response: {"expressions": ["2^16", "prev^(1/2)", "prev to hexadecimal"]}
 User: Find the LCM of 12, 18, and 30. Then calculate the GCD of the same numbers. What is the product of the LCM and GCD?
 Response: {"expressions": ["lcm(12, 18, 30)", "gcd(12, 18, 30)", "prev * prev"]} (This requires careful use of prev, maybe storing intermediate results or running sequentially)
 Better Response (if allowed): {"expressions": ["lcm(12, 18, 30)", "gcd(12, 18, 30)", "lcm(12, 18, 30) * gcd(12, 18, 30)"]} (Avoids ambiguity of prev * prev)
+
+My monthly income is $6,200. I spend $1,800 on rent, $400 on utilities, $600 on food, and $350 on transportation. I also have a student loan payment of $200 per month. If I save 15% of my remaining income, how much will I have saved in 5 years?
+
+monthly_income = $6200
+total_expenses = $1800 + $400 + $600 + $350 + $200
+remaining_income = monthly_income - total_expenses
+monthly_savings = 15% of remaining_income
+total_savings_in_5_years = monthly_savings to yearly * 5
+
+I have a SaaS where I provide APIs for use to my customers.
+The product is using AI APIs the cost of 0.10 per 1million tokens
+My product pricing is $50 per year and it allows fixed number of requests per day.
+Assuming each requests uses 6000 tokens, how many maximum requests per day can I allow uses to not make a loss ?

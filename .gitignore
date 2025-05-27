@@ -33,3 +33,7 @@ Dockerfile
 *.zip
 .wrangler/
 .dev.vars
+.dev.vars.dev
+.dev.vars.prod
+.env.prod
+.env.dev

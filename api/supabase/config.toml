@@ -141,8 +141,8 @@ otp_expiry = 3600
 enabled = true
 host = "email-smtp.us-east-2.amazonaws.com"
 port = 587
-user = "AKIATKSXYQUXIGXAI6W7"
-pass = "BEAAVP6MDhH/sfqO4o/wLdxKH7Z796O/axUE6GPcc9aW"
+user = "env(SMTP_USER)"
+pass = "env(SMTP_PASSWORD)"
 admin_email = "no-reply@hissab.io"
 sender_name = "Hissab"
 

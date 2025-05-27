@@ -27,7 +27,8 @@ export default function UserDropdown() {
             }}
             className="transition-transform "
             description={isPremium ?? "Free Plan"}
-            name={metadata?.user_name || session?.user?.email}
+            // name={metadata?.user_name || session?.user?.email}
+            name={"Remy LeBeau"}
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" className={"text-gray-300"}>

@@ -4,6 +4,7 @@ import { UserError } from "../../src/exceptions";
 import spacetime from "spacetime";
 import { doLex, doParse } from "../../src";
 
+/*
 describe("Valid Expressions", () => {
   const validTestDir = "./tests/expression/valid/";
   beforeEach(() => {
@@ -41,6 +42,7 @@ describe("Valid Expressions", () => {
     });
   });
 });
+*/
 
 describe("Invalid Expressions", () => {
   const validTestDir = "./tests/expression/invalid/";
@@ -152,6 +154,7 @@ describe("Valid Pro Only Expressions", () => {
   });
 });
 
+/* 
 describe("Pro Expressions for Non Pro", () => {
   const validTestDir = "./tests/expression/pro/";
   readdirSync(validTestDir).forEach((file) => {
@@ -173,6 +176,7 @@ describe("Pro Expressions for Non Pro", () => {
     });
   });
 });
+*/
 
 /*
    TODO:

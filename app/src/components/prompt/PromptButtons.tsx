@@ -18,6 +18,7 @@ import {
   chatDefaultModel,
   modelRateLimits,
   Models,
+  ModelSize,
   ModelsMap,
 } from "../../../../lib/types/AITypes.ts";
 import {
@@ -41,26 +42,6 @@ export function PromptButtons({ prompt }: { prompt: string }) {
       <div className="flex w-full gap-1 md:gap-3">
         <ModelListDropdown isPremium={isPremium} />
         <UploadModal />
-        <Button
-          size="sm"
-          isDisabled={isPremium !== "AI Plus"}
-          startContent={
-            <Icon
-              className={cn(
-                currPage?.explain ? "text-purple-300" : "text-white",
-              )}
-              icon="fluent:apps-list-detail-20-filled"
-              width={16}
-            />
-          }
-          onPress={() => {
-            toggleExplain(currentPage?.id ?? "");
-          }}
-          className={cn(currPage?.explain ? "bg-purple-700" : "")}
-          variant={"solid"}
-        >
-          Explain
-        </Button>
       </div>
       {maxPromptLength ? (
         <p
@@ -89,10 +70,10 @@ function ModelListDropdown({ isPremium }: { isPremium?: string | null }) {
     useContext(PageContext);
 
   const [selectedKeys, setSelectedKeys] = useState<Selection>(
-    new Set([currentPage?.model ?? chatDefaultModel]),
+    new Set([currentPage?.model ?? "medium"]),
   );
   useEffect(() => {
-    updateModel(currentPageNumber, Array.from(selectedKeys)[0] as Models);
+    updateModel(currentPageNumber, Array.from(selectedKeys)[0] as ModelSize);
   }, [currentPageNumber, selectedKeys, updateModel]);
 
   return (
@@ -109,8 +90,9 @@ function ModelListDropdown({ isPremium }: { isPremium?: string | null }) {
             />
           }
           variant="solid"
+          className={"capitalize"}
         >
-          {ModelsMap[Array.from(selectedKeys)[0] as Models].name}
+          {Array.from(selectedKeys)[0]}
         </Button>
       </DropdownTrigger>
       <DropdownMenu
@@ -120,94 +102,74 @@ function ModelListDropdown({ isPremium }: { isPremium?: string | null }) {
         variant="solid"
         onSelectionChange={setSelectedKeys}
       >
-        <DropdownSection title="Small">
-          {(Object.keys(ModelsMap) as Models[])
-            .filter((model) => ModelsMap[model].size === "small")
-            .map((model) => (
-              <DropdownItem
-                key={model}
-                description={`${modelRateLimits["small"][isPremium as ProductNames]} prompts per day`}
-                isDisabled={
-                  modelRateLimits["small"][isPremium as ProductNames] === 0
-                }
-                startContent={
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fill="#448aff"
-                      d="M15 8.014A7.457 7.457 0 0 0 8.014 15h-.028A7.456 7.456 0 0 0 1 8.014v-.028A7.456 7.456 0 0 0 7.986 1h.028A7.457 7.457 0 0 0 15 7.986z"
-                    />
-                  </svg>
-                }
-              >
-                <p className={"text-xs"}>{ModelsMap[model].name}</p>
-              </DropdownItem>
-            ))}
-        </DropdownSection>
-        <DropdownSection title="Medium">
-          {(Object.keys(ModelsMap) as Models[])
-            .filter((model) => ModelsMap[model].size === "medium")
-            .map((model) => (
-              <DropdownItem
-                key={model}
-                description={`${modelRateLimits["medium"][isPremium as ProductNames]} prompts per day`}
-                isDisabled={
-                  modelRateLimits["medium"][isPremium as ProductNames] === 0
-                }
-                startContent={
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fill="#448aff"
-                      d="M15 8.014A7.457 7.457 0 0 0 8.014 15h-.028A7.456 7.456 0 0 0 1 8.014v-.028A7.456 7.456 0 0 0 7.986 1h.028A7.457 7.457 0 0 0 15 7.986z"
-                    />
-                  </svg>
-                }
-              >
-                <p className={"text-xs"}>{ModelsMap[model].name}</p>
-              </DropdownItem>
-            ))}
-        </DropdownSection>
-        <DropdownSection title="Large">
-          {(Object.keys(ModelsMap) as Models[])
-            .filter((model) => ModelsMap[model].size === "large")
-            .map((model) => (
-              <DropdownItem
-                key={model}
-                description={
-                  modelRateLimits["large"][isPremium as ProductNames] > 0
-                    ? `${modelRateLimits["large"][isPremium as ProductNames]} prompts per day`
-                    : "Upgrade to AI Plus to use this model"
-                }
-                isDisabled={
-                  modelRateLimits["large"][isPremium as ProductNames] === 0
-                }
-                startContent={
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      fill="#448aff"
-                      d="M15 8.014A7.457 7.457 0 0 0 8.014 15h-.028A7.456 7.456 0 0 0 1 8.014v-.028A7.456 7.456 0 0 0 7.986 1h.028A7.457 7.457 0 0 0 15 7.986z"
-                    />
-                  </svg>
-                }
-              >
-                <p className={"text-xs"}>{ModelsMap[model].name}</p>
-              </DropdownItem>
-            ))}
-        </DropdownSection>
+        <DropdownItem
+          key={"small"}
+          description={`${modelRateLimits["small"][isPremium as ProductNames]} prompts per day`}
+          isDisabled={modelRateLimits["small"][isPremium as ProductNames] === 0}
+          startContent={
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill="#448aff"
+                d="M15 8.014A7.457 7.457 0 0 0 8.014 15h-.028A7.456 7.456 0 0 0 1 8.014v-.028A7.456 7.456 0 0 0 7.986 1h.028A7.457 7.457 0 0 0 15 7.986z"
+              />
+            </svg>
+          }
+        >
+          <p className={"text-xs"}>Small</p>
+        </DropdownItem>
+
+        <DropdownItem
+          key={"medium"}
+          description={`${modelRateLimits["medium"][isPremium as ProductNames]} prompts per day`}
+          isDisabled={
+            modelRateLimits["medium"][isPremium as ProductNames] === 0
+          }
+          startContent={
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill="#448aff"
+                d="M15 8.014A7.457 7.457 0 0 0 8.014 15h-.028A7.456 7.456 0 0 0 1 8.014v-.028A7.456 7.456 0 0 0 7.986 1h.028A7.457 7.457 0 0 0 15 7.986z"
+              />
+            </svg>
+          }
+        >
+          <p className={"text-xs"}>Medium</p>
+        </DropdownItem>
+
+        <DropdownItem
+          key={"large"}
+          description={
+            modelRateLimits["large"][isPremium as ProductNames] > 0
+              ? `${modelRateLimits["large"][isPremium as ProductNames]} prompts per day`
+              : "Upgrade to AI Plus to use this model"
+          }
+          isDisabled={modelRateLimits["large"][isPremium as ProductNames] === 0}
+          startContent={
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill="#448aff"
+                d="M15 8.014A7.457 7.457 0 0 0 8.014 15h-.028A7.456 7.456 0 0 0 1 8.014v-.028A7.456 7.456 0 0 0 7.986 1h.028A7.457 7.457 0 0 0 15 7.986z"
+              />
+            </svg>
+          }
+        >
+          <p className={"text-xs"}>Large</p>
+        </DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );

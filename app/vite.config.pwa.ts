@@ -13,7 +13,7 @@ export default defineConfig({
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2,json}"],
       },
-      manifestFilename: "./manifest.json",
+      manifestFilename: "manifest.json",
       includeAssets: ["**/*.{png}"],
       manifest: {
         display: "standalone",

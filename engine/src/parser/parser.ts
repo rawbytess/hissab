@@ -67,12 +67,15 @@ async function parse(
       ) {
         if (token.basetype === "BRAC_START") {
           parseIndex += 1;
-          const { result, index } = await parse(
+
+          const { result, index, convertTo, isExplicit } = await parse(
             tokens,
             isPro,
             parseIndex,
             false,
           );
+          parseTree.setIsExplicit(isExplicit);
+
           parseIndex = index;
           tokens.splice(parseIndex + 1, 0, result);
         }
@@ -93,7 +96,7 @@ async function parse(
           func = true;
           while (func) {
             parseIndex += 1;
-            const { result, index, isFunc } = await parse(
+            const { result, index, isFunc, isExplicit } = await parse(
               tokens,
               isPro,
               parseIndex,
@@ -101,6 +104,7 @@ async function parse(
             );
             parseIndex = index;
             func = isFunc;
+            parseTree.setIsExplicit(isExplicit);
             if (result instanceof NumberToken)
               parseState = await parseState.handleOperand(parseTree, result);
             else if (result instanceof DateToken)

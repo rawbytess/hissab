@@ -52,13 +52,13 @@ export default App;
 export function AttachmentBar() {
   const { currentPage, updateNote } = useContext(PageContext);
   if (!currentPage) return null;
-  const exptime = new Date(currentPage.file?.geminiFile?.expirationTime);
+  const exptime = new Date(currentPage.file?.geminiFile?.expirationTime ?? 0);
   const now = new Date();
 
   return (
     <div
       className={cn(
-        "flex flex-wrap gap-2 items-center justify-center w-fill text-[#dddddd] drop-shadow p-2 mt-11  fixed",
+        "flex flex-wrap gap-2 items-center justify-center w-fill text-[#dddddd] drop-shadow p-2 mt-11  fixed z-10",
         !currentPage.file ? "h-0 p-0" : "h-auto",
       )}
     >

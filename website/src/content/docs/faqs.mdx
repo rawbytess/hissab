@@ -1,8 +1,6 @@
 ---
 id: faqs
 title: FAQs
-sidebar:
-    order: 1
 ---
 
 <div className="faqs">
@@ -12,23 +10,20 @@ sidebar:
 ### What is Hissab?
 
 > Hissab is a calculator app where you can type your calculations and get results instantly.
-> It uses an intuitive syntax and can perform wide range of calculations.
+> It uses an intuitive syntax and AI. It can perform wide range of calculations.
 
 ### Who is Hissab for?
 
 > Hissab is designed to be a general purpose calculator app. Its capabilities range from simple calculations to advanced computations.
 > Thus, Hissab is useful for everyone including students and professionals.
 
-### Does Hissab understand full natural language?
+### What is Hissab classic?
+> Hissab classic is the standard non-ai part of hissab. Its totally free to use.
+It has an almost natural language like syntax and you can refer the docs for more details for its syntax and capabilities.
 
-> Short answer is No. Hissab understands specific grammar and syntax, which is defined in the Guide section of the docs.
-> Having said that, the grammar is very intuitive and natural-language-like and we plan to improve it over time.
-> There is little to no learning curve and anyone can start using Hissab immediately.
+### What is Hissab AI?
+> Hissab AI is a wrapper over classic hissab to provide full natural language capabilities for calculations and math and uses hissab engine for the actual calculations.
 
-### Does Hissab use Artificial Intelligence?
-
-> Hissab does NOT use AI in anyway shape or form. The core hissab engine parses the expressions, performs calculations and generates the result,
-    the old-fashioned way performing accurate, reliable and trustworthy calculations.
 
 ### What platforms does Hissab run on?
 
@@ -44,16 +39,36 @@ sidebar:
 
 ### Does Hissab work offline?
 
-> Not currently. But soon, if you have installed hissab it will work offline except for some features that require internet connection.
+> Not currently. But soon, if you have installed hissab it will work offline except for some features (like AI) that require internet connection.
+
+## AI
+
+### What LLM Models does Hissab AI use?
+
+> Currently Hissab uses Google Gemini set of models, tuned for use with hissab. We are always working to improve the models
+    and its performance while experimenting with other models as well.
+
+### How does Hissab AI work? And how does it ensure accurate results?
+> Hissab AI uses a combination of LLMs and hissab engine to provide accurate results. The LLMs are tuned to understand the
+    context of the calculations and extract calculation intent from the prompts which generate hissab expressions.
+    These expressions are parsed by hissab engine which does the computation to provide the final results.
+
+## Account
+### Do I need to create an account to use Hissab?
+> No. Hissab does not require you to create an account to use it. You only need an account if you want to subscribe and
+    use the AI features.
+
+
 
 ## Privacy
 
 ### Does Hissab collect my personal information or share it with any 3rd party vendors?
 
-> Hissab does not collect any personal information.
+> Hissab does not collect any personal information nor does it share any info with any 3rd party vendors.
+    Hissab AI does use the user prompts anonymously to improve the models and its performance.
 
 ### Are the calculations performed locally on device, or on the cloud?
 
-> All calculations are performed locally on the device.
+> All classic calculations are performed locally on the device. All AI calculations are performed on the cloud.
 
 </div>
