@@ -51,11 +51,11 @@ jobs:
 
       - name: Run D1 Migration and Deploy API
         uses: cloudflare/wrangler-action@v3
+        working-directory: ./api
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           packageManager: pnpm
           environment: dev
-          working-directory: ./api
           preCommands: pnpm d1:migrate:apply:dev
           secrets: |
             GEMINI_API_KEY
