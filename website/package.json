@@ -6,31 +6,20 @@
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro",
-    "supabase:dev": "pnpm supabase start",
-    "dblocal:push": "",
-    "dblocal:pull": "",
-    "dbremote:push": "",
-    "dbremote:pull": "",
-    "wrangler:dev": "wrangler pages dev ./dist --d1=dev-db"
+    "astro": "astro"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
-    "@astrojs/cloudflare": "^12.5.3",
     "@astrojs/react": "^4.3.0",
     "@astrojs/starlight": "^0.34.3",
     "@astrojs/tailwind": "^6.0.2",
-    "@aws-sdk/client-ses": "^3.817.0",
     "@heroui/react": "^2.7.8",
     "@iconify/react": "^6.0.0",
     "astro": "^5.8.0",
-    "better-auth": "^1.2.8",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "drizzle-orm": "^0.43.1",
     "engine": "workspace:*",
     "framer-motion": "^12.15.0",
-    "hono": "^4.7.10",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.511.0",
     "react": "^19.1.0",
@@ -46,13 +35,8 @@
   },
   "devDependencies": {
     "@astrojs/node": "^9.2.2",
-    "@better-auth/cli": "^1.2.8",
-    "@cloudflare/workers-types": "^4.20250525.0",
     "@tailwindcss/vite": "^4.1.7",
     "@types/react": "^19.1.6",
-    "@types/react-dom": "^19.1.5",
-    "better-sqlite3": "^11.10.0",
-    "drizzle-kit": "^0.31.1",
-    "wrangler": "^4.17.0"
+    "@types/react-dom": "^19.1.5"
   }
 }
