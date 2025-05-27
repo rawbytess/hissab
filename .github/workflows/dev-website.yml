@@ -2,6 +2,12 @@ name: Deploy Website on Dev Push
 
 on:
   push:
+    paths:
+      - 'website/**'
+      - 'lib/**'
+      - 'engine/**'
+      - '.github/workflows/dev-website.yml'
+      - '.github/workflows/prod-website.yml'
     branches-ignore:
       - main
 

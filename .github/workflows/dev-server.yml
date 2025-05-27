@@ -2,6 +2,12 @@ name: Deploy Server on Dev Push
 
 on:
   push:
+    paths:
+        - 'api/**'
+        - 'lib/**'
+        - 'engine/**'
+        - '.github/workflows/dev-server.yml'
+        - '.github/workflows/prod-server.yml'
     branches-ignore:
       - main
 

@@ -2,6 +2,12 @@ name: Deploy App on Dev Push
 
 on:
   push:
+    paths:
+      - 'app/**'
+      - 'lib/**'
+      - 'engine/**'
+      - '.github/workflows/dev-app.yml'
+      - '.github/workflows/prod-app.yml'
     branches-ignore:
       - main
 
