@@ -6,9 +6,6 @@
   "assets": {
     "directory": "dist"
   },
-  "build": {
-    "command": "pnpm build"
-  },
   "env": {
     "prod": {
       "workers_dev": false,
