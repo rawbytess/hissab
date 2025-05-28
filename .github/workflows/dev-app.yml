@@ -53,7 +53,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           packageManager: pnpm
           environment: dev
-          command: wrangler deploy --env dev --no-build --assets="dist"
+          command: deploy --env dev --no-build --assets="dist"
         env:
           VITE_HISSAB_WEBSITE_URL: ${{ secrets.HISSAB_WEBSITE_URL }}
           VITE_BACKEND_URL: ${{ secrets.BACKEND_URL }}
