@@ -27,8 +27,7 @@ export default function UserDropdown() {
             }}
             className="transition-transform "
             description={isPremium ?? "Free Plan"}
-            // name={metadata?.user_name || session?.user?.email}
-            name={"Remy LeBeau"}
+            name={metadata?.user_name || session?.user?.email}
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" className={"text-gray-300"}>
@@ -63,6 +62,7 @@ export default function UserDropdown() {
               className={"text-red-700"}
               onPress={logout}
               textValue={"Log Out"}
+              description={session?.user?.email}
             >
               <div className={"flex items-center justify-start gap-2"}>
                 <Icon icon="humbleicons:logout" width="16" height="16" />

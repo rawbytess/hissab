@@ -41,7 +41,7 @@ jobs:
         working-directory: app
         env:
           VITE_HISSAB_WEBSITE_URL: ${{ secrets.HISSAB_WEBSITE_URL }}
-          VITE_BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          VITE_HISSAB_SERVER_URL: ${{ secrets.HISSAB_SERVER_URL }}
           VITE_SUPABASE_PROJECT_URL: ${{ secrets.SUPABASE_PROJECT_URL }}
           VITE_SUPABASE_PROJECT_ANON_KEY: ${{ secrets.SUPABASE_PROJECT_ANON_KEY }}
 
@@ -55,6 +55,6 @@ jobs:
           command: deploy --env dev --no-bundle
         env:
           VITE_HISSAB_WEBSITE_URL: ${{ secrets.HISSAB_WEBSITE_URL }}
-          VITE_BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          VITE_HISSAB_SERVER_URL: ${{ secrets.HISSAB_SERVER_URL }}
           VITE_SUPABASE_PROJECT_URL: ${{ secrets.SUPABASE_PROJECT_URL }}
           VITE_SUPABASE_PROJECT_ANON_KEY: ${{ secrets.SUPABASE_PROJECT_ANON_KEY }}
