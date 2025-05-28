@@ -36,6 +36,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Build and Deploy Website
+        working-directory: ./website
+        run: pnpm build
+        env:
+          PUBLIC_HISSAB_APP_URL: ${{ secrets.HISSAB_APP_URL }}
+
       - name: Deploy Website
         uses: cloudflare/wrangler-action@v3
         with:
@@ -43,5 +49,6 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           packageManager: pnpm
           environment: dev
+          command: wrangler deploy --env dev --no-build --assets="dist"
         env:
           PUBLIC_HISSAB_APP_URL: ${{ secrets.HISSAB_APP_URL }}
