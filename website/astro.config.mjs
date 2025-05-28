@@ -9,6 +9,10 @@ import starlight from "@astrojs/starlight";
 export default defineConfig({
   output: "static",
   site: "https://hissab.io/",
+  server: ({ command }) => ({
+    port: command === "dev" ? 4321 : 5321,
+    host: "0.0.0.0",
+  }),
   integrations: [
     react(),
     tailwind({ applyBaseStyles: false }),

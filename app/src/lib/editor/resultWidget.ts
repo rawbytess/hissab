@@ -77,7 +77,10 @@ export class ResultWidget extends WidgetType {
       ? "cm-result cm-result-stale"
       : "cm-result cm-result-fresh";
 
-    if (this.result.error && this.result.errorMessage?.name !== "UserError") {
+    if (
+      this.result.error &&
+      this.result.errorMessage?.message !== "User Error"
+    ) {
       const errorSpan = document.createElement("span");
       errorSpan.setAttribute("id", `result-error-${this.result.lineNumber}`);
       wrap.appendChild(errorSpan);

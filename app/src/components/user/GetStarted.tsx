@@ -92,7 +92,10 @@ export default function GetStarted() {
           size="sm"
           variant="light"
           onPress={() => {
-            window.open("https://hissab.io/pricing", "_blank");
+            window.open(
+              `${import.meta.env.VITE_HISSAB_WEBSITE_URL}/pricing`,
+              "_blank",
+            );
           }}
         >
           Learn More
