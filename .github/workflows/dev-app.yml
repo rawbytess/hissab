@@ -45,6 +45,11 @@ jobs:
           VITE_SUPABASE_PROJECT_URL: ${{ secrets.SUPABASE_PROJECT_URL }}
           VITE_SUPABASE_PROJECT_ANON_KEY: ${{ secrets.SUPABASE_PROJECT_ANON_KEY }}
 
+      - name: Build Website
+        working-directory: ./website
+        run: pnpm build
+        env:
+          PUBLIC_HISSAB_APP_URL: ${{ secrets.HISSAB_APP_URL }}
 
       - name: Deploy APP
         uses: cloudflare/wrangler-action@v3
