@@ -36,15 +36,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build App
-        run: pnpm build:pwa
-        working-directory: ./app
-        env:
-          VITE_HISSAB_WEBSITE_URL: ${{ secrets.HISSAB_WEBSITE_URL }}
-          VITE_BACKEND_URL: ${{ secrets.BACKEND_URL }}
-          VITE_SUPABASE_PROJECT_URL: ${{ secrets.SUPABASE_PROJECT_URL }}
-          VITE_SUPABASE_PROJECT_ANON_KEY: ${{ secrets.SUPABASE_PROJECT_ANON_KEY }}
-
       - name: Deploy APP
         uses: cloudflare/wrangler-action@v3
         with:
@@ -52,3 +43,8 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           packageManager: pnpm
           environment: dev
+        env:
+          VITE_HISSAB_WEBSITE_URL: ${{ secrets.HISSAB_WEBSITE_URL }}
+          VITE_BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          VITE_SUPABASE_PROJECT_URL: ${{ secrets.SUPABASE_PROJECT_URL }}
+          VITE_SUPABASE_PROJECT_ANON_KEY: ${{ secrets.SUPABASE_PROJECT_ANON_KEY }}
