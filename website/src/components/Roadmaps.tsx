@@ -42,15 +42,14 @@ export default function Roadmaps() {
             title: string;
           },
           oi: number,
-        ) => {
-          return (
-            <RoadmapCard
-              title={rm.title}
-              status={rm.status}
-              description={rm.description}
-            />
-          );
-        },
+        ) => (
+          <RoadmapCard
+            key={oi}
+            title={rm.title}
+            status={rm.status}
+            description={rm.description}
+          />
+        ),
       )}
     </section>
   );
