@@ -12,10 +12,12 @@ import { infinity } from "ldrs";
 import { Icon } from "@iconify/react";
 import { useContext } from "react";
 import { PostHogProvider } from "posthog-js/react";
+import { PostHogConfig } from "posthog-js";
 
 infinity.register();
-const options = {
+const options: Partial<PostHogConfig> = {
   api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST ?? "",
+  capture_pageview: "history_change",
 };
 
 function App() {

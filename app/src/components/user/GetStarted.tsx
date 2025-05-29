@@ -24,7 +24,7 @@ export default function GetStarted() {
         </p>
       </CardHeader>
       <CardBody className={"justify-center text-center"}>
-        <p className="text-sm text-white">
+        <div className="text-sm text-white">
           <ul className="flex flex-col gap-2">
             <li
               className={
@@ -63,7 +63,7 @@ export default function GetStarted() {
               Attach and reference files, images, and documents
             </li>
           </ul>
-        </p>
+        </div>
       </CardBody>
       <CardFooter className="flex flex-col gap-2">
         {session ? (
