@@ -27,7 +27,7 @@ function App() {
       )}
     >
       <PostHogProvider
-        apiKey={process.env.VITE_PUBLIC_POSTHOG_KEY ?? ""}
+        apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY ?? ""}
         options={options}
       >
         <NuqsAdapter>

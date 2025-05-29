@@ -33,7 +33,6 @@ export default defineConfig({
         {
           tag: "script",
           content: `
-          <script>
   !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");
     2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}
     (p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host+"/static/array.js",
@@ -49,8 +48,7 @@ export default defineConfig({
     {
       api_host:'https://us.i.posthog.com'
     }
-  )
-</script>`,
+  )`,
         },
         {
           tag: "script",
