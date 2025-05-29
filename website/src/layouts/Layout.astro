@@ -6,6 +6,12 @@ import "../css/tailwind.css";
 import Header from "../components/Header.tsx";
 import Footer from "../components/Footer.tsx";
 import {HeroUIProvider } from "@heroui/react";
+import { PostHogProvider } from 'posthog-js/react'
+
+const options = {
+  api_host: import.meta.env.PUBLIC_POSTHOG_HOST,
+  capture_pageview: 'history_change'
+}
 ---
 <!doctype html>
 <html lang="en">
@@ -22,13 +28,13 @@ import {HeroUIProvider } from "@heroui/react";
 
 	</head>
 	<body class="dark">
-  <HeroUIProvider client:load>
-    <div class="grid grid-cols-1 grid-rows-[auto_1fr_auto] min-h-screen">
-	<Header client:load />
-		<slot />
-	<Footer client:load />
-  </HeroUIProvider>
-  </div>
+  <PostHogProvider apiKey={import.meta.env.PUBLIC_POSTHOG_KEY} options={options}>
+    <HeroUIProvider client:load>
+      <div class="grid grid-cols-1 grid-rows-[auto_1fr_auto] min-h-screen">
+        <Header client:load />
+        <slot />
+        <Footer client:load />
+      </div> </HeroUIProvider>
 	</body>
 </html>
 

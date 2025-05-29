@@ -11,8 +11,12 @@ import { NuqsAdapter } from "nuqs/adapters/react";
 import { infinity } from "ldrs";
 import { Icon } from "@iconify/react";
 import { useContext } from "react";
+import { PostHogProvider } from "posthog-js/react";
 
 infinity.register();
+const options = {
+  api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST ?? "",
+};
 
 function App() {
   return (
@@ -22,27 +26,32 @@ function App() {
         "dark text-foreground bg-background",
       )}
     >
-      <NuqsAdapter>
-        <HeroUIProvider>
-          <ToastProvider toastOffset={50} disableAnimation />
-          <SessionProvider>
-            <PagesProvider>
-              <Sidebar>
-                <div
-                  className={
-                    "grid grid-rows-[auto_auto_1fr_auto] grid-cols-1 justify-between w-full rounded"
-                  }
-                >
-                  <Header />
-                  <AttachmentBar />
-                  <Editor />
-                  <Footer />
-                </div>
-              </Sidebar>
-            </PagesProvider>
-          </SessionProvider>
-        </HeroUIProvider>
-      </NuqsAdapter>
+      <PostHogProvider
+        apiKey={process.env.REACT_APP_PUBLIC_POSTHOG_KEY ?? ""}
+        options={options}
+      >
+        <NuqsAdapter>
+          <HeroUIProvider>
+            <ToastProvider toastOffset={50} disableAnimation />
+            <SessionProvider>
+              <PagesProvider>
+                <Sidebar>
+                  <div
+                    className={
+                      "grid grid-rows-[auto_auto_1fr_auto] grid-cols-1 justify-between w-full rounded"
+                    }
+                  >
+                    <Header />
+                    <AttachmentBar />
+                    <Editor />
+                    <Footer />
+                  </div>
+                </Sidebar>
+              </PagesProvider>
+            </SessionProvider>
+          </HeroUIProvider>
+        </NuqsAdapter>
+      </PostHogProvider>
     </div>
   );
 }

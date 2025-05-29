@@ -9,6 +9,8 @@ import {
 import { Icon } from "@iconify/react";
 import { modelRateLimits } from "../../../../lib/types/AITypes.ts";
 
+const priceMap = {};
+
 export default function Price() {
   return (
     <div className="flex flex-col items-center w-full mt-5 text-[#efefef]">
@@ -148,7 +150,9 @@ export default function Price() {
             </ul>
           </CardBody>
           <CardFooter className={"mt-auto flex flex-col gap-2"}>
-            <Button className={"mx-auto w-full bg-cyan-700"}>$8 / month</Button>
+            <Button className={"mx-auto w-full bg-cyan-700"}>
+              $10 / month
+            </Button>
             <Button className={"mx-auto w-full bg-cyan-700"}>$50 / year</Button>
             <p className={"text-xs text-gray-400"}>Cancel Anytime</p>
           </CardFooter>
@@ -252,10 +256,10 @@ export default function Price() {
           </CardBody>
           <CardFooter className={"mt-auto flex flex-col gap-2"}>
             <Button className={"mx-auto bg-fuchsia-700 w-full"}>
-              $15 / month
+              $20 / month
             </Button>
             <Button className={"mx-auto bg-fuchsia-700 w-full"}>
-              $100 / year
+              $125 / year
             </Button>
             <p className={"text-xs text-gray-400"}>Cancel Anytime</p>
           </CardFooter>

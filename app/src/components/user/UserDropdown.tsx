@@ -35,7 +35,7 @@ export default function UserDropdown() {
             {isPremium ? (
               <DropdownItem key="manage_account" textValue={"Manage Account"}>
                 <a
-                  href={"https://hissab.lemonsqueezy.com/billing"}
+                  href={"https://store.hissab.io/billing"}
                   target={"_blank"}
                   className="flex items-center justify-start gap-2"
                 >

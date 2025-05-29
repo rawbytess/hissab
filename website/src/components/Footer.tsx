@@ -3,27 +3,47 @@ import { Button } from "@heroui/react";
 
 export default function Footer() {
   return (
-    <div className="bg-black w-full">
-      <footer className={"text-white max-w-[60em] mx-auto py-6"}>
-        <div className="container flex flex-col md:flex-row justify-around items-center">
-          <div className="mb-4 md:mb-0 flex flex-col items-center gap-2">
-            <a
-              href={"https://www.linkedin.com/in/prenx4x/"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={"mr-2 text-gray-100 hover:text-blue-300"}
-            >
-              Made by: Mufaddal Makati
+    <footer
+      className={"flex flex-col items-center text-white py-6 bg-black w-full"}
+    >
+      <div className="container flex flex-col md:flex-row justify-around items-center">
+        <div className="mb-4 md:mb-0 flex flex-col items-center gap-2">
+          <a
+            href={"https://www.linkedin.com/in/prenx4x/"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={"mr-2 text-gray-100 hover:text-blue-300"}
+          >
+            Made by: Mufaddal Makati
+          </a>
+          <div className={"flex items-center gap-5"}>
+            <a href={"https://www.reddit.com/r/hissab/"} target={"_blank"}>
+              <Icon icon="logos:reddit-icon" width={24} />
             </a>
-            <span className={"text-xs"}>
-              © {new Date().getFullYear()}. All rights reserved.
-            </span>
-            <div className={"flex items-center gap-2"}>
-              <Icon icon="tabler:external-link" width={16} />
-              <a href={"/privacy"}>Privacy Policy</a>
-            </div>
+            <a href={"https://x.com/prenx4x"} target={"_blank"}>
+              <Icon icon="hugeicons:new-twitter" width={24} />
+            </a>
           </div>
+          <span className={"text-xs"}>
+            © {new Date().getFullYear()}. All rights reserved.
+          </span>
+        </div>
+        <div>
+          <div className={"flex items-center gap-2"}>
+            <Icon icon="tabler:external-link" width={16} />
+            <a href={"/privacy"}>Privacy Policy</a>
+          </div>
+          <div className={"flex items-center gap-2"}>
+            <Icon icon="tabler:external-link" width={16} />
+            <a href={"/privacy-app"}>Privacy App Policy</a>
+          </div>
+          <div className={"flex items-center gap-2"}>
+            <Icon icon="tabler:external-link" width={16} />
+            <a href={"/terms"}>Terms of Use</a>
+          </div>
+        </div>
 
+        <div className="flex flex-col items-center gap-5 space-x-4">
           <div className={"flex flex-row items-center gap-2 "}>
             <div className={"flex flex-row gap-1 items-center"}>
               <Icon icon="emojione-v1:red-heart" width={16} />
@@ -42,28 +62,26 @@ export default function Footer() {
               </Button>
             </div>
           </div>
-          <div className="flex flex-col items-center gap-5 space-x-4">
-            <div>
-              <a
-                href="https://www.producthunt.com/posts/hissab?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-hissab"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <img
-                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=406257&theme=dark"
-                  alt="Hissab - Just&#0032;Type&#0032;and&#0032;Calculate&#0032;Anything&#0044;&#0032;Instantly | Product Hunt"
-                  style={{
-                    width: "250px",
-                  }}
-                  width="250"
-                  height="54"
-                />
-              </a>
-            </div>
+          <div>
+            <a
+              href="https://www.producthunt.com/posts/hissab?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-hissab"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <img
+                src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=406257&theme=dark"
+                alt="Hissab - Just&#0032;Type&#0032;and&#0032;Calculate&#0032;Anything&#0044;&#0032;Instantly | Product Hunt"
+                style={{
+                  width: "250px",
+                }}
+                width="250"
+                height="54"
+              />
+            </a>
           </div>
         </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
   );
 }
 

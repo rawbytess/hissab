@@ -77,7 +77,7 @@ export default function GetStarted() {
               <Icon icon="gridicons:external" color={"white"} width={20} />
             }
             onPress={() => {
-              window.open("https://hissab.lemonsqueezy.com", "_blank");
+              window.open("https://store.hissab.io", "_blank");
             }}
           >
             Buy Now
