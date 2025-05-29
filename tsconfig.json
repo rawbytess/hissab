@@ -15,5 +15,5 @@
     "noUnusedLocals": false, // make sure this is false to have no errors
     "noUnusedParameters": false
   },
-  "include": ["./lib/**/*"],
+  "include": ["./lib/**/*"]
 }

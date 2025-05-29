@@ -1,5 +1,5 @@
 @import url("https://fonts.cdnfonts.com/css/chillax");
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -40,7 +40,6 @@ body {
   font-style: normal;
 }
 
-
 @layer base {
   * {
     @apply border-border;
@@ -53,8 +52,8 @@ body {
   }
   /* Hide scrollbar for IE, Edge and Firefox */
   .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 }
 @layer utilities {
@@ -70,8 +69,8 @@ body {
   }
 }
 .cm-ai-widget {
-    @apply bg-purple-700 text-[#efefef] rounded-l pl-1 py-1 uppercase cursor-pointer;
-    font-family: "Inter", sans-serif;
+  @apply bg-purple-700 text-[#efefef] rounded-l pl-1 py-1 uppercase cursor-pointer;
+  font-family: "Inter", sans-serif;
 }
 .cm-prompt {
   @apply text-[#efefef] ring-purple-700 bg-gray-800 py-1 px-2 rounded-r font-extralight;

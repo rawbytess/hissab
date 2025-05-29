@@ -3,11 +3,11 @@ name: Deploy App on Dev Push
 on:
   push:
     paths:
-      - 'app/**'
-      - 'lib/**'
-      - 'engine/**'
-      - '.github/workflows/dev-app.yml'
-      - '.github/workflows/prod-app.yml'
+      - "app/**"
+      - "lib/**"
+      - "engine/**"
+      - ".github/workflows/dev-app.yml"
+      - ".github/workflows/prod-app.yml"
     branches-ignore:
       - main
 
@@ -30,8 +30,8 @@ jobs:
       - name: Setup Node.js v22
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
-          cache: 'pnpm'
+          node-version: "22.x"
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install

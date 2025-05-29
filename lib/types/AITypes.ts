@@ -29,7 +29,7 @@ export type ModelFamily = "gemini";
 export const zModels = z.enum([
   "gemini-2.0-flash-lite",
   "gemini-2.0-flash",
-  "gemini-2.5-flash-preview-04-17",
+  "gemini-2.5-flash-preview-05-20",
   "gemini-2.5-pro-preview-05-06",
 ]);
 /*
@@ -74,7 +74,7 @@ export const ModelsList: {
     canThink: false,
   },
   medium: {
-    id: "gemini-2.5-flash-preview-04-17",
+    id: "gemini-2.5-flash-preview-05-20",
     name: "Gemini 2.5 Flash",
     family: "gemini",
     description: "Gemini 2.5 Flash",
@@ -119,7 +119,7 @@ export const ModelsMap: {
     size: "small",
     canThink: false,
   },
-  "gemini-2.5-flash-preview-04-17": {
+  "gemini-2.5-flash-preview-05-20": {
     name: "Gemini 2.5 Flash",
     description: "Gemini 2.5 Flash",
     family: "gemini",
@@ -136,7 +136,7 @@ export const ModelsMap: {
 };
 
 export const inLineDefaultModel: Models = "gemini-2.0-flash";
-export const chatDefaultModel: Models = "gemini-2.5-flash-preview-04-17";
+export const chatDefaultModel: Models = "gemini-2.5-flash-preview-05-20";
 
 export const modelRateLimits: {
   [key in ModelSize]: {

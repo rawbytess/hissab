@@ -22,8 +22,7 @@ export default function Pages() {
     if (notes.length === 0) {
       const newNote: Page = createNote(getRandomPlaceholderName(), "");
       setCurrentPageNumber(newNote.id);
-    }
-    else if (currentPageNumber?.length === 0) {
+    } else if (currentPageNumber?.length === 0) {
       setCurrentPageNumber(notes[0].id);
     }
   }, [createNote, notes, currentPageNumber, setCurrentPageNumber]);

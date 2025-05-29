@@ -50,9 +50,14 @@ export class Gemini {
       | undefined = undefined,
     isPremium: ProductNames | null = null,
   ): Promise<AIFormatResponseType> {
-    const contents: (string | Part | {})[] = [prompt];
+    const contents: (string | Part | {})[] = [
+      { role: "user", parts: [{ text: prompt }] },
+    ];
     if (files && isPremium && isPremium === "AI Plus") {
-      contents.push(createPartFromUri(files.url, files.mimeType));
+      contents.push({
+        role: "user",
+        parts: [createPartFromUri(files.url, files.mimeType)],
+      });
     }
     const thinkingConfig = ModelsMap[this.hissabModel].canThink
       ? { thinkingBudget: 0 }
@@ -61,7 +66,7 @@ export class Gemini {
     const respResult = await run(
       this.ai.models.generateContent({
         model: this.hissabModel,
-        contents: createUserContent(contents),
+        contents: contents,
         config: {
           thinkingConfig: thinkingConfig,
           tools: [{ functionDeclarations: [hissabExpFunction] }],

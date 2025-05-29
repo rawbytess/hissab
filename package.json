@@ -4,6 +4,9 @@
   "description": "Hissab Monorepo",
   "main": "index.js",
   "scripts": {
+    "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
     "update": "pnpm update -i --latest",
     "pretty": "prettier --write .",
     "pretty-check": "prettier --check .",

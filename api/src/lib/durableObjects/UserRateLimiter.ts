@@ -2,14 +2,19 @@ import { DurableObject } from "cloudflare:workers";
 import { ProductNames } from "~lib/types/userMetadata";
 import { modelRateLimits, Models, ModelSize } from "~lib/types/AITypes";
 import { getTodayTimestamp } from "~lib/timeutils";
-import { Bindings, MetaBindings, RateLimitStorage, userVars } from "@lib/types/envTypes";
+import {
+  Bindings,
+  MetaBindings,
+  RateLimitStorage,
+  userVars,
+} from "@lib/types/envTypes";
 
 export class UserRateLimiter extends DurableObject<MetaBindings> {
   async checkRateLimit(
     isPremium: ProductNames,
     modelSize: ModelSize,
     timezone: string,
-    userId: string
+    userId: string,
   ): Promise<boolean> {
     const today = getTodayTimestamp();
     const limit = modelRateLimits[modelSize][isPremium];
@@ -18,7 +23,7 @@ export class UserRateLimiter extends DurableObject<MetaBindings> {
     }
     this.ctx.storage.put("userId", userId);
     const currentCount: RateLimitStorage = (await this.ctx.storage.get(
-      `${today}-${modelSize}`
+      `${today}-${modelSize}`,
     )) || { count: 0, timezone, model: modelSize };
     if (currentCount.count === 0) {
       this.ctx.storage.put(`${today}-${modelSize}`, {
@@ -36,7 +41,7 @@ export class UserRateLimiter extends DurableObject<MetaBindings> {
     const rateLimitData: RateLimitStorage[] = [];
     for (const model of allModels) {
       const currentCount: RateLimitStorage = (await this.ctx.storage.get(
-        `${today}-${model}`
+        `${today}-${model}`,
       )) as RateLimitStorage;
       if (currentCount) {
         rateLimitData.push(currentCount);
@@ -48,7 +53,7 @@ export class UserRateLimiter extends DurableObject<MetaBindings> {
   async incrementRateLimit(
     isPremium: ProductNames,
     modelSize: ModelSize,
-    timezone: string
+    timezone: string,
   ) {
     const today = getTodayTimestamp();
     const limit = modelRateLimits[modelSize][isPremium];
@@ -56,7 +61,7 @@ export class UserRateLimiter extends DurableObject<MetaBindings> {
       return;
     }
     const currentCount: RateLimitStorage = (await this.ctx.storage.get(
-      `${today}-${modelSize}`
+      `${today}-${modelSize}`,
     )) as RateLimitStorage;
     if (currentCount.count === 0) {
       this.ctx.storage.put(`${today}-${modelSize}`, {

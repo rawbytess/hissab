@@ -5,7 +5,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "lib": ["esnext"],
-    "types": ["@cloudflare/workers-types","node"],
+    "types": ["@cloudflare/workers-types", "node"],
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
@@ -24,10 +24,10 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": "src",
     "paths": {
-        "@lib/*": ["lib/*"],
-        "@middlewares/*": ["middlewares/*"],
-        "@routes/*": ["routes/*"],
-        "~lib/*": ["../../lib/*"],
+      "@lib/*": ["lib/*"],
+      "@middlewares/*": ["middlewares/*"],
+      "@routes/*": ["routes/*"],
+      "~lib/*": ["../../lib/*"]
     }
   },
   "include": ["test/**/*", "playwright.config.ts", "src/**/*"],
