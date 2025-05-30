@@ -27,8 +27,8 @@
     "supabase:link": "supabase link",
     "supabase:db:prod:push": "supabase db push",
     "d1:migrate:apply:local": "wrangler d1 migrations apply dev-logs --local",
-    "d1:migrate:apply:dev": "wrangler d1 migrations apply dev-logs --remote",
-    "d1:migrate:apply:prod": "wrangler d1 migrations apply prod-logs --remote"
+    "d1:migrate:apply:dev": "wrangler d1 migrations apply dev-logs --remote --env dev",
+    "d1:migrate:apply:prod": "wrangler d1 migrations apply prod-logs --remote --env prod"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250525.0",
