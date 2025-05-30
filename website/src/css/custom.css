@@ -7,7 +7,7 @@
 /* You can override the default Infima variables here. */
 @import url("https://fonts.cdnfonts.com/css/chillax");
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap");
-
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
 :root {
   --ifm-color-primary: #1c1c1c;
   --ifm-color-primary-dark: #191919;
@@ -31,28 +31,45 @@
   --ifm-color-primary-lightest: #ffffff;
   --ifm-background-color: #1c1c1c;
 }
+.w-fill {
+  width: -webkit-fill-available;
+  width: -moz-available;
+  width: stretch;
+}
+.h-fill {
+  height: -webkit-fill-available;
+  height: -moz-available;
+  height: stretch;
+}
+
+.page {
+  font-family: "Nunito Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100,
+    "YTLC" 500;
+}
 body {
   @apply tracking-wider;
   font-family: "Outfit", sans-serif;
 }
 .eg-lines {
-  @apply flex flex-col justify-between gap-4 flex-wrap;
-  border-bottom: 1px solid #1c1c1c;
-  margin: 0 !important;
+  @apply flex flex-row justify-between gap-4 flex-wrap py-2;
+  border-bottom: 1px solid #393939;
 }
 .eg-lines:last-child {
   border-bottom: none;
 }
 
 .hissab-example {
-  @apply bg-[#111111] px-4 py-2 min-w-[20em] max-w-[40em];
+  @apply bg-stone-900 px-4 py-2 w-fill rounded-xl;
   text-align: start;
   margin-top: 1.5rem /* 20px */;
   margin-bottom: 1.5rem /* 20px */;
   clear: both;
   font-family: "Chillax", serif;
   position: relative;
-  border-radius: 1em;
 }
 
 .hissab-example-inline {

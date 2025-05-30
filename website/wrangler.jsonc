@@ -1,0 +1,25 @@
+{
+  "name": "hissab-astro",
+  "account_id": "a0609a9b2f23cde30f9f3a87339196b8",
+  "compatibility_date": "2025-05-01",
+  "workers_dev": true,
+  "assets": {
+    "directory": "dist"
+  },
+  "env": {
+    "prod": {
+      "workers_dev": false,
+      "route": {
+        "pattern": "hissab.io",
+        "custom_domain": true
+      }
+    },
+    "dev": {
+      "workers_dev": true,
+      "route": {
+        "pattern": "dev.hissab.io",
+        "custom_domain": true
+      }
+    }
+  }
+}

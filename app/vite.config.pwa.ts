@@ -1,17 +1,29 @@
 import { defineConfig } from "vite";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
 import react from "@vitejs/plugin-react-swc";
 import { VitePWA } from "vite-plugin-pwa";
 import path from "path";
 
 export default defineConfig({
+  server: {
+    host: "0.0.0.0",
+    port: 5173,
+    strictPort: true,
+  },
+  preview: {
+    host: "0.0.0.0",
+    port: 4173,
+    strictPort: true,
+  },
   plugins: [
     react(),
+    nodePolyfills(),
     VitePWA({
       registerType: "autoUpdate",
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2,json}"],
       },
-      manifestFilename: "./manifest.json",
+      manifestFilename: "manifest.json",
       includeAssets: ["**/*.{png}"],
       manifest: {
         display: "standalone",

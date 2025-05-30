@@ -75,3 +75,6 @@
 ["60 months to years","5 years","5 years"]
 
 ["5 meter 30 cm - 3 meter 52 mm","2.248 meter","2 meter 24 centimeter 8 millimeter"]
+
+["((10 miles to cm) to km)","16.0934 km","16.0934 km"]
+["(100 monthly to yearly) *5","6,000 yearly","6,000 yearly"]

@@ -1,0 +1,85 @@
+name: Deploy Server on Prod Push
+
+on:
+  push:
+    paths:
+      - "api/**"
+      - "lib/**"
+      - "engine/**"
+      - ".github/workflows/prod-server.yml"
+    branches:
+      - main
+
+jobs:
+  setup:
+    name: Setup Environment
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+          run_install: false
+
+      - name: Setup Node.js v22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build API
+        working-directory: ./api
+        run: pnpm build
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Run Supabase Migrations
+        working-directory: ./api
+        run: |
+          supabase link --project-ref $SUPABASE_PROJECT_ID
+          supabase config push
+          pnpm supabase:migrate:up
+        env:
+          SMTP_USER: ${{ secrets.AWS_SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.AWS_SMTP_PASSWORD }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_ADMIN_KEY: ${{ secrets.SUPABASE_ADMIN_KEY }}
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          HISSAB_APP_URL: ${{ secrets.HISSAB_APP_URL }}
+
+      - name: Run D1 Migration and Deploy API
+        uses: cloudflare/wrangler-action@v3
+        with:
+          workingDirectory: api
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          packageManager: pnpm
+          environment: prod
+          preCommands: pnpm d1:migrate:apply:prod
+          secrets: |
+            GEMINI_API_KEY
+            LEMONSQUEEZY_SIGNING_SECRET
+            SUPABASE_PROJECT_URL
+            SUPABASE_ADMIN_KEY
+            SUPABASE_PROJECT_ANON_KEY
+            SUPABASE_JWT_SECRET
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          LEMONSQUEEZY_SIGNING_SECRET: ${{ secrets.LEMONSQUEEZY_SIGNING_SECRET }}
+          SUPABASE_PROJECT_URL: ${{ secrets.SUPABASE_PROJECT_URL }}
+          SUPABASE_ADMIN_KEY: ${{ secrets.SUPABASE_ADMIN_KEY }}
+          SUPABASE_PROJECT_ANON_KEY: ${{ secrets.SUPABASE_PROJECT_ANON_KEY }}
+          SUPABASE_JWT_SECRET: ${{ secrets.SUPABASE_JWT_SECRET }}
+          PUBLIC_POSTHOG_KEY: ${{ secrets.PUBLIC_POSTHOG_KEY }}
+          PUBLIC_POSTHOG_HOST: ${{ secrets.PUBLIC_POSTHOG_HOST }}

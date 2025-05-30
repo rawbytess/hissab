@@ -1,6 +1,5 @@
-import { Table, Thead, Tbody, Tr, Th, Td } from "react-super-responsive-table";
-import "react-super-responsive-table/dist/SuperResponsiveTableStyle.css";
 import { roadmap } from "./roadmap";
+import { Card, CardBody } from "@heroui/react";
 
 interface statusMapIf {
   [key: string]: {
@@ -34,15 +33,7 @@ const statusMap: statusMapIf = {
 
 export default function Roadmaps() {
   return (
-    <Table className={"border-0"}>
-      <Thead>
-        <Tr>
-          <Th>Status</Th>
-          <Th>Title</Th>
-          <Th>Description</Th>
-        </Tr>
-      </Thead>
-
+    <section className={"flex flex-col items-start gap-4"}>
       {roadmap.map(
         (
           rm: {
@@ -51,26 +42,46 @@ export default function Roadmaps() {
             title: string;
           },
           oi: number,
-        ) => {
-          return (
-            <Tbody key={oi}>
-              <Tr>
-                <Td className={" text-center"}>
-                  <img
-                    src={statusMap[rm.status].icon}
-                    alt={statusMap[rm.status].title}
-                    className={"w-6 h-6"}
-                  />
-                  <div>{statusMap[rm.status].title}</div>
-                </Td>
-
-                <Td>{rm.title}</Td>
-                <Td>{rm.description}</Td>
-              </Tr>
-            </Tbody>
-          );
-        },
+        ) => (
+          <RoadmapCard
+            key={oi}
+            title={rm.title}
+            status={rm.status}
+            description={rm.description}
+          />
+        ),
       )}
-    </Table>
+    </section>
+  );
+}
+
+function RoadmapCard({
+  status,
+  title,
+  description,
+}: {
+  status: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <Card className={"w-full max-w-[40em] bg-stone-800 ring-2 ring-stone-600"}>
+      <CardBody className={"flex flex-row gap-4 p-2"}>
+        <div
+          className={"flex flex-col gap-2 items-center justify-center min-w-24"}
+        >
+          <img
+            src={statusMap[status].icon}
+            alt={statusMap[status].title}
+            className={"w-5 h-5"}
+          />
+          <div className={"text-center text-sm"}>{statusMap[status].title}</div>
+        </div>
+        <div>
+          <div>{title}</div>
+          <div className={"text-sm text-stone-400"}>{description}</div>
+        </div>
+      </CardBody>
+    </Card>
   );
 }

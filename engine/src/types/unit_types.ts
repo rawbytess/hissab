@@ -26,6 +26,7 @@ const Constants: ConstantIF = {
 export interface UnitsTypeIF {
   type: UnitTypes;
   description: string;
+  plural?: string;
   factor?: number;
   factors?: {
     [key: string]: number;
@@ -71,6 +72,7 @@ const timeFamily = [
 
 const Units: UnitsIF = {
   meter: {
+    plural: "meters",
     type: UnitTypes.LENGTH,
     description: "Unit of Length",
     factor: 1,
@@ -89,6 +91,7 @@ const Units: UnitsIF = {
     },
   },
   mile: {
+    plural: "miles",
     type: UnitTypes.LENGTH,
     description: "Unit of Length",
     factor: 1609.3,
@@ -107,6 +110,7 @@ const Units: UnitsIF = {
     },
   },
   yard: {
+    plural: "yards",
     type: UnitTypes.LENGTH,
     description: "Unit of Length",
     factor: 0.9144,
@@ -143,6 +147,7 @@ const Units: UnitsIF = {
     },
   },
   inch: {
+    plural: "inches",
     type: UnitTypes.LENGTH,
     description: "Unit of Length",
     factor: 0.0254,
@@ -161,6 +166,7 @@ const Units: UnitsIF = {
     },
   },
   micron: {
+    plural: "microns",
     type: UnitTypes.LENGTH,
     description: "Unit of Length",
     factor: 1e-6,
@@ -178,6 +184,7 @@ const Units: UnitsIF = {
     },
   },
   parsec: {
+    plural: "parsecs",
     type: UnitTypes.LENGTH,
     description: "Unit of Length",
     factor: 30856775812799588,
@@ -195,6 +202,7 @@ const Units: UnitsIF = {
     },
   },
   "astronomical unit": {
+    plural: "astronomical units",
     type: UnitTypes.LENGTH,
     description: "Unit of Length",
     factor: 149597870691,
@@ -212,6 +220,7 @@ const Units: UnitsIF = {
     },
   },
   "nautical mile": {
+    plural: "nautical miles",
     type: UnitTypes.LENGTH,
     description: "Unit of Length",
     factor: 1852,
@@ -229,6 +238,7 @@ const Units: UnitsIF = {
     },
   },
   "light year": {
+    plural: "light years",
     type: UnitTypes.LENGTH,
     description: "Unit of Length",
     factor: 9460730472580800,
@@ -247,6 +257,7 @@ const Units: UnitsIF = {
   },
 
   hectare: {
+    plural: "hectares",
     type: UnitTypes.AREA,
     description: "Unit of Area",
     factor: 10000,
@@ -261,6 +272,7 @@ const Units: UnitsIF = {
     },
   },
   acre: {
+    plural: "acres",
     type: UnitTypes.AREA,
     description: "Unit of Area",
     factor: 4046.8564224,
@@ -276,6 +288,7 @@ const Units: UnitsIF = {
     },
   },
   "square mile": {
+    plural: "square miles",
     type: UnitTypes.AREA,
     description: "Unit of Area",
     factor: 2589988.110336,
@@ -306,6 +319,7 @@ const Units: UnitsIF = {
     },
   },
   "square inch": {
+    plural: "square inches",
     type: UnitTypes.AREA,
     description: "Unit of Area",
     factor: 0.00064516,
@@ -321,6 +335,7 @@ const Units: UnitsIF = {
     },
   },
   "square yard": {
+    plural: "square yards",
     type: UnitTypes.AREA,
     description: "Unit of Area",
     factor: 0.83612736,
@@ -337,6 +352,7 @@ const Units: UnitsIF = {
   },
 
   "square meter": {
+    plural: "square meters",
     type: UnitTypes.AREA,
     description: "Unit of Area",
     factor: 1,
@@ -353,6 +369,7 @@ const Units: UnitsIF = {
   },
 
   liter: {
+    plural: "liters",
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 1,
@@ -376,6 +393,7 @@ const Units: UnitsIF = {
     },
   },
   gallon: {
+    plural: "gallons",
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 3.785411784,
@@ -399,6 +417,7 @@ const Units: UnitsIF = {
     },
   },
   quart: {
+    plural: "quarts",
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 0.946352946,
@@ -422,6 +441,7 @@ const Units: UnitsIF = {
     },
   },
   pint: {
+    plural: "pints",
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 0.473176473,
@@ -445,6 +465,7 @@ const Units: UnitsIF = {
     },
   },
   cup: {
+    plural: "cups",
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 0.2365882365,
@@ -468,6 +489,7 @@ const Units: UnitsIF = {
     },
   },
   tablespoon: {
+    plural: "tablespoons",
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 0.0147867648,
@@ -491,6 +513,7 @@ const Units: UnitsIF = {
     },
   },
   teaspoon: {
+    plural: "teaspoons",
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 0.0049289216,
@@ -514,6 +537,7 @@ const Units: UnitsIF = {
     },
   },
   barrel: {
+    plural: "barrels",
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 119.2404712,
@@ -536,6 +560,7 @@ const Units: UnitsIF = {
     },
   },
   "fluid ounce": {
+    plural: "fluid ounces",
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 0.0295735296,
@@ -560,6 +585,7 @@ const Units: UnitsIF = {
   },
 
   "cubic mile": {
+    plural: "cubic miles",
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 4168181825441,
@@ -583,6 +609,7 @@ const Units: UnitsIF = {
     },
   },
   "cubic foot": {
+    plural: "cubic feet",
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 28.316846592,
@@ -606,6 +633,7 @@ const Units: UnitsIF = {
     },
   },
   "cubic feet": {
+    plural: "cubic feet",
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 28.316846592,
@@ -629,6 +657,7 @@ const Units: UnitsIF = {
     },
   },
   "cubic inch": {
+    plural: "cubic inches",
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 0.016387064,
@@ -652,6 +681,7 @@ const Units: UnitsIF = {
     },
   },
   "cubic yard": {
+    plural: "cubic yards",
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 764.55485798,
@@ -676,6 +706,7 @@ const Units: UnitsIF = {
   },
 
   "cubic meter": {
+    plural: "cubic meters",
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 1000,
@@ -700,6 +731,7 @@ const Units: UnitsIF = {
   },
 
   gram: {
+    plural: "grams",
     type: UnitTypes.WEIGHT,
     description: "Unit of Weight",
     factor: 1,
@@ -714,6 +746,7 @@ const Units: UnitsIF = {
     },
   },
   ton: {
+    plural: "tons",
     type: UnitTypes.WEIGHT,
     description: "Unit of Weight",
     factor: 907185,
@@ -727,6 +760,7 @@ const Units: UnitsIF = {
     },
   },
   pound: {
+    plural: "pounds",
     type: UnitTypes.WEIGHT,
     description: "Unit of Weight",
     factor: 453.59237,
@@ -741,6 +775,7 @@ const Units: UnitsIF = {
     },
   },
   ounce: {
+    plural: "ounces",
     type: UnitTypes.WEIGHT,
     description: "Unit of Weight",
     factor: 28.349523125,
@@ -755,6 +790,7 @@ const Units: UnitsIF = {
     },
   },
   carat: {
+    plural: "carats",
     type: UnitTypes.WEIGHT,
     description: "Unit of Weight",
     factor: 0.2,
@@ -768,6 +804,7 @@ const Units: UnitsIF = {
     },
   },
   amu: {
+    plural: "atomic mass units",
     type: UnitTypes.WEIGHT,
     description: "Unit of Weight",
     factor: 1.660540199e-24,
@@ -782,6 +819,7 @@ const Units: UnitsIF = {
   },
 
   degree: {
+    plural: "degrees",
     type: UnitTypes.ANGLE,
     description: "Unit of Angle",
     factor: 1,
@@ -794,6 +832,7 @@ const Units: UnitsIF = {
     },
   },
   grad: {
+    plural: "grads",
     type: UnitTypes.ANGLE,
     description: "Unit of Angle",
     factor: 0.9,
@@ -806,6 +845,7 @@ const Units: UnitsIF = {
     },
   },
   radian: {
+    plural: "radians",
     type: UnitTypes.ANGLE,
     description: "Unit of Angle",
     factor: 57.295779513,
@@ -818,6 +858,7 @@ const Units: UnitsIF = {
     },
   },
   arcminute: {
+    plural: "arcminutes",
     type: UnitTypes.ANGLE,
     description: "Unit of Angle",
     factor: 0.0166666667,
@@ -831,6 +872,7 @@ const Units: UnitsIF = {
     },
   },
   arcsecond: {
+    plural: "arcseconds",
     type: UnitTypes.ANGLE,
     description: "Unit of Angle",
     factor: 0.0002777778,
@@ -878,6 +920,7 @@ const Units: UnitsIF = {
   },
 
   bit: {
+    plural: "bits",
     type: UnitTypes.DATA,
     description: "Unit of Data",
     factor: 1,
@@ -889,6 +932,7 @@ const Units: UnitsIF = {
     },
   },
   byte: {
+    plural: "bytes",
     type: UnitTypes.DATA,
     description: "Unit of Data",
     factor: 8,
@@ -900,6 +944,7 @@ const Units: UnitsIF = {
     },
   },
   nibble: {
+    plural: "nibbles",
     type: UnitTypes.DATA,
     description: "Unit of Data",
     factor: 4,
@@ -911,6 +956,7 @@ const Units: UnitsIF = {
   },
 
   second: {
+    plural: "seconds",
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 1,
@@ -929,6 +975,7 @@ const Units: UnitsIF = {
     },
   },
   minute: {
+    plural: "minutes",
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 60,
@@ -947,6 +994,7 @@ const Units: UnitsIF = {
     },
   },
   hour: {
+    plural: "hours",
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 3600,
@@ -965,6 +1013,7 @@ const Units: UnitsIF = {
     },
   },
   day: {
+    plural: "days",
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 86400,
@@ -983,6 +1032,7 @@ const Units: UnitsIF = {
     },
   },
   week: {
+    plural: "weeks",
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 604800,
@@ -1001,6 +1051,7 @@ const Units: UnitsIF = {
     },
   },
   month: {
+    plural: "months",
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 2.628e6,
@@ -1019,6 +1070,7 @@ const Units: UnitsIF = {
     },
   },
   year: {
+    plural: "years",
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 3.154e7,
@@ -1037,6 +1089,7 @@ const Units: UnitsIF = {
     },
   },
   decade: {
+    plural: "decades",
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 3.154e8,
@@ -1055,6 +1108,7 @@ const Units: UnitsIF = {
     },
   },
   century: {
+    plural: "centuries",
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 3.154e9,
@@ -1073,6 +1127,7 @@ const Units: UnitsIF = {
     },
   },
   millennium: {
+    plural: "millenniums",
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 3.154e10,

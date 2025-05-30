@@ -7,13 +7,16 @@ section h2 {
   font-weight: normal;
 }
 
-.hero-text-size {
-  font-size: clamp(3em, 7vw, 7em);
+.hero-text-size-sm {
+  font-size: clamp(1em, 2vw, 3em);
   line-height: 1.2;
 }
-
+.hero-text-size-lg {
+  font-size: clamp(3em, 5vw, 7em);
+  line-height: 1.2;
+}
 .sub-hero-text {
-  font-size: clamp(1em, 1.5vw, 2.5em);
+  font-size: 1.5em;
   line-height: 1.5;
 }
 
@@ -34,4 +37,32 @@ section h2 {
 
 .fade-in-animation {
   @apply opacity-0 transition-opacity ease-in duration-700;
+}
+.video-container {
+  position: relative; /* Needed for absolute positioning of the overlay */
+  width: 100%; /* Or your desired width */
+  height: auto; /* Maintain aspect ratio */
+  overflow: hidden; /* Hide any potential overflow */
+}
+
+.video-container video {
+  display: block; /* Remove extra space below the video */
+  width: 100%;
+  height: auto;
+  border: none; /* Remove video border */
+  outline: none; /* Remove focus outline */
+}
+
+.play-icon-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center the icon */
+  z-index: 1; /* Ensure the icon is above the video */
+  pointer-events: none; /* Allows hover events to pass through to the video container */
+  transition: opacity 0.3s ease-in-out; /* Smooth transition for fading */
+}
+
+.play-icon-overlay.hidden {
+  opacity: 0;
 }

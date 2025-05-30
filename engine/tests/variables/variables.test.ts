@@ -21,7 +21,7 @@ describe("Variable Expressions", () => {
       test(`Variables:${filename}:${i + 1}`, async () => {
         for (const [l, ex] of expList.entries()) {
           const tokens = doLex(ex, variables, l + 1);
-          const { result, resultToken, meta } = await doParse(tokens);
+          const { result, resultToken, meta } = await doParse(tokens, true);
           testResult = result;
           if (meta.variableName) variables[meta.variableName] = resultToken;
           variables[`line${l + 1}`] = resultToken;

@@ -57,3 +57,7 @@ h6 {
   color: #4cb3d4;
   @apply underline underline-offset-2;
 }
+
+.sidebar-content summary {
+  display: flex;
+}

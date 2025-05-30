@@ -8,3 +8,4 @@ resources
 public
 .next
 pnpm-lock.yaml
+*.jsonc

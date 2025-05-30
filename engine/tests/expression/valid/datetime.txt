@@ -37,3 +37,4 @@
 ["8:23:32 to mst","6:23:32 mst","6:23:32 mst"]
 ["14:23:32 to mst","12:23:32 mst","12:23:32 mst"]
 ["6:23 pm - 4 hr","2:23 pm","2:23 pm"]
+["8 am paris to mumbai", "12:30 pm mumbai","12:30 pm mumbai"]

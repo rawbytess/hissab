@@ -48,7 +48,7 @@ function doLex(
 
 async function doParse(
   tokens: TokenType[],
-  isPro = false,
+  isPro = true,
 ): Promise<parseResultIf> {
   if (!tokens) throw new UserError(102);
   const cleanTokens = tokens.filter(
@@ -56,13 +56,14 @@ async function doParse(
       !(token instanceof UndefinedToken || token instanceof StringToken),
   );
   const { result, isExplicit, convertTo } = await parse(cleanTokens, isPro);
+
   if (
     result instanceof NumberToken ||
     result instanceof DateToken ||
     result instanceof ColorToken ||
     result instanceof ResultToken
   ) {
-    if (isPro && !isExplicit && result instanceof NumberToken) {
+    if (!isExplicit && result instanceof NumberToken) {
       const humanized: string = humanize(result, convertTo);
       return {
         result: humanized,

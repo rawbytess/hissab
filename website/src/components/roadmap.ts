@@ -1,32 +1,49 @@
 export const roadmap = [
   {
-    title: "Improve autocomplete suggestions",
-    description:
-      "Improve the autocomplete suggestions by adding city names, improve descriptions, and other UX improvements.",
+    title: "Even better Hissab LLM Models",
+    description: "Improve AI performance and increase rate limits.",
     status: "wip",
   },
   {
-    title: "Quick features glance",
+    title: "Provide API access to Hissab AI and classic calculations",
     description:
-      "Include small animations/gifs to showcase basic usage and features at a quick glance",
-    status: "incomplete",
+      "Provide API access to Hissab AI and classic calculations for developers to build their own apps.",
+    status: "wip",
+  },
+
+  {
+    title: "Compound units and corresponding calculations",
+    description:
+      "Add support for compound units like meter/sec or kg/(m·s2) aka Pascal and support calculations using them like 50 meter/sec to miles/hour.",
+    status: "wip",
   },
   {
-    title: "Improve search help with lot more keywords",
+    title: "Sync pages and chats to the cloud",
     description:
-      "Currently search data is limited to certain keywords. Thus improve the search db with lot more keywords.",
-    status: "incomplete",
+      "Add support to sync user pages and chats to the cloud and across devices",
+    status: "considering",
+  },
+  {
+    title: "Add Nano size LLM model for free tier",
+    description: "Add a nano sized custom fine tuned LLM Model for free tier",
+    status: "considering",
+  },
+  {
+    title: "Support for more unit families",
+    description:
+      "Add support for more unit families like energy, power, pressure etc.",
+    status: "considering",
   },
   {
     title: "Hissab apps on the app store for iOS and Android",
     description:
-      "Hissab can be installed on iOS and Android as pwa. This however add official apps that can be downloaded from the app stores.",
+      "Hissab can be installed on iOS and Android as pwa. However, considering official apps that can be downloaded from the app stores.",
     status: "considering",
   },
   {
-    title: "Show helpful errors for wrong expressions",
+    title: "Web search support for AI",
     description:
-      "Currently, if the expression cannot generate a result,there is no error or message shown. Thus, I want to add feature to show errors and possible causes e.g. when unit family are different and cannot convert etc.",
+      "Perform calculation that relies on latest information like currency rates, stock prices, weather etc. seamlessly by letting AI do the web search and find such data.",
     status: "considering",
   },
   {
@@ -46,9 +63,8 @@ export const roadmap = [
     status: "considering",
   },
   {
-    title: "Add interface to collect feedback from customers ",
-    description:
-      "Implement a way to collect feedback from customers like feature requests, bug fixes, testimonials and general comments",
+    title: "Add AI integration for full natural language prompts",
+    description: "Add support for LLM models to teach them",
     status: "completed",
   },
   {

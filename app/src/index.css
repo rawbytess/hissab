@@ -1,5 +1,5 @@
 @import url("https://fonts.cdnfonts.com/css/chillax");
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -30,8 +30,14 @@ body {
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: ;
   }
+}
+
+.montserrat-font {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
 }
 
 @layer base {
@@ -41,4 +47,58 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
+@layer utilities {
+  .w-fill {
+    width: -webkit-fill-available;
+    width: -moz-available;
+    width: stretch;
+  }
+  .h-fill {
+    height: -webkit-fill-available;
+    height: -moz-available;
+    height: stretch;
+  }
+}
+.cm-ai-widget {
+  @apply bg-purple-700 text-[#efefef] rounded-l pl-1 py-1 uppercase cursor-pointer;
+  font-family: "Inter", sans-serif;
+}
+.cm-prompt {
+  @apply text-[#efefef] ring-purple-700 bg-gray-800 py-1 px-2 rounded-r font-extralight;
+  font-family: "Inter", sans-serif;
+}
+
+/* For WebKit browsers (Chrome, Safari) */
+.chat-scrollbar::-webkit-scrollbar {
+  width: 10px; /* Adjust the width of the scrollbar */
+}
+
+.chat-scrollbar::-webkit-scrollbar-track {
+  background-color: transparent; /* Color of the track */
+  border-radius: 5px; /* Optional: round the track */
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb {
+  background-color: transparent; /* Color of the thumb */
+  border-radius: 5px; /* Round the thumb */
+  border: 2px solid #f1f1f1; /* Optional: add a border to the thumb */
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #2e2e2e; /* Color of the thumb on hover */
+}
+
+/* For Firefox */
+.chat-scrollbar {
+  scrollbar-width: thin; /* or auto */
+  scrollbar-color: #2e2e2e transparent; /* thumb track */
 }

@@ -307,7 +307,7 @@ const Operators: operatorType = {
       expUnit: expressionUnit,
     ) => {
       result.variableName = variableName.value;
-      if (expUnit && result instanceof NumberToken) result.unit = expUnit;
+      // if (expUnit && result instanceof NumberToken) result.unit = expUnit;
       return result;
     },
     isRaw: true,

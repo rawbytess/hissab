@@ -3,4 +3,4 @@ packages:
   - "website/**"
   - "app/**"
   - "engine/**"
-  - "editor/**"
+  - "api/**"
