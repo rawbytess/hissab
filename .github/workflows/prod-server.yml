@@ -1,4 +1,4 @@
-name: Deploy Server on Dev Push
+name: Deploy Server on Prod Push
 
 on:
   push:
@@ -6,15 +6,15 @@ on:
       - "api/**"
       - "lib/**"
       - "engine/**"
-      - ".github/workflows/dev-server.yml"
-    branches-ignore:
+      - ".github/workflows/prod-server.yml"
+    branches:
       - main
 
 jobs:
   setup:
     name: Setup Environment
     runs-on: ubuntu-latest
-    environment: dev
+    environment: prod
 
     steps:
       - name: Checkout code
@@ -65,8 +65,8 @@ jobs:
           workingDirectory: api
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           packageManager: pnpm
-          environment: dev
-          preCommands: pnpm d1:migrate:apply:dev
+          environment: prod
+          preCommands: pnpm d1:migrate:apply:prod
           secrets: |
             GEMINI_API_KEY
             LEMONSQUEEZY_SIGNING_SECRET

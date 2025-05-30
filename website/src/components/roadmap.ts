@@ -41,6 +41,12 @@ export const roadmap = [
     status: "considering",
   },
   {
+    title: "Web search support for AI",
+    description:
+      "Perform calculation that relies on latest information like currency rates, stock prices, weather etc. seamlessly by letting AI do the web search and find such data.",
+    status: "considering",
+  },
+  {
     title: "Compound units and corresponding calculations",
     description:
       "Add support for compound units like meter/sec or kg/(m·s2) aka Pascal and support calculations using them like 50 meter/sec to miles/hour.",

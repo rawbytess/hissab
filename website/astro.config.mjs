@@ -4,6 +4,7 @@ import react from "@astrojs/react";
 import tailwind from "@astrojs/tailwind";
 import starlightLlmsTxt from "starlight-llms-txt";
 import starlightNextjsTheme from "starlight-nextjs-theme";
+import { ion } from "starlight-ion-theme";
 import starlight from "@astrojs/starlight";
 
 export default defineConfig({

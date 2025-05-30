@@ -1,4 +1,4 @@
-name: Deploy App on Dev Push
+name: Deploy App on Prod Push
 
 on:
   push:
@@ -6,15 +6,15 @@ on:
       - "app/**"
       - "lib/**"
       - "engine/**"
-      - ".github/workflows/dev-app.yml"
-    branches-ignore:
+      - ".github/workflows/prod-app.yml"
+    branches:
       - main
 
 jobs:
   setup:
     name: Setup Environment
     runs-on: ubuntu-latest
-    environment: dev
+    environment: prod
 
     steps:
       - name: Checkout code
@@ -52,8 +52,8 @@ jobs:
           workingDirectory: app
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           packageManager: pnpm
-          environment: dev
-          command: deploy --env dev --no-bundle
+          environment: prod
+          command: deploy --env prod --no-bundle
         env:
           VITE_HISSAB_WEBSITE_URL: ${{ secrets.HISSAB_WEBSITE_URL }}
           VITE_HISSAB_SERVER_URL: ${{ secrets.HISSAB_SERVER_URL }}
