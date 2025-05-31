@@ -7,13 +7,12 @@ import {
   notePage,
   PageContext,
 } from "@/components/sidebar/pages/PagesProvider.tsx";
-import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
 import { ChatPageWrapper } from "@/components/sidebar/chat/ChatPage.tsx";
 
 export default function Editor({ className }: { className?: string }) {
   const { updateNote, currentPageNumber, setEditorOperations, currentPage } =
     useContext(PageContext);
-  const { isPremium } = useContext(SessionContext);
+
   const heRef = useRef<HTMLDivElement>(null);
   const pg = currentPage as notePage;
 
@@ -27,7 +26,7 @@ export default function Editor({ className }: { className?: string }) {
       retrievePage: null,
       isWritable: true,
       isDark: true,
-      isPro: !!isPremium,
+      isPro: true,
     };
 
     const he: HissabEditorType = new HissabEditor(

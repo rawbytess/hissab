@@ -150,7 +150,7 @@ sender_name = "Hissab"
 subject = "Your Hissab OTP"
 content_path = "./supabase/email/otp.html"
 
-[auth.email.template.confirm_signup]
+[auth.email.template.confirmation]
 subject = "Confirm your Hissab Signup"
 content_path = "./supabase/email/otp.html"
 
