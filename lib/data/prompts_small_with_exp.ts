@@ -53,7 +53,7 @@ const prompts_with_exp = [
   },
   {
     prompt: "Apply a 20% discount to 500 dollars.",
-    hissab_expressions: ["500 dollars - 20%"],
+    hissab_expressions: ["$500 - 20%"],
   },
   {
     prompt: "Add 10% to 450.",
@@ -113,7 +113,7 @@ const prompts_with_exp = [
   },
   {
     prompt: "In how many ways can I arrange 5 different books on a shelf?",
-    hissab_expressions: ["5 perm 5"],
+    hissab_expressions: ["5!"],
   },
   {
     prompt: "Find the average of 45, 56, 67, 78, 89.",
@@ -140,20 +140,22 @@ const prompts_with_exp = [
     hissab_expressions: ["cos 60 degrees"],
   },
   {
+    // TODO
     prompt: "Compute tangent of π/4 radians.",
     hissab_expressions: ["tan (pi/4) radians"],
   },
   {
     prompt: "What date is 10 days after January 1, 2023?",
-    hissab_expressions: ["January 1, 2023 + 10 days"],
+    hissab_expressions: ["January 1 2023 + 10 days"],
   },
   {
+    // TODO Comma not supported in date
     prompt: "How many days are between July 4, 2022, and December 25, 2022?",
-    hissab_expressions: ["July 4, 2022 - December 25, 2022 to days"],
+    hissab_expressions: ["July 4 2022 - December 25 2022 to days"],
   },
   {
     prompt: "If I was born on March 5, 1995, how old am I today?",
-    hissab_expressions: ["today - March 5, 1995 to years"],
+    hissab_expressions: ["today - March 5 1995 to years"],
   },
   {
     prompt: "Convert 1672531199 to human-readable date.",
