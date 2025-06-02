@@ -206,6 +206,7 @@ const prompts_with_exp = [
     hissab_expressions: ["123+456-78"],
   },
   {
+    // TODO more complex arithmetic examples
     prompt: "What is 10 multiplied by 5 divided by 2?",
     hissab_expressions: ["10*5/2"],
   },
@@ -230,6 +231,7 @@ const prompts_with_exp = [
     hissab_expressions: ["abs(-345)"],
   },
   {
+    // TODO more percentage mix examples
     prompt: "What is 30 percent of 500?",
     hissab_expressions: ["30% of 500"],
   },
@@ -250,6 +252,7 @@ const prompts_with_exp = [
     hissab_expressions: ["10 miles to kilometers"],
   },
   {
+    // TODO More unit breakdown examples
     prompt: "How many yards, feet, and inches are in 5 miles?",
     hissab_expressions: ["5 miles to yards, feet, inches"],
   },
@@ -362,6 +365,7 @@ const prompts_with_exp = [
     hissab_expressions: ["tan 45 degrees"],
   },
   {
+    // TODO pi
     prompt: "What is the secant of pi/4 radians?",
     hissab_expressions: ["sec (pi/4) radians"],
   },
@@ -510,6 +514,7 @@ const prompts_with_exp = [
     hissab_expressions: ["sin 45 degrees"],
   },
   {
+    // TODO: pi
     prompt: "Tangent of π/4 radians",
     hissab_expressions: ["tan (pi/4) radians"],
   },
@@ -591,11 +596,7 @@ const prompts_with_exp = [
   },
   {
     prompt: "Convert 5 feet 3 inches to centimeters",
-    hissab_expressions: [
-      "feet_to_cm = 5 feet to cm",
-      "inches_to_cm = 3 inches to cm",
-      "total_cm = feet_to_cm + inches_to_cm",
-    ],
+    hissab_expressions: ["5 feet 3 inches to centimeters"],
   },
   {
     prompt: "If I was born on June 15 1985, how many days have I lived?",
@@ -624,7 +625,7 @@ const prompts_with_exp = [
   {
     prompt:
       "Calculate the time difference between 3:30 PM PST and 5:45 AM GMT tomorrow",
-    hissab_expressions: ["tomorrow 5:45 AM GMT - 3:30 PM PST to hours"],
+    hissab_expressions: ["5:45 AM GMT - 3:30 PM PST to hours"],
   },
   {
     prompt: "What is the factorial of the number of combinations of 5 from 10?",
@@ -647,7 +648,7 @@ const prompts_with_exp = [
   },
   {
     prompt: "What is the date 3 quarters from today?",
-    hissab_expressions: ["today + 3 quarters"],
+    hissab_expressions: ["today + 3 * 3 months"],
   },
   {
     prompt: "Convert 1 astronomical unit to kilometers and miles",

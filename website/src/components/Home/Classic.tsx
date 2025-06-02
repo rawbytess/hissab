@@ -27,7 +27,7 @@ const expressions = {
     "5 june 2004 + 2 months + 1 year\n" +
     "06:23 pm - 4 hr\n" +
     "06.08.1995 9:23 pm - 15 feb 1995 3:42 am to days,hours\n" +
-    "time\n" +
+    "$30 daily to monthly\n" +
     "time in new york\n" +
     "2023.05.22 7:30 am in tokyo",
   academic:
@@ -51,10 +51,10 @@ function Classic() {
     <section className="flex flex-col w-full text-light">
       <h2
         className={
-          "text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-blue-400 to-teal-500 mb-5"
+          "text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-blue-300 to-teal-500 mb-5"
         }
       >
-        Powerful without AI...
+        Magical without AI...
       </h2>
 
       <div className="flex items-center flex-col ring-2 promo-imgs ring-stone-600 mb-10">

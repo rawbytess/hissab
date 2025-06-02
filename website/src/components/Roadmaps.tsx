@@ -1,5 +1,7 @@
 import { roadmap } from "./roadmap";
 import { Card, CardBody } from "@heroui/react";
+import { cn } from "@/lib/utils.ts";
+import { Icon } from "@iconify/react";
 
 interface statusMapIf {
   [key: string]: {
@@ -33,7 +35,7 @@ const statusMap: statusMapIf = {
 
 export default function Roadmaps() {
   return (
-    <section className={"flex flex-col items-start gap-4"}>
+    <section className={"flex flex-row flex-wrap gap-4 items-start w-full"}>
       {roadmap.map(
         (
           rm: {
@@ -65,22 +67,49 @@ function RoadmapCard({
   description: string;
 }) {
   return (
-    <Card className={"w-full max-w-[40em] bg-stone-800 ring-2 ring-stone-600"}>
-      <CardBody className={"flex flex-row gap-4 p-2"}>
-        <div
-          className={"flex flex-col gap-2 items-center justify-center min-w-24"}
-        >
-          <img
-            src={statusMap[status].icon}
-            alt={statusMap[status].title}
-            className={"w-5 h-5"}
+    <Card
+      className={cn(
+        "max-w-[25em] w-full bg-stone-800 ring-1 ring-stone-600 p-1",
+        status === "completed" && "",
+        status === "considering" && "",
+        status === "wip" && "",
+        status === "exciting" && "",
+      )}
+    >
+      <CardBody className={"flex flex-col gap-4 p-2 relative"}>
+        {status === "wip" && (
+          <Icon
+            icon={"nrk:progress"}
+            width={24}
+            color={"aqua"}
+            className={"absolute right-0 top-0"}
           />
-          <div className={"text-center text-sm"}>{statusMap[status].title}</div>
-        </div>
-        <div>
-          <div>{title}</div>
-          <div className={"text-sm text-stone-400"}>{description}</div>
-        </div>
+        )}
+        {status === "considering" && (
+          <Icon
+            icon={"raphael:roadmap"}
+            width={24}
+            color={"yellow"}
+            className={"absolute right-0 top-0"}
+          />
+        )}
+        {status === "completed" && (
+          <Icon
+            icon={"weui:done2-filled"}
+            width={24}
+            color={"#66FF99"}
+            className={"absolute right-0 top-0"}
+          />
+        )}
+        {status === "exciting" && (
+          <Icon
+            icon={"noto:party-popper"}
+            width={24}
+            className={"absolute right-0 top-0"}
+          />
+        )}
+        <div className={""}>{title}</div>
+        <div className={"text-sm text-stone-400"}>{description}</div>
       </CardBody>
     </Card>
   );

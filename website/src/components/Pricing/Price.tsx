@@ -43,7 +43,7 @@ export default function Price() {
                   color={"green"}
                   width={20}
                 />
-                <p>All classic calculations</p>
+                <p>Instant realtime answers as you type</p>
               </li>
               <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
                 <Icon
@@ -51,7 +51,87 @@ export default function Price() {
                   color={"green"}
                   width={20}
                 />
-                <p>Limited Support</p>
+                <p>All classic calculations</p>
+              </li>
+              <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
+                <ul className={"text-sm flex flex-col gap-1 ml-5"}>
+                  <li
+                    className={"grid grid-cols-[auto_1fr] gap-2 items-center"}
+                  >
+                    <Icon
+                      icon="meteor-icons:check-double"
+                      color={"green"}
+                      width={20}
+                    />
+                    <p>Basic Math & Arithmetic</p>
+                  </li>
+                  <li
+                    className={"grid grid-cols-[auto_1fr] gap-2 items-center"}
+                  >
+                    <Icon
+                      icon="meteor-icons:check-double"
+                      color={"green"}
+                      width={20}
+                    />
+                    <p>Percentage Operations</p>
+                  </li>
+                  <li
+                    className={"grid grid-cols-[auto_1fr] gap-2 items-center"}
+                  >
+                    <Icon
+                      icon="meteor-icons:check-double"
+                      color={"green"}
+                      width={20}
+                    />
+                    <p>Unit conversion</p>
+                  </li>
+                  <li
+                    className={"grid grid-cols-[auto_1fr] gap-2 items-center"}
+                  >
+                    <Icon
+                      icon="meteor-icons:check-double"
+                      color={"green"}
+                      width={20}
+                    />
+                    <p>Calculation with date, time and timezones</p>
+                  </li>
+                  <li
+                    className={"grid grid-cols-[auto_1fr] gap-2 items-center"}
+                  >
+                    <Icon
+                      icon="meteor-icons:check-double"
+                      color={"green"}
+                      width={20}
+                    />
+                    <p>Multiple number systems</p>
+                  </li>
+                  <li
+                    className={"grid grid-cols-[auto_1fr] gap-2 items-center"}
+                  >
+                    <Icon
+                      icon="meteor-icons:check-double"
+                      color={"green"}
+                      width={20}
+                    />
+                    <p>Advanced operations & scientific calculations</p>
+                  </li>
+                </ul>
+              </li>
+              <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
+                <Icon
+                  icon="meteor-icons:check-double"
+                  color={"green"}
+                  width={20}
+                />
+                <p>Variables and reference previous lines results</p>
+              </li>
+              <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
+                <Icon
+                  icon="meteor-icons:check-double"
+                  color={"green"}
+                  width={20}
+                />
+                <p>Organize calculations in pages</p>
               </li>
               <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
                 <Icon icon="entypo:cross" color={"red"} width={20} />
@@ -60,7 +140,13 @@ export default function Price() {
             </ul>
           </CardBody>
           <CardFooter className={"mt-auto"}>
-            <Button className={"mx-auto w-full"}>Free</Button>
+            <a
+              href={import.meta.env.PUBLIC_HISSAB_APP_URL}
+              target={"_blank"}
+              className={"w-full"}
+            >
+              <Button className={"mx-auto w-full"}>Free</Button>
+            </a>
           </CardFooter>
         </Card>
         <Card
@@ -91,7 +177,15 @@ export default function Price() {
                   color={"green"}
                   width={20}
                 />
-                <p>AI Enhanced</p>
+                <p>Everything in Free</p>
+              </li>
+              <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
+                <Icon
+                  icon="meteor-icons:check-double"
+                  color={"green"}
+                  width={20}
+                />
+                <p>AI Powered</p>
               </li>
               <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
                 <Icon
@@ -137,7 +231,7 @@ export default function Price() {
                   color={"green"}
                   width={20}
                 />
-                <p>Text prompts</p>
+                <p>Text prompts only</p>
               </li>
               <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
                 <Icon icon="entypo:cross" color={"red"} width={20} />
@@ -150,10 +244,24 @@ export default function Price() {
             </ul>
           </CardBody>
           <CardFooter className={"mt-auto flex flex-col gap-2"}>
-            <Button className={"mx-auto w-full bg-cyan-700"}>
-              $10 / month
-            </Button>
-            <Button className={"mx-auto w-full bg-cyan-700"}>$50 / year</Button>
+            <a
+              href={"https://store.hissab.io"}
+              target={"_blank"}
+              className={"w-full"}
+            >
+              <Button className={"mx-auto w-full bg-cyan-700"}>
+                $10 / month
+              </Button>
+            </a>
+            <a
+              href={"https://store.hissab.io"}
+              target={"_blank"}
+              className={"w-full"}
+            >
+              <Button className={"mx-auto w-full bg-cyan-700"}>
+                $50 / year
+              </Button>
+            </a>
             <p className={"text-xs text-gray-400"}>Cancel Anytime</p>
           </CardFooter>
         </Card>
@@ -185,23 +293,7 @@ export default function Price() {
                   color={"green"}
                   width={20}
                 />
-                <p>AI Enhanced</p>
-              </li>
-              <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
-                <Icon
-                  icon="meteor-icons:check-double"
-                  color={"green"}
-                  width={20}
-                />
-                <p>Inline AI prompts for quick calculations</p>
-              </li>
-              <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
-                <Icon
-                  icon="meteor-icons:check-double"
-                  color={"green"}
-                  width={20}
-                />
-                <p>AI Chat for more complex prompts</p>
+                <p>Everything in Lite</p>
               </li>
               <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
                 <Icon
@@ -255,36 +347,48 @@ export default function Price() {
             </ul>
           </CardBody>
           <CardFooter className={"mt-auto flex flex-col gap-2"}>
-            <Button className={"mx-auto bg-fuchsia-700 w-full"}>
-              $20 / month
-            </Button>
-            <Button className={"mx-auto bg-fuchsia-700 w-full"}>
-              $125 / year
-            </Button>
+            <a
+              href={"https://store.hissab.io"}
+              target={"_blank"}
+              className={"w-full"}
+            >
+              <Button className={"mx-auto bg-fuchsia-700 w-full"}>
+                $20 / month
+              </Button>
+            </a>
+            <a
+              href={"https://store.hissab.io"}
+              target={"_blank"}
+              className={"w-full"}
+            >
+              <Button className={"mx-auto bg-fuchsia-700 w-full"}>
+                $125 / year
+              </Button>
+            </a>
             <p className={"text-xs text-gray-400"}>Cancel Anytime</p>
           </CardFooter>
         </Card>
       </div>
-      <div className="text-sm text-gray-400">
+      <div className="text-sm text-gray-400 mt-10 max-w-[50em]">
         <p>
-          *Small LLMs are used for inline AI prompts and chat. They are fast and
-          good for small prompts.
+          * Small LLMs are used for inline AI prompts and chat. They are fast
+          and good for small prompts.
         </p>
-        <p>*Medium LLMs are good for medium complexity prompts.</p>
+        <p>* Medium LLMs are good for medium complexity prompts.</p>
         <p>
-          *Large LLMs should be used for large, complex prompts. They involve
+          * Large LLMs should be used for large, complex prompts. They involve
           thinking and chain of thought.
         </p>
         <br />
         <p>
-          *The LLMs can make mistake in producing the correct hissab expression.
-          Always check the generated expressions.
+          * The LLMs can make mistake in producing the correct hissab
+          expression. Always check the generated expressions.
         </p>
         <p>
-          *If the prompt needs calculations that hissab does not support, the
-          LLMs will try to calculate themselves.
-          <br /> This can also happen if the wrong expressions were generated
-          and hissab engine was not able to calculate those expressions.
+          * If the prompt needs calculations that hissab does not support, the
+          LLMs will try to calculate themselves. This can also happen if the
+          wrong expressions were generated and hissab engine was not able to
+          calculate those expressions.
         </p>
       </div>
     </div>
