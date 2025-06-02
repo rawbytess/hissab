@@ -34,7 +34,7 @@ function AISection() {
             "text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-red-200 to-yellow-100"
           }
         >
-          ...Brilliant with AI
+          ...Then we added the Magic
         </h2>
 
         <div className="flex flex-row gap-5 flex-wrap justify-center mt-4">

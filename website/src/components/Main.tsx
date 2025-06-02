@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import Classic from "@/components/Home/Classic.tsx";
 import AISection from "@/components/Home/AISection.tsx";
 import ApiSection from "@/components/Home/APISection.tsx";
+import { Comparison } from "@/components/Home/Comparison.tsx";
 
 const firstPromo = "/resources/home/first-promo.png";
 const freePromo = "/resources/home/free-promo.png";
@@ -51,7 +52,7 @@ export default function Main() {
             World's Most <br /> Powerful Calculator
           </h1>
 
-          <p className={cn("text-zinc-400")}>(No Exaggeration, Really)</p>
+          <p className={cn("text-zinc-400")}>(No Exaggeration, really)</p>
         </div>
 
         <ul className={"flex flex-row gap-10 text-gray-300 mt-10"}>
@@ -92,10 +93,10 @@ export default function Main() {
       <section>
         <h2
           className={
-            "text-transparent bg-clip-text bg-gradient-to-r from-[#1d4ed8] via-[#1e40af] to-blue-500"
+            "text-transparent bg-clip-text bg-gradient-to-r from-[#60C7F0] via-[#57C785] to-[#EDDD53]"
           }
         >
-          Available on all platforms
+          Runs on Anything with a Screen
         </h2>
         <div className={"flex flex-row flex-wrap gap-5 mt-5"}>
           <Tooltip
@@ -202,6 +203,7 @@ export default function Main() {
       </section>
       <Classic />
       <AISection />
+      <Comparison />
       <ApiSection />
       <section>
         <h2

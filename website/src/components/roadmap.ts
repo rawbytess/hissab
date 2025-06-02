@@ -41,9 +41,9 @@ export const roadmap = [
     status: "considering",
   },
   {
-    title: "Web search support for AI",
+    title: "Real-time data support for calculations",
     description:
-      "Perform calculation that relies on latest information like currency rates, stock prices, weather etc. seamlessly by letting AI do the web search and find such data.",
+      "Perform calculation that relies on latest real-time information like currency rates, stock prices, weather etc. seamlessly.",
     status: "considering",
   },
   {
