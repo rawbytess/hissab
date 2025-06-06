@@ -231,11 +231,23 @@ export default function Price() {
                   color={"green"}
                   width={20}
                 />
+                <p>Multiple languages</p>
+              </li>
+              <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
+                <Icon
+                  icon="meteor-icons:check-double"
+                  color={"green"}
+                  width={20}
+                />
                 <p>Text prompts only</p>
               </li>
               <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
                 <Icon icon="entypo:cross" color={"red"} width={20} />
                 <p>No access to large size LLM models.</p>
+              </li>
+              <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
+                <Icon icon="entypo:cross" color={"red"} width={20} />
+                <p>No realtime data access</p>
               </li>
               <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
                 <Icon icon="entypo:cross" color={"red"} width={20} />
@@ -343,6 +355,15 @@ export default function Price() {
                   width={20}
                 />
                 <p>File attachments</p>
+              </li>
+              <li className={"grid grid-cols-[auto_1fr] gap-2 items-center"}>
+                <Icon
+                  icon="meteor-icons:check-double"
+                  color={"green"}
+                  width={20}
+                />
+                Realtime data access for finance, stocks, crypto, weather, and
+                more
               </li>
             </ul>
           </CardBody>

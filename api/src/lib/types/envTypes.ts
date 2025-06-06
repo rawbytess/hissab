@@ -15,6 +15,7 @@ export type Bindings = {
   SUPABASE_JWT_SECRET: string;
   USER_RATE_LIMITER: DurableObjectNamespace<UserRateLimiter>;
   LOGS_DB: D1Database;
+  PERPLEXITY_API_KEY: string;
 };
 export type supabaseVars = {
   supabase: SupabaseClient;

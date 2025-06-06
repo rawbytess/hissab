@@ -101,7 +101,7 @@ app.post("/", async (c) => {
       lifetime: null,
     };
     if (insertError) {
-      console.log(
+      console.error(
         `Error inserting user_plan: ${user_id}`,
         insertError.message,
         body,
@@ -113,7 +113,7 @@ app.post("/", async (c) => {
       { user_metadata: userMetadata },
     );
     if (metaError) {
-      console.log(
+      console.error(
         `Error updating user metadata: ${user_id}`,
         metaError.message,
         body,

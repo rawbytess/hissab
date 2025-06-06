@@ -76,10 +76,12 @@ export class ResultWidget extends WidgetType {
     wrap.className = this.result.stale
       ? "cm-result cm-result-stale"
       : "cm-result cm-result-fresh";
+    if (this.result.ai) wrap.className += " cm-result-ai";
 
     if (
       this.result.error &&
-      this.result.errorMessage?.message !== "User Error"
+      this.result.errorMessage?.message !== "User Error" &&
+      !this.result.loading
     ) {
       const errorSpan = document.createElement("span");
       errorSpan.setAttribute("id", `result-error-${this.result.lineNumber}`);
@@ -125,7 +127,7 @@ export class ResultWidget extends WidgetType {
     wrap.setAttribute("title", "Double click to copy answer");
 
     if (this.result.loading) {
-      const loadingSpan = document.createElement("button");
+      const loadingSpan = document.createElement("span");
       loadingSpan.setAttribute(
         "id",
         `result-loading-${this.result.lineNumber}`,
@@ -138,7 +140,7 @@ export class ResultWidget extends WidgetType {
       const aiSpan = document.createElement("button");
 
       const title = `Hissab Expressions: 
-${this.result.ai.expressions.join("\n")}
+${this.result.ai?.expressions?.join("\n")}
 Click to add expressions to the editor`;
       aiSpan.setAttribute("title", title);
       aiSpan.addEventListener("click", async (e) => {

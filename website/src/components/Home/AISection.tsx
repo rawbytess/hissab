@@ -36,6 +36,9 @@ function AISection() {
         >
           ...Then we added the Magic
         </h2>
+        <p className={"text-xl text-gray-400"}>
+          Understands your words. Calculates with precision.
+        </p>
 
         <div className="flex flex-row gap-5 flex-wrap justify-center mt-4">
           {prompts.map((prompt, index) => (
@@ -113,6 +116,48 @@ function AISection() {
               Attach and refer documents and images in your chats
             </p>
             <img src={"/screens/multimodal.png"} className={"rounded-b-2xl"} />
+          </Tab>
+          <Tab
+            key="Multilingual"
+            title={
+              <div className={"flex flex-row gap-2 items-center"}>
+                <Icon
+                  icon={"fa:language"}
+                  width={16}
+                  className={""}
+                  color="#efefef"
+                />
+                Multilingual
+              </div>
+            }
+          >
+            <p className={"text-gray-400 mb-3"}>
+              Hissab AI can understand and respond in multiple languages.
+            </p>
+            <img src={"/screens/languages.png"} className={"rounded-b-2xl"} />
+          </Tab>
+          <Tab
+            key="realtime"
+            title={
+              <div className={"flex flex-row gap-2 items-center"}>
+                <Icon
+                  icon={"mdi:finance"}
+                  width={16}
+                  className={""}
+                  color="#efefef"
+                />
+                Realtime data
+              </div>
+            }
+          >
+            <p className={"text-gray-400 mb-3"}>
+              Access real-time data like stock prices, weather, currency rates,
+              and more.
+            </p>
+            <img
+              src={"/screens/realtimechat.png"}
+              className={"rounded-b-2xl"}
+            />
           </Tab>
         </Tabs>
       </div>

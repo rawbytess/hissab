@@ -41,12 +41,6 @@ export const roadmap = [
     status: "considering",
   },
   {
-    title: "Real-time data support for calculations",
-    description:
-      "Perform calculation that relies on latest real-time information like currency rates, stock prices, weather etc. seamlessly.",
-    status: "considering",
-  },
-  {
     title: "Compound units and corresponding calculations",
     description:
       "Add support for compound units like meter/sec or kg/(m·s2) aka Pascal and support calculations using them like 50 meter/sec to miles/hour.",
@@ -61,6 +55,12 @@ export const roadmap = [
     title: "Complex numbers and corresponding calculations",
     description: "Add support for complex (or imaginary) numbers",
     status: "considering",
+  },
+  {
+    title: "Real-time data support for calculations",
+    description:
+      "Perform calculation that relies on latest real-time information like currency rates, stock prices, weather etc. seamlessly.",
+    status: "completed",
   },
   {
     title: "Add AI integration for full natural language prompts",

@@ -127,6 +127,18 @@ export function ChatPageWrapper({ page }: { page: ChatPage }) {
               ) : (
                 message.content
               )}
+              {message.role === "hissab" &&
+                message.webSearchContext &&
+                message.webSearchContext.length > 0 && (
+                  <div className="mt-5 text-sm text-gray-400">
+                    <div className="font-semibold">Real time data context:</div>
+                    {message.webSearchContext
+                      .split("\n")
+                      .map((x) => removeNumericPattern(x.trim()))
+                      .join("\n")}
+                    .
+                  </div>
+                )}
               {message.role === "hissab" && message.expressions.length > 0 && (
                 <InChatEditor expressions={message.expressions} />
               )}
@@ -182,3 +194,8 @@ const FeatureCard = forwardRef<HTMLDivElement, FeatureCardProps>(
     );
   },
 );
+
+function removeNumericPattern(str: string) {
+  const pattern = /(\[\d+\])+\.$/;
+  return str.replace(pattern, "");
+}

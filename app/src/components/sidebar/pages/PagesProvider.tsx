@@ -20,6 +20,7 @@ export type aiMessage = {
   content: string;
   error: boolean;
   expressions: string[];
+  webSearchContext?: string;
   createdAt: number;
 };
 

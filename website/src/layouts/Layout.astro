@@ -6,11 +6,8 @@ import "../css/tailwind.css";
 import Header from "../components/Header.tsx";
 import Footer from "../components/Footer.tsx";
 import {HeroUIProvider } from "@heroui/react";
-import { PostHogProvider } from 'posthog-js/react'
 
-const options = {
-  api_host: import.meta.env.PUBLIC_POSTHOG_HOST ?? "",
-}
+
 ---
 <!doctype html>
 <html lang="en">
@@ -21,13 +18,14 @@ const options = {
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta
 			name="description"
-			content="A simple and intuitive calculator, unit-convertor and productivity application. Just type and calculate anything."
+			content="AI powered natural language calculator that answers accurately. Just type and calculate anything with ease.
+      Perform basic to advanced calculations in multiple languages, do unit conversions, percentage operations, date and time calculations,
+      access realtime finance data and more."
 		/>
 		<title>Hissab - Calculator with Superpowers</title>
 		<script defer src="https://analytics.rawbytes.com/script.js" data-website-id="19ee36c5-98a3-48d8-bf85-8ebfb5f6c17d"></script>
 	</head>
 	<body class="dark">
-  <PostHogProvider apiKey={import.meta.env.PUBLIC_POSTHOG_KEY ?? ""} options={options} client:load>
     <HeroUIProvider client:load>
       <div class="grid grid-cols-1 grid-rows-[auto_1fr_auto] min-h-screen">
         <Header client:load />
@@ -35,7 +33,6 @@ const options = {
         <Footer client:load />
       </div>
     </HeroUIProvider>
-  </PostHogProvider>
 	</body>
 </html>
 

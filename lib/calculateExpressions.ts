@@ -61,3 +61,8 @@ export async function calculateExpressions(
   }
   return expWRes;
 }
+
+export async function calcExp({ expressions }: { expressions: string[] }) {
+  const results = await calculateExpressions(expressions, true);
+  return results;
+}

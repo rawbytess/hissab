@@ -69,6 +69,7 @@ export function PromptWrapper() {
         updateNote(currPage.id, "", "chat", undefined, {
           content: data.naturalAnswer,
           expressions: data.expressions.map((x) => x.expression),
+          webSearchContext: data.webSearchContext,
           createdAt: Date.now(),
           role: "hissab",
           error: false,

@@ -14,6 +14,10 @@ export function Comparison() {
         >
           Competitors? We Did the Math
         </h2>
+        <p className={"text-xl text-gray-400"}>
+          Hissab is the only calculator that combines full natural language with
+          absolute accuracy.
+        </p>
         <ComparisonTable />
       </div>
     </section>
@@ -268,6 +272,56 @@ export const features = [
     </div>,
   ],
   [
+    "Realtime data",
+    <div className={"flex flex-col gap-2 items-center"}>
+      <Icon icon={"meteor-icons:check-double"} width={24} color={"#66FF99"} />
+    </div>,
+    <div className={"flex flex-col gap-2 items-center"}>
+      <Icon icon="entypo:cross" color={"red"} width={24} />
+    </div>,
+    <div className={"flex flex-col gap-2 items-center"}>
+      <Icon icon={"meteor-icons:check-double"} width={24} color={"#66FF99"} />
+    </div>,
+    <div className={"flex flex-col gap-2 items-center"}>
+      <Icon icon="entypo:cross" color={"red"} width={24} />
+    </div>,
+    <div className={"flex flex-col gap-2 items-center"}>
+      <Icon icon={"eva:checkmark-outline"} width={24} color={"#8B8000"} />
+      Limited
+    </div>,
+    <div className={"flex flex-col gap-2 items-center"}>
+      <Icon icon={"meteor-icons:check-double"} width={24} color={"#66FF99"} />
+    </div>,
+    <div className={"flex flex-col gap-2 items-center"}>
+      <Icon icon={"eva:checkmark-outline"} width={24} color={"#8B8000"} />
+      Limited
+    </div>,
+  ],
+  [
+    "Multilingual",
+    <div className={"flex flex-col gap-2 items-center"}>
+      <Icon icon={"meteor-icons:check-double"} width={24} color={"#66FF99"} />
+    </div>,
+    <div className={"flex flex-col gap-2 items-center"}>
+      <Icon icon="entypo:cross" color={"red"} width={24} />
+    </div>,
+    <div className={"flex flex-col gap-2 items-center"}>
+      <Icon icon={"meteor-icons:check-double"} width={24} color={"#66FF99"} />
+    </div>,
+    <div className={"flex flex-col gap-2 items-center"}>
+      <Icon icon="entypo:cross" color={"red"} width={24} />
+    </div>,
+    <div className={"flex flex-col gap-2 items-center"}>
+      <Icon icon="entypo:cross" color={"red"} width={24} />
+    </div>,
+    <div className={"flex flex-col gap-2 items-center"}>
+      <Icon icon={"meteor-icons:check-double"} width={24} color={"#66FF99"} />
+    </div>,
+    <div className={"flex flex-col gap-2 items-center"}>
+      <Icon icon="entypo:cross" color={"red"} width={24} />
+    </div>,
+  ],
+  [
     "Rest APIs",
     <div className={"flex flex-col gap-2 items-center"}>
       <Icon icon={"meteor-icons:check-double"} width={24} color={"#66FF99"} />
@@ -330,6 +384,7 @@ function ComparisonTable() {
           >
             {item.map((columnKey, ind) => (
               <td
+                key={ind}
                 className={cn(
                   "px-1 py-2 text-xs max-w-[8em] text-light font-light border-r-1 border-stone-600",
                   ind === 1 ? "bg-purple-700 border-b-1 border-stone-500" : "",

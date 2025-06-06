@@ -15,6 +15,8 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { ProductNames } from "~lib/types/userMetadata";
 import { UserRateLimiter } from "@lib/durableObjects/UserRateLimiter";
 import systemInstructions from "@lib/ai/instructions/system-instructions";
+import { generate, initOpenAI } from "@lib/ai/openai";
+import { Part } from "@google/genai";
 
 const app = new Hono<MetaBindings>();
 app.use(cors());
@@ -51,9 +53,14 @@ app.post(
         429,
       );
     }
-    const sysInst = systemInstructions(body.explain, body.fallback);
+    const sysInst = systemInstructions(
+      body.explain,
+      body.fallback,
+      isPremium === "AI Plus",
+    );
 
     const geminiModel = new Gemini(c.env.GEMINI_API_KEY, modelName);
+    // const openAI = initOpenAI(c.env.GEMINI_API_KEY, "gemini");
     const maxPromptLength = getMaxCharacterLimit(
       user.subscription.product_name,
     );
@@ -61,30 +68,52 @@ app.post(
       body.prompt.length > maxPromptLength
         ? body.prompt.slice(0, maxPromptLength)
         : body.prompt;
+    const history: {}[] = [];
 
-    const prompt = body.inline
-      ? `Note: This prompt is on line ${body.lineNumber}. All lines on the page are ${body.expressions
-          .map((x, i) => `${x.expression} :: Result: ${x.result}`)
-          .join("\n")}
+    if (body.inline)
+      history.push({
+        role: "Assistant",
+        parts: [
+          {
+            text: `Note: All lines on the page are ${body.expressions
+              .map((x) => `${x.expression} :: Result: ${x.result}`)
+              .join("\n")}
       If the prompt reference any previous lines or results please use the previous line numbers in the output expressions.
-
-      User Prompt: ${sliced_prompt}
-      `
-      : `Note: History of previous conversations: ${body.history}
-        User Prompt: ${sliced_prompt}
-    `;
+      User prompt is on line ${body.lineNumber}.`,
+          },
+        ],
+      });
+    else {
+      const parts: {}[] = body.history.map((chat) => {
+        return {
+          role: chat.role,
+          parts: [{ text: chat.content }],
+        };
+      });
+      history.push(...parts);
+    }
 
     const AIResponse = await run(
-      geminiModel.getExpressions(sysInst, prompt, body.file, isPremium),
+      geminiModel.getExpressions(
+        sysInst,
+        sliced_prompt,
+        history,
+        body.file,
+        isPremium,
+        c.env.PERPLEXITY_API_KEY,
+      ),
+      // generate(openAI, modelName, sysInst, prompt, body.file, isPremium),
     );
-    /*const AIResponse = {
+
+    const AIResponse1 = {
       data: {
         naturalAnswer: "My answer is this",
         expressions: [],
       },
       failed: false,
       error: { message: "Error", userMessage: "Error", statusCode: 500 },
-    };*/
+    };
+
     const db = c.env.LOGS_DB;
 
     if (AIResponse.failed) {

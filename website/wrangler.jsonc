@@ -3,6 +3,9 @@
   "account_id": "a0609a9b2f23cde30f9f3a87339196b8",
   "compatibility_date": "2025-05-01",
   "workers_dev": true,
+  "observability": {
+    "enabled": true
+  },
   "assets": {
     "directory": "dist"
   },

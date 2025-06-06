@@ -5,9 +5,10 @@ import {
   Part,
 } from "@google/genai";
 import documentation from "@lib/ai/instructions/documentation";
-import { hissabExpFunction } from "./jsonSchema";
+import { hissabExpFunction, webSearchFunction } from "./jsonSchema";
 import {
   AIFormatResponseType,
+  ExpWithResult,
   inLineDefaultModel,
   Models,
   ModelsMap,
@@ -16,6 +17,7 @@ import { CustomError, run } from "~lib/errors";
 import { FileUpload } from "~lib/types/fileTypes";
 import { calculateExpressions } from "~lib/calculateExpressions";
 import { ProductNames } from "~lib/types/userMetadata";
+import { webSearch } from "@lib/webSearch";
 
 async function blobToBase64(blob: any) {
   // Convert the Blob to an ArrayBuffer
@@ -45,12 +47,15 @@ export class Gemini {
   async getExpressions(
     systemInstructions: string,
     prompt: string,
+    history: {}[],
     files:
       | { url: string; mimeType: string; name: string }
       | undefined = undefined,
     isPremium: ProductNames | null = null,
+    SEARCH_API_KEY: string | null = null,
   ): Promise<AIFormatResponseType> {
     const contents: (string | Part | {})[] = [
+      ...history,
       { role: "user", parts: [{ text: prompt }] },
     ];
     if (files && isPremium && isPremium === "AI Plus") {
@@ -63,93 +68,125 @@ export class Gemini {
       ? { thinkingBudget: 0 }
       : undefined;
 
-    const respResult = await run(
-      this.ai.models.generateContent({
-        model: this.hissabModel,
-        contents: contents,
-        config: {
-          thinkingConfig: thinkingConfig,
-          tools: [{ functionDeclarations: [hissabExpFunction] }],
-          systemInstruction: systemInstructions + documentation,
-        },
-      }),
-    );
+    const hissabExps: ExpWithResult[] = [];
+    let webSearchContext = "";
+    const tools =
+      isPremium === "AI Plus"
+        ? [hissabExpFunction, webSearchFunction]
+        : [hissabExpFunction];
 
-    if (respResult.failed) {
-      throw new CustomError(
-        "GeminiGenContent",
-        respResult.error.message,
-        "Something went wrong",
-      );
-    }
-
-    if (
-      respResult.data.functionCalls &&
-      respResult.data.functionCalls.length > 0
-    ) {
-      const functionCall = respResult.data.functionCalls[0];
-
-      const results = await run(
-        calculateExpressions(
-          functionCall.args!.expressions as string[],
-          !!isPremium,
-        ),
-      );
-      if (results.failed) {
-        throw new CustomError(
-          "Unknown",
-          "Something went wrong",
-          "Something went wrong",
-          500,
-        );
-      }
-      contents.push({
-        role: "model",
-        parts: [{ functionCall: functionCall }],
-      });
-
-      contents.push({
-        role: "user",
-        parts: [
-          {
-            functionResponse: {
-              name: hissabExpFunction.name,
-              response: { result: results.data },
-            },
+    for (let i = 0; i < 10; i++) {
+      const respResult = await run(
+        this.ai.models.generateContent({
+          model: this.hissabModel,
+          contents: contents,
+          config: {
+            thinkingConfig: thinkingConfig,
+            tools: [{ functionDeclarations: tools }],
+            systemInstruction: systemInstructions + documentation,
           },
-        ],
-      });
+        }),
+      );
 
-      const final_response = await this.ai.models.generateContent({
-        model: this.hissabModel,
-        contents: contents,
-        config: {
-          tools: [{ functionDeclarations: [hissabExpFunction] }],
-          systemInstruction: systemInstructions,
-        },
-      });
-      if (!final_response.text)
+      if (respResult.failed) {
         throw new CustomError(
           "GeminiGenContent",
-          "Something went wrong",
+          respResult.error.message,
           "Something went wrong",
         );
-      return {
-        naturalAnswer: final_response.text,
-        expressions: results.data,
-      };
-    }
+      }
 
-    if (!respResult.data.text)
-      throw new CustomError(
-        "GeminiGenContent",
-        "Something went wrong",
-        "Something went wrong",
-      );
-    return {
-      naturalAnswer: respResult.data.text,
-      expressions: [],
-    };
+      if (
+        respResult.data.functionCalls &&
+        respResult.data.functionCalls.length > 0
+      ) {
+        for (const toolCall of respResult.data.functionCalls) {
+          contents.push({
+            role: "model",
+            parts: [{ functionCall: toolCall }],
+          });
+
+          if (toolCall.name === webSearchFunction.name) {
+            const searchQueries = toolCall.args!.searchQueries as string[];
+            const Results = await run(
+              webSearch(searchQueries, SEARCH_API_KEY!),
+            );
+            if (Results.failed)
+              throw new CustomError(
+                "FetchResponse",
+                Results.error.message,
+                "Unable to get real-time information",
+              );
+            webSearchContext += Results.data;
+
+            contents.push({
+              role: "user",
+              parts: [
+                {
+                  functionResponse: {
+                    name: toolCall.name,
+                    response: { searchResults: Results.data },
+                  },
+                },
+              ],
+            });
+          } else if (toolCall.name === hissabExpFunction.name) {
+            const results = await run(
+              calculateExpressions(
+                toolCall.args!.expressions as string[],
+                !!isPremium,
+              ),
+            );
+            if (results.failed) {
+              throw new CustomError(
+                "Unknown",
+                "Something went wrong",
+                "Hissab failed to calculate expressions",
+                500,
+              );
+            }
+            hissabExps.push(...results.data);
+
+            contents.push({
+              role: "user",
+              parts: [
+                {
+                  functionResponse: {
+                    name: toolCall.name,
+                    response: { result: results.data },
+                  },
+                },
+              ],
+            });
+          }
+        }
+      } else {
+        const final_response = await this.ai.models.generateContent({
+          model: this.hissabModel,
+          contents: contents,
+          config: {
+            tools: [{ functionDeclarations: [hissabExpFunction] }],
+            systemInstruction: systemInstructions,
+          },
+        });
+        if (!final_response.text)
+          throw new CustomError(
+            "GeminiGenContent",
+            "Something went wrong",
+            "Something went wrong",
+          );
+        return {
+          naturalAnswer: final_response.text,
+          webSearchContext: webSearchContext,
+          expressions: hissabExps,
+        };
+      }
+    }
+    throw new CustomError(
+      "GeminiGenContent",
+      "Failed to generate content after multiple attempts",
+      "Something went wrong",
+    );
   }
 
   async uploadFile(file: FileUpload, fileBlob?: Blob) {

@@ -1,9 +1,8 @@
 import { Button, Modal, ModalContent, useDisclosure } from "@heroui/react";
 import { LoginForm } from "@/components/user/auth/Login.tsx";
 
-export default function LoginModal() {
+export default function LoginModal({ isMobile }: { isMobile: boolean }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
   return (
     <>
       <Button
@@ -20,6 +19,11 @@ export default function LoginModal() {
         onOpenChange={onOpenChange}
         shadow={"lg"}
         backdrop={"blur"}
+        portalContainer={
+          isMobile
+            ? document.getElementById("sidebar-sheet-content") || document.body
+            : document.body
+        }
       >
         <ModalContent>
           <LoginForm setOpen={onOpenChange} />
