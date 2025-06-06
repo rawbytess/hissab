@@ -3,9 +3,11 @@ import LoginModal from "@/components/user/login/LoginModal.tsx";
 import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
 import { useContext } from "react";
 import { Icon } from "@iconify/react";
+import { useSidebar } from "@/components/ui/sidebar.tsx";
 
 export default function GetStarted() {
   const { session } = useContext(SessionContext);
+  const { isMobile } = useSidebar();
 
   return (
     <Card
@@ -62,6 +64,30 @@ export default function GetStarted() {
               />
               Attach and reference files, images, and documents
             </li>
+            <li
+              className={
+                "grid grid-cols-[auto_1fr] gap-4 items-start text-start"
+              }
+            >
+              <Icon
+                icon="meteor-icons:check-double"
+                color={"green"}
+                width={20}
+              />
+              Talk in your own language
+            </li>
+            <li
+              className={
+                "grid grid-cols-[auto_1fr] gap-4 items-start text-start"
+              }
+            >
+              <Icon
+                icon="meteor-icons:check-double"
+                color={"green"}
+                width={20}
+              />
+              Realtime data like finance, weather, and more
+            </li>
           </ul>
         </div>
       </CardBody>
@@ -83,7 +109,7 @@ export default function GetStarted() {
             Buy Now
           </Button>
         ) : (
-          <LoginModal />
+          <LoginModal isMobile={isMobile} />
         )}
 
         <Button
