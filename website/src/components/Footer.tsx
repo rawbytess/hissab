@@ -7,7 +7,7 @@ export default function Footer() {
       className={"flex flex-col items-center text-white py-6 bg-black w-full"}
     >
       <div className="container flex flex-col md:flex-row justify-around items-center">
-        <div className="mb-4 md:mb-0 flex flex-col items-center gap-5">
+        <div className="mb-4 md:mb-0 flex flex-col items-center gap-3">
           <a
             href={"https://www.linkedin.com/in/prenx4x/"}
             target="_blank"
@@ -24,6 +24,14 @@ export default function Footer() {
               <Icon icon="hugeicons:new-twitter" width={24} />
             </a>
           </div>
+
+          <a
+            className={"flex items-center gap-2 font-light"}
+            href={"mailto:hello@hissab.io"}
+          >
+            <Icon icon="fluent:mail-16-filled" width={20} />
+            hello@hissab.io
+          </a>
         </div>
         <div>
           <div className={"flex items-center gap-2"}>

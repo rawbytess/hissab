@@ -44,10 +44,37 @@ export async function getResult(
   for (const [index, line] of lines.entries()) {
     try {
       if (line.trim().startsWith("ai ")) {
+        if (!isPro) {
+          results.push({
+            result: "AI features are only available in Pro version.",
+            stale: false,
+            loading: false,
+            lineNumber: index,
+            error: true,
+            errorMessage: new CustomError(
+              "NotSubscribed",
+              "AI features are only available in Pro version.",
+              "Upgrade to Pro to use AI features.",
+            ),
+          });
+          continue;
+        }
         const aiPrompt = line.trim().substring(2).trim();
         if (index === currentLine - 1) {
           results.push({
-            result: oldResults[index]?.result || "",
+            result:
+              oldResults[index]?.result ||
+              aicache.get(aiPrompt)?.naturalAnswer ||
+              "",
+            ai:
+              oldResults[index]?.ai || aicache.get(aiPrompt)
+                ? {
+                    // @ts-expect-error ???
+                    expressions: aicache
+                      .get(aiPrompt)
+                      .expressions.map((x) => x.expression),
+                  }
+                : undefined,
             stale: !aicache.has(aiPrompt),
             loading: false,
             lineNumber: index,
@@ -132,7 +159,7 @@ export async function getResult(
       await calculateTotal(index + 1, variables);
       calculatePrev(index + 1, variables);
       const tokens = doLex(ln, variables, index + 1);
-      const { result, meta, resultToken } = await doParse(tokens, isPro);
+      const { result, meta, resultToken } = await doParse(tokens, true);
       results.push({
         result,
         stale: false,

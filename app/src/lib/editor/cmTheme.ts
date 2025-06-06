@@ -41,6 +41,11 @@ export function hissabTheme(
       flexDirection: "column",
       letterSpacing: "0.1em",
     },
+    ".cm-result-ai": {
+      fontFamily: "Inter, sans-serif",
+      fontWeight: "300",
+      color: "#efefef",
+    },
     ".cm-result": {
       display: "flex",
       gap: "0.5em",

@@ -32,7 +32,6 @@ app.post("/", zValidator("json", zFileUpload), async (c) => {
     return c.body("Not subscribed to AI Plus", 403);
   }
   const geminiModel = new Gemini(c.env.GEMINI_API_KEY, "gemini-2.0-flash-lite");
-  console.log(body);
   const fileRes = await supabase.storage
     .from("context")
     .download(`${user.user_id}/${body.name}`);

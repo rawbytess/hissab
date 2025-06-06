@@ -16,6 +16,7 @@
     "check": "pnpm run pretty-check && pnpm run lint-check && pnpm run test",
     "gh:secrets:dev": "gh secret set --env dev -f .env.dev",
     "gh:secrets:prod": "gh secret set --env prod -f .env.prod",
+    "gh:secrets:all": "pnpm gh:secrets:dev && pnpm gh:secrets:prod",
     "clear:cache": "pnpm store prune"
   },
   "keywords": [],
@@ -38,7 +39,7 @@
     "wrangler": "^4.17.0"
   },
   "dependencies": {
-    "zod": "^3.25.30",
+    "zod": "^3.25.49",
     "@heroui/react": "^2.7.8"
   }
 }

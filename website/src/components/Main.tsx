@@ -55,14 +55,18 @@ export default function Main() {
           <p className={cn("text-zinc-400")}>(No Exaggeration, really)</p>
         </div>
 
-        <ul className={"flex flex-row gap-10 text-gray-300 mt-10"}>
+        <ul
+          className={
+            "flex flex-row flex-wrap justify-center gap-10 text-gray-300 mt-10 max-w-[50em]"
+          }
+        >
           <li className={"flex flex-row gap-2 items-center"}>
             <Icon icon={"hugeicons:artificial-intelligence-04"} width={20} />
             <p>AI Powered</p>
           </li>
           <li className={"flex flex-row gap-2 items-center"}>
             <Icon icon={"octicon:goal-24"} width={20} />
-            <p>Accurate Results</p>
+            <p>Accurate Answers</p>
           </li>
           <li className={"flex flex-row gap-2 items-center"}>
             <Icon icon={"lets-icons:lightning-duotone"} width={20} />
@@ -76,9 +80,20 @@ export default function Main() {
             <Icon icon={"fluent:coin-multiple-24-filled"} width={20} />
             <p>Wide range of operations</p>
           </li>
+          <li className={"flex flex-row gap-2 items-center"}>
+            <Icon icon={"fa:language"} width={20} />
+            <p>Multilingual</p>
+          </li>
+          <li className={"flex flex-row gap-2 items-center"}>
+            <Icon icon={"mdi:finance"} width={20} />
+            <p>Realtime data</p>
+          </li>
         </ul>
 
-        <img src={hero} className={"promo-imgs"} />
+        <img
+          src={hero}
+          className={"max-w-[60em] w-full drop-shadow-lg mt-10"}
+        />
         <h4
           className={
             "sub-hero-text text-stone-300 tracking-wider whitespace-pre-line mt-12 max-w-[40em]"
@@ -98,6 +113,9 @@ export default function Main() {
         >
           Runs on Anything with a Screen
         </h2>
+        <p className={"text-xl text-gray-400"}>
+          Cross-Platform? Cross It Off Your Worry List
+        </p>
         <div className={"flex flex-row flex-wrap gap-5 mt-5"}>
           <Tooltip
             content={"Web"}

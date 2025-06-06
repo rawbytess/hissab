@@ -1,7 +1,7 @@
 {
   "name": "app",
   "private": true,
-  "version": "2.2.0",
+  "version": "3.0.0",
   "type": "module",
   "scripts": {
     "update": "pnpm update -i --latest",
@@ -37,7 +37,6 @@
     "lru-cache": "^11.1.0",
     "lucide-react": "^0.511.0",
     "nuqs": "^2.4.3",
-    "posthog-js": "^1.248.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-dropzone": "^14.3.8",

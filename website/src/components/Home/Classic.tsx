@@ -56,7 +56,9 @@ function Classic() {
       >
         Magical without AI...
       </h2>
-
+      <p className={"text-xl text-gray-400"}>
+        No buttons, no formulas, just brains.
+      </p>
       <div className="flex items-center flex-col ring-2 promo-imgs ring-stone-600 mb-10">
         <Tabs
           aria-label="Options"

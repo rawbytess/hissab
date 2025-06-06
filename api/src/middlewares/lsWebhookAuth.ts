@@ -31,7 +31,7 @@ export const lsWebhookAuth = createMiddleware<{
     hexToUint8Array(signature),
     rawBody,
   );
-  console.log("Verified: ", verified);
+
   if (!verified) {
     throw new HTTPException(403, { message: "Invalid signature" });
   }

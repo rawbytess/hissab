@@ -9,6 +9,7 @@ export type ExpWithResult = {
 
 export type AIFormatResponseType = {
   naturalAnswer: string;
+  webSearchContext?: string;
   expressions: ExpWithResult[];
 };
 
