@@ -51,7 +51,7 @@ jobs:
       - name: Upload and Publish Extension
         working-directory: app
         run: |-
-          chrome-webstore-upload \\
+          pnpm chrome-webstore-upload \\
             --source hissab-chrome-extension.zip \\
             --extension-id ${{ env.EXTENSION_ID }} \\
             --client-id ${{ secrets.CI_GOOGLE_CLIENT_ID }} \\
