@@ -58,7 +58,7 @@ function Classic() {
         Magical without AI...
       </h2>
       <p className={"text-xl text-gray-400"}>
-        No buttons, no clicks, no formulas...just type.
+        Designed By Humans, For Humans Who Calculates.
       </p>
       <div className="flex items-center flex-col ring-2 promo-imgs ring-stone-600 mb-10">
         <Tabs

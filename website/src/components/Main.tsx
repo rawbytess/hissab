@@ -33,7 +33,7 @@ export default function Main() {
             </div>
             <Icon icon={"ph:plus-thin"} width={30} color="#efefef" />
             <div className={"hero-text-size-sm text-emerald-500 max-w-[5em]"}>
-              Functional Design
+              Intuitive Interface
             </div>
           </div>
 
@@ -49,7 +49,7 @@ export default function Main() {
               "hero-text-size-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-violet via-purple-500 to-indigo-500"
             }
           >
-            World's Most <br /> Powerful Calculator
+            World's Most Powerful Vibe Calculator
           </h1>
 
           <p className={cn("text-zinc-400")}>(No Exaggeration, really)</p>
@@ -99,8 +99,8 @@ export default function Main() {
             "sub-hero-text text-stone-300 tracking-wider whitespace-pre-line mt-12 max-w-[40em]"
           }
         >
-          Hissab is an AI Powered natural language calculator that ensures
-          accurate answers and does way more than calculations. <br />
+          Hissab is an all in one, versatile AI Powered natural language
+          calculator that ensures accurate answers. <br />
           Hissab is useful for performing quick day-to-day calculations as well
           as complex brainstorming and planning.
         </h4>

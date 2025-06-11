@@ -46,7 +46,7 @@ function AISection() {
           ...Then we added the Magic
         </h2>
         <p className={"text-xl text-gray-400"}>
-          Understands your words. Calculates with precision.
+          It Doesn’t Guess. It Calculates.
         </p>
 
         <div className="flex flex-row gap-5 flex-wrap justify-center mt-4">
@@ -175,7 +175,9 @@ function AISection() {
           </Tab>
         </Tabs>
       </div>
-
+      <p className={"text-xs text-gray-400 mt-3"}>
+        *No "Actual Indians" were harmed in making of this App
+      </p>
       <Button className="mt-6 bg-blue-700 shadow-2xl">
         <a href="/pricing" className="">
           <p>See all Subscription options</p>
