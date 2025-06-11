@@ -11,7 +11,9 @@ function ApiSection() {
       >
         Developers, This One’s for You
       </h2>
-
+      <p className={"text-xl text-gray-400"}>
+        Need an AI that can do math correctly?
+      </p>
       <div
         className={
           "ring-2 ring-stone-600 bg-stone-900 p-5 rounded-lg my-4 text-left font-mono leading-8"

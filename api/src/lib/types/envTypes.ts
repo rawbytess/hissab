@@ -1,6 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { LSWebhook } from "@lib/types/lemonSqueezyTypes";
-import { userMetadata } from "~lib/types/userMetadata";
+import { ProductNames, userMetadata } from "~lib/types/userMetadata";
 import { UserRateLimiter } from "@lib/durableObjects/UserRateLimiter";
 import { ModelSize } from "~lib/types/AITypes";
 
@@ -45,4 +45,15 @@ export type RateLimitStorage = {
   model: ModelSize;
   count: number;
   timezone: string;
+};
+
+export type CreateUser = {
+  name: string;
+  email: string;
+  tier?: ProductNames;
+  expirationDays?: number;
+  expirationMonths?: number;
+  expirationYears?: number;
+  timezone: string;
+  demo?: number;
 };

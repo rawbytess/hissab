@@ -28,7 +28,8 @@
     "supabase:db:prod:push": "supabase db push",
     "d1:migrate:apply:local": "wrangler d1 migrations apply dev-logs --local",
     "d1:migrate:apply:dev": "wrangler d1 migrations apply dev-logs --remote --env dev",
-    "d1:migrate:apply:prod": "wrangler d1 migrations apply prod-logs --remote --env prod"
+    "d1:migrate:apply:prod": "wrangler d1 migrations apply prod-logs --remote --env prod",
+    "source:env:dev": "set -o allexport; source .dev.vars; set +o allexport"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250525.0",
@@ -40,6 +41,7 @@
     "@google/genai": "^1.1.0",
     "@hono/zod-validator": "^0.6.0",
     "@supabase/supabase-js": "^2.49.8",
+    "date-fns": "^4.1.0",
     "engine": "workspace:*",
     "hono": "^4.7.10",
     "openai": "^5.1.0",
