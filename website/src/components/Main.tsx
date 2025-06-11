@@ -99,8 +99,8 @@ export default function Main() {
             "sub-hero-text text-stone-300 tracking-wider whitespace-pre-line mt-12 max-w-[40em]"
           }
         >
-          Hissab is an AI enhanced natural language calculator that ensures
-          accuracy and does way more than calculations. <br />
+          Hissab is an AI Powered natural language calculator that ensures
+          accurate answers and does way more than calculations. <br />
           Hissab is useful for performing quick day-to-day calculations as well
           as complex brainstorming and planning.
         </h4>
@@ -116,7 +116,7 @@ export default function Main() {
         <p className={"text-xl text-gray-400"}>
           Cross-Platform? Cross It Off Your Worry List
         </p>
-        <div className={"flex flex-row flex-wrap gap-5 mt-5"}>
+        <div className={"flex flex-row flex-wrap justify-around gap-5 mt-5"}>
           <Tooltip
             content={"Web"}
             showArrow

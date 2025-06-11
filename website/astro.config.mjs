@@ -28,13 +28,16 @@ export default defineConfig({
       ],
       favicon: "/img/favicon.ico",
       lastUpdated: true,
-      tagline: "Calculator with superpowers",
+      tagline: "AI Calculator with superpowers",
+      description:
+        "Hissab is an AI calculator that can do more than just basic calculations. " +
+        "It can handle complex math, unit conversions, and even references to variables and dates.",
       plugins: [starlightLlmsTxt(), starlightNextjsTheme()],
       head: [
         {
           tag: "script",
           attrs: {
-            src: "https://analytics.rawbytes.com/script.js",
+            src: "/umami.js",
             "data-website-id": "19ee36c5-98a3-48d8-bf85-8ebfb5f6c17d",
             defer: true,
           },

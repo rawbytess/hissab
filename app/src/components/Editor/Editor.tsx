@@ -48,7 +48,7 @@ export default function Editor({ className }: { className?: string }) {
       });
     });
     return () => he.destroy();
-  }, [currentPageNumber]);
+  }, [currentPageNumber, isPremium]);
 
   if (!currentPageNumber) return null;
   if (currentPage?.type === "chat")

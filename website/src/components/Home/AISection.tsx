@@ -2,6 +2,7 @@ import { Button, Card, CardBody, CardHeader, Tab, Tabs } from "@heroui/react";
 import Video from "@/components/Video.tsx";
 import { Icon } from "@iconify/react";
 import HissabExample from "@/components/HissabExample.tsx";
+import { useEffect, useState } from "react";
 
 const prompts = [
   "Apply a 20% discount to 500 dollars",
@@ -26,6 +27,14 @@ const prompts = [
 ];
 
 function AISection() {
+  const [windowWidth, setWindowWidth] = useState(0);
+  const handleResize = () => {
+    setWindowWidth(window.innerWidth);
+  };
+  useEffect(() => {
+    setWindowWidth(window.innerWidth); // Accessing window API safely on the client
+    window.addEventListener("resize", handleResize);
+  }, []);
   return (
     <section>
       <div className="flex flex-col items-center justify-center w-full p-4 text-light">
@@ -54,10 +63,12 @@ function AISection() {
         <Tabs
           aria-label="Options"
           className={"items-center"}
-          variant={"underlined"}
+          isVertical={windowWidth < 680}
+          variant={windowWidth > 680 ? "underlined" : "light"}
           classNames={{
             base: "mt-2 mb-4 w-full justify-around",
             panel: "p-0",
+            tabList: `${windowWidth < 680 ? "flex-wrap" : ""}`,
           }}
         >
           <Tab
@@ -77,7 +88,10 @@ function AISection() {
             <p className={"text-gray-400 mb-3"}>
               Inline AI prompts for quick answers
             </p>
-            <img src={"/screens/inlineai.png"} className={"rounded-b-2xl"} />
+            <img
+              src={"/screens/inlineai.png"}
+              className={"rounded-b-2xl max-w-[60em] w-full"}
+            />
           </Tab>
           <Tab
             key="chat"

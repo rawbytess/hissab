@@ -11,6 +11,7 @@ import {
 import { Icon } from "@iconify/react";
 import HissabExample from "@/components/HissabExample.tsx";
 import Video from "@/components/Video.tsx";
+import { cn } from "@/lib/utils.ts";
 
 const expressions = {
   basic: "10 + 20 -15* 5/10\n22* (10^3) -16\navg(1,2,3,4)\n",
@@ -57,7 +58,7 @@ function Classic() {
         Magical without AI...
       </h2>
       <p className={"text-xl text-gray-400"}>
-        No buttons, no formulas, just brains.
+        No buttons, no clicks, no formulas...just type.
       </p>
       <div className="flex items-center flex-col ring-2 promo-imgs ring-stone-600 mb-10">
         <Tabs
@@ -207,7 +208,7 @@ function Classic() {
           </Tab>
         </Tabs>
       </div>
-      <div className={"flex flex-row flex-wrap gap-8 my-10"}>
+      <div className={cn("flex flex-row flex-wrap gap-8 my-10 justify-center")}>
         <Card className={"ring-1 ring-stone-600 max-w-[20em] bg-stone-900 "}>
           <CardHeader className={"justify-start p-0"}>
             <Video src={"/videos/organization.mp4"} />

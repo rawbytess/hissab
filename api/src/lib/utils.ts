@@ -1,3 +1,5 @@
+import { format, add } from "date-fns";
+
 export function hexToUint8Array(hex: string) {
   const x = hex.match(/.{1,2}/g);
   if (!x) {
@@ -14,4 +16,25 @@ export function log(message: {}, type: "info" | "warn" | "error" = "error") {
   } else {
     console.log(message);
   }
+}
+
+export function getFormattedUtcDateString(
+  duration: {
+    years?: number;
+    months?: number;
+    days?: number;
+    hours?: number;
+    minutes?: number;
+    seconds?: number;
+  } | null = null,
+): string {
+  const baseDate = new Date();
+
+  let targetDate;
+  if (duration) {
+    targetDate = add(baseDate, duration);
+  } else {
+    targetDate = baseDate;
+  }
+  return format(targetDate, "yyyy-MM-dd HH:mm:ss") + "+00";
 }

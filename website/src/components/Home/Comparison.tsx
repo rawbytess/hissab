@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils.ts";
 import { Icon } from "@iconify/react";
-import { Image, Link } from "@heroui/react";
+import { Card, CardBody, CardHeader, Image, Link } from "@heroui/react";
 
 export function Comparison() {
   return (
@@ -42,7 +42,15 @@ export const columns = [
   { name: "Google Search", uid: "google-search" },
   { name: "Apple Math Notes", uid: "apple-math-notes" },
 ];
-
+const competitors = [
+  "Hissab",
+  "Default calculator apps",
+  "LLMs (like ChatGPT)",
+  "Numi",
+  "Soulver",
+  "Google Search",
+  "Apple Math Notes",
+];
 export const features = [
   [
     "Just type and calculate",
@@ -349,6 +357,45 @@ export const features = [
 ];
 
 function ComparisonTable() {
+  const [windowWidth, setWindowWidth] = useState(0);
+  const handleResize = () => {
+    setWindowWidth(window.innerWidth);
+  };
+  useEffect(() => {
+    setWindowWidth(window.innerWidth); // Accessing window API safely on the client
+    window.addEventListener("resize", handleResize);
+  }, []);
+
+  if (windowWidth <= 700) {
+    return (
+      <div>
+        {features.map((f, i) => (
+          <Card
+            className={
+              "bg-stone-800 ring-2 ring-stone-600 rounded-2xl mt-10 text-light"
+            }
+          >
+            <CardHeader className={"bg-stone-900"}>{f[0]}</CardHeader>
+            {f.slice(1).map((feature, index) => (
+              <CardBody
+                className={cn(
+                  "flex flex-row justify-between gap-2",
+                  index === 0 ? "bg-purple-700" : "",
+                )}
+              >
+                <div>{competitors[index]}</div>
+                <div
+                  className={cn("text-xs max-w-[8em] text-light font-light")}
+                >
+                  {feature}
+                </div>
+              </CardBody>
+            ))}
+          </Card>
+        ))}
+      </div>
+    );
+  }
   return (
     <table
       aria-label="Example table with custom cells"

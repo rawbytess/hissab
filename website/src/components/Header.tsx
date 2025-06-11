@@ -94,17 +94,25 @@ export default function Header(props: NavbarProps) {
           </Link>
         </NavbarMenuItem>
         <NavbarMenuItem>
-          <Link className="mb-2 w-full text-default-500" href="#" size="md">
+          <Link className="mb-2 w-full text-default-500" href="/faqs" size="md">
             Docs
           </Link>
         </NavbarMenuItem>
         <NavbarMenuItem>
-          <Link className="mb-2 w-full text-default-500" href="#" size="md">
+          <Link
+            className="mb-2 w-full text-default-500"
+            href="/pricing"
+            size="md"
+          >
             Pricing
           </Link>
         </NavbarMenuItem>
         <NavbarMenuItem>
-          <Link className="mb-2 w-full text-default-500" href="#" size="md">
+          <Link
+            className="mb-2 w-full text-default-500"
+            href="/roadmap"
+            size="md"
+          >
             Roadmap
           </Link>
         </NavbarMenuItem>
