@@ -5,6 +5,7 @@ on:
     paths:
       - "app/manifest.json"
       - "app/vite.config.crx.ts"
+      - ".github/workflows/prod-chrome.yml"
     branches:
       - main
 
