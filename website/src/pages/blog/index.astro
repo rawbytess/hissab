@@ -1,0 +1,20 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BlogLayout.astro";
+
+
+const pageTitle = "My Astro Learning Blog";
+const allPosts = await getCollection("blog");
+---
+<BaseLayout pageTitle={pageTitle}>
+    <ul class="flex flex-col gap-5">
+        {
+            allPosts.map((post) => (
+                <li>
+                    <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+                    <p>{post.data.pubDate}</p>
+                </li>
+        ))
+        }
+    </ul>
+</BaseLayout>

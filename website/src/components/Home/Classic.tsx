@@ -14,7 +14,8 @@ import Video from "@/components/Video.tsx";
 import { cn } from "@/lib/utils.ts";
 
 const expressions = {
-  basic: "10 + 20 -15* 5/10\n22* (10^3) -16\navg(1,2,3,4)\n",
+  basic:
+    "10 + 20 -15* 5/10\n22* (10^3) -16\navg(1,2,3,4)\n (10 + 20) * 3 / 2\nsum(12, 20*2, 30)\n",
   percentage:
     "150 + 33%\n67.7% of 1234\n22% off 345\n37% of what is 690\n10% of 1000 - 5%\n",
   units:
@@ -70,21 +71,32 @@ function Classic() {
             tabList: `${windowWidth < 640 ? "flex-wrap" : ""} bg-stone-900`,
             panel: "bg-stone-900 rounded-r-2xl w-full",
             base: "py-4 pl-2 bg-stone-900 rounded-l-2xl",
-            tab: "justify-start",
+            tab: "justify-start p-2 h-full",
           }}
         >
           <Tab
             key="basic"
             title={
-              <div className={"flex flex-row gap-2 items-center"}>
-                <Icon
-                  icon={"solar:calculator-minimalistic-bold"}
-                  width={16}
-                  className={""}
-                  color="#FF6E49"
-                />
-                Basic Calculations
-              </div>
+              <>
+                <div
+                  className={"flex flex-row gap-2 items-center text-[#FF6E49]"}
+                >
+                  <Icon
+                    icon={"solar:calculator-minimalistic-bold"}
+                    width={16}
+                    className={""}
+                    color="#FF6E49"
+                  />
+                  Basic Calculations
+                </div>
+                <p
+                  className={
+                    "text-xs text-gray-400 max-w-60 text-wrap text-left"
+                  }
+                >
+                  Addition, Subtraction, Multiplication, Division, Average
+                </p>
+              </>
             }
           >
             <HissabExample
@@ -95,15 +107,27 @@ function Classic() {
           <Tab
             key="percentage"
             title={
-              <div className={"flex flex-row gap-2 items-center"}>
-                <Icon
-                  icon={"mdi:percent-box"}
-                  width={16}
-                  className={"rotate-45"}
-                  color="#E0FF3C"
-                />
-                Percentages
-              </div>
+              <>
+                <div
+                  className={"flex flex-row gap-2 items-center text-[#E0FF3C]"}
+                >
+                  <Icon
+                    icon={"mdi:percent-box"}
+                    width={16}
+                    className={"rotate-45"}
+                    color="#E0FF3C"
+                  />
+                  Percentages
+                </div>
+                <p
+                  className={
+                    "text-xs text-gray-400 max-w-60 text-wrap text-left"
+                  }
+                >
+                  Percent addition, subtraction, percentage of a number,
+                  discount
+                </p>
+              </>
             }
           >
             <HissabExample
@@ -114,15 +138,26 @@ function Classic() {
           <Tab
             key="units"
             title={
-              <div className={"flex flex-row gap-2 items-center"}>
-                <Icon
-                  icon={"solar:refresh-square-bold"}
-                  width={16}
-                  className={""}
-                  color="#53FF79"
-                />
-                Unit conversion
-              </div>
+              <>
+                <div
+                  className={"flex flex-row gap-2 items-center text-[#53FF79]"}
+                >
+                  <Icon
+                    icon={"solar:refresh-square-bold"}
+                    width={16}
+                    className={""}
+                    color="#53FF79"
+                  />
+                  Unit conversion
+                </div>
+                <p
+                  className={
+                    "text-xs text-gray-400 max-w-60 text-wrap text-left"
+                  }
+                >
+                  Length, weight, volume, time, temperature and more
+                </p>
+              </>
             }
           >
             <HissabExample
@@ -133,15 +168,27 @@ function Classic() {
           <Tab
             key="datetime"
             title={
-              <div className={"flex flex-row gap-2 items-center"}>
-                <Icon
-                  icon={"clarity:date-solid"}
-                  width={16}
-                  className={""}
-                  color="#2CFFF8"
-                />
-                Date, time and timezone
-              </div>
+              <>
+                <div
+                  className={"flex flex-row gap-2 items-center text-[#2CFFF8]"}
+                >
+                  <Icon
+                    icon={"clarity:date-solid"}
+                    width={16}
+                    className={""}
+                    color="#2CFFF8"
+                  />
+                  Calender math
+                </div>
+                <p
+                  className={
+                    "text-xs text-gray-400 max-w-60 text-wrap text-left"
+                  }
+                >
+                  Date, time and timezone calculations, epoch time calculations
+                  and more.
+                </p>
+              </>
             }
           >
             <HissabExample
@@ -152,15 +199,27 @@ function Classic() {
           <Tab
             key="acedemic"
             title={
-              <div className={"flex flex-row gap-2 items-center"}>
-                <Icon
-                  icon={"solar:square-academic-cap-bold"}
-                  width={16}
-                  className={""}
-                  color="#4286FF"
-                />
-                Academic and Scientific Maths
-              </div>
+              <>
+                <div
+                  className={"flex flex-row gap-2 items-center text-[#4286FF]"}
+                >
+                  <Icon
+                    icon={"solar:square-academic-cap-bold"}
+                    width={16}
+                    className={""}
+                    color="#4286FF"
+                  />
+                  Academic and Scientific Maths
+                </div>
+                <p
+                  className={
+                    "text-xs text-gray-400 max-w-60 text-wrap text-left"
+                  }
+                >
+                  Logarithms, trigonometry, GCD,Permutations, combinations,
+                  Statistics and more
+                </p>
+              </>
             }
           >
             <HissabExample
@@ -171,15 +230,27 @@ function Classic() {
           <Tab
             key="computational"
             title={
-              <div className={"flex flex-row gap-2 items-center"}>
-                <Icon
-                  icon={"ph:binary-fill"}
-                  width={16}
-                  className={""}
-                  color="#FF46F8"
-                />
-                Computational Maths
-              </div>
+              <>
+                <div
+                  className={"flex flex-row gap-2 items-center text-[#FF46F8]"}
+                >
+                  <Icon
+                    icon={"ph:binary-fill"}
+                    width={16}
+                    className={""}
+                    color="#FF46F8"
+                  />
+                  Computational Maths
+                </div>
+                <p
+                  className={
+                    "text-xs text-gray-400 max-w-60 text-wrap text-left"
+                  }
+                >
+                  Binary, hexadecimal, octal, bitwise and color operations and
+                  more.
+                </p>
+              </>
             }
           >
             <HissabExample
@@ -190,7 +261,9 @@ function Classic() {
           <Tab
             key="crazy"
             title={
-              <div className={"flex flex-row gap-2 items-center"}>
+              <div
+                className={"flex flex-row gap-2 items-center text-[#FF6E49]"}
+              >
                 <Icon
                   icon={"streamline-emojis:crazy-face"}
                   width={16}

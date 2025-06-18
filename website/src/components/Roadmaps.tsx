@@ -87,7 +87,7 @@ function RoadmapCard({
         )}
         {status === "considering" && (
           <Icon
-            icon={"raphael:roadmap"}
+            icon={"fxemoji:hourglass"}
             width={24}
             color={"yellow"}
             className={"absolute right-0 top-0"}

@@ -30,25 +30,11 @@ export type ModelFamily = "gemini";
 export const zModels = z.enum([
   "gemini-2.0-flash-lite",
   "gemini-2.0-flash",
-  "gemini-2.5-flash-preview-05-20",
-  "gemini-2.5-pro-preview-05-06",
+  "gemini-2.5-flash-lite-preview-06-17",
+  "gemini-2.5-flash",
+  "gemini-2.5-pro",
 ]);
-/*
-small -
- llama 4 Scout
- gpt 4.1 nano
 
-medium -
-  llama 4 Maverick
-  gpt 4.1 mini
-
-large -
-  Deepseek r1 distill llama 70B
-  o4-mini
-
-xlarge -
-  o3
- */
 export type Models = z.infer<typeof zModels>;
 
 export const ModelsList: {
@@ -68,28 +54,28 @@ export const ModelsList: {
     canThink: false,
   },
   small: {
-    id: "gemini-2.0-flash",
-    name: "Gemini 2.0 Flash",
+    id: "gemini-2.5-flash-lite-preview-06-17",
+    name: "Gemini 2.5 Flash Lite",
     family: "gemini",
-    description: "Gemini 2.0 Flash",
+    description: "Gemini 2.0 Flash Lite",
     canThink: false,
   },
   medium: {
-    id: "gemini-2.5-flash-preview-05-20",
+    id: "gemini-2.5-flash",
     name: "Gemini 2.5 Flash",
     family: "gemini",
     description: "Gemini 2.5 Flash",
     canThink: true,
   },
   large: {
-    id: "gemini-2.5-pro-preview-05-06",
+    id: "gemini-2.5-pro",
     name: "Gemini 2.5 Pro",
     family: "gemini",
     description: "Gemini 2.5 Pro",
     canThink: true,
   },
   xlarge: {
-    id: "gemini-2.5-pro-preview-05-06",
+    id: "gemini-2.5-pro",
     name: "Gemini 2.5 Pro",
     family: "gemini",
     description: "Gemini 2.5 Pro",
@@ -120,14 +106,21 @@ export const ModelsMap: {
     size: "small",
     canThink: false,
   },
-  "gemini-2.5-flash-preview-05-20": {
+  "gemini-2.5-flash-lite-preview-06-17": {
+    name: "Gemini 2.5 Flash Lite",
+    description: "Gemini 2.5 Flash Lite",
+    family: "gemini",
+    size: "small",
+    canThink: false,
+  },
+  "gemini-2.5-flash": {
     name: "Gemini 2.5 Flash",
     description: "Gemini 2.5 Flash",
     family: "gemini",
     size: "medium",
     canThink: true,
   },
-  "gemini-2.5-pro-preview-05-06": {
+  "gemini-2.5-pro": {
     name: "Gemini 2.5 Pro",
     description: "Gemini 2.5 Pro",
     family: "gemini",
@@ -136,8 +129,8 @@ export const ModelsMap: {
   },
 };
 
-export const inLineDefaultModel: Models = "gemini-2.0-flash";
-export const chatDefaultModel: Models = "gemini-2.5-flash-preview-05-20";
+export const inLineDefaultModel: Models = "gemini-2.5-flash-lite-preview-06-17";
+export const chatDefaultModel: Models = "gemini-2.5-flash";
 
 export const modelRateLimits: {
   [key in ModelSize]: {
@@ -198,7 +191,7 @@ const zAIRequestChat = z.object({
     .optional(),
   history: z.array(
     z.object({
-      role: z.enum(["user", "assistant"]),
+      role: z.enum(["user", "model"]),
       content: z.string(),
     }),
   ),

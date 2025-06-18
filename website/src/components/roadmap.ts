@@ -41,19 +41,13 @@ export const roadmap = [
     status: "considering",
   },
   {
-    title: "Compound units and corresponding calculations",
-    description:
-      "Add support for compound units like meter/sec or kg/(m·s2) aka Pascal and support calculations using them like 50 meter/sec to miles/hour.",
-    status: "considering",
-  },
-  {
     title: "Solve equations",
     description: "Add ability to solve equations",
     status: "considering",
   },
   {
-    title: "Complex numbers and corresponding calculations",
-    description: "Add support for complex (or imaginary) numbers",
+    title: "Advanced Engineering math and science calculations",
+    description: "Complex/imaginary numbers, probability, physics etc.",
     status: "considering",
   },
   {

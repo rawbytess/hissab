@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.astro';
+import {getCollection, render} from "astro:content";
+
+const posts = await getCollection("blog");
+const currentSlug = Astro.url.pathname.split("/").pop();
+---
+
+<Layout>
+  <div class="flex justify-center w-full pt-10 bg-dark text-light">
+  <aside class="w-[20em] sidebar">
+    <ul class="flex flex-col gap-2">
+      {posts.map(post => (
+        <li class={post.id === currentSlug ? "active" : ""}>
+          <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+        </li>
+      ))}
+    </ul>
+  </aside>
+  <main class="content">
+    <slot />
+  </main>
+  </div>
+</Layout>

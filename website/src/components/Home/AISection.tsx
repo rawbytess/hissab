@@ -5,6 +5,7 @@ import HissabExample from "@/components/HissabExample.tsx";
 import { useEffect, useState } from "react";
 
 const prompts = [
+  "how much should I pay per month if I want my $50K loan at 4% interest to be paid of in 5 years",
   "Apply a 20% discount to 500 dollars",
   "Convert 10 miles to kilometers",
   "Calculate the average of 10, 20, and 30",
@@ -175,9 +176,6 @@ function AISection() {
           </Tab>
         </Tabs>
       </div>
-      <p className={"text-xs text-gray-400 mt-3"}>
-        *No "Actual Indians" were harmed in making of this App
-      </p>
       <Button className="mt-6 bg-blue-700 shadow-2xl">
         <a href="/pricing" className="">
           <p>See all Subscription options</p>
