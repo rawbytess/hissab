@@ -41,7 +41,7 @@ export default function Header(props: NavbarProps) {
             className={"w-8 drop-shadow"}
             alt="Hissab logo"
           />
-          <h1 className={"shadow"}>Hissab</h1>
+          <h2 className={"shadow"}>Hissab</h2>
         </Link>
       </NavbarBrand>
 

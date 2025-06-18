@@ -42,7 +42,7 @@ export function PromptWrapper() {
     history: currPage.chats.messages
       .filter((message) => message.role === "user" || message.role === "hissab")
       .map((message) => ({
-        role: message.role === "user" ? "user" : "assistant",
+        role: message.role === "user" ? "user" : "model",
         content: message.content,
       })),
   };

@@ -72,7 +72,7 @@ app.post(
 
     if (body.inline)
       history.push({
-        role: "Assistant",
+        role: "model",
         parts: [
           {
             text: `Note: All lines on the page are ${body.expressions

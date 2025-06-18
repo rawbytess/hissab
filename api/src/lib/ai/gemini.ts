@@ -18,6 +18,7 @@ import { FileUpload } from "~lib/types/fileTypes";
 import { calculateExpressions } from "~lib/calculateExpressions";
 import { ProductNames } from "~lib/types/userMetadata";
 import { webSearch } from "@lib/webSearch";
+import { print } from "~lib/utils";
 
 async function blobToBase64(blob: any) {
   // Convert the Blob to an ArrayBuffer
@@ -58,6 +59,7 @@ export class Gemini {
       ...history,
       { role: "user", parts: [{ text: prompt }] },
     ];
+
     if (files && isPremium && isPremium === "AI Plus") {
       contents.push({
         role: "user",
@@ -160,6 +162,19 @@ export class Gemini {
             });
           }
         }
+      } else if (respResult.data.text) {
+        if (respResult.data.text.length === 0) {
+          throw new CustomError(
+            "GeminiGenContent",
+            "Something went wrong",
+            "Something went wrong",
+          );
+        }
+        return {
+          naturalAnswer: respResult.data.text,
+          webSearchContext: webSearchContext,
+          expressions: hissabExps,
+        };
       } else {
         const final_response = await this.ai.models.generateContent({
           model: this.hissabModel,

@@ -1,4 +1,4 @@
-const prompts_with_exp = [
+export const prompts_with_exp = [
   {
     prompt: "What is 25 plus 78?",
     hissab_expressions: ["25+78"],

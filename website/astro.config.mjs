@@ -6,6 +6,9 @@ import starlightLlmsTxt from "starlight-llms-txt";
 import starlightNextjsTheme from "starlight-nextjs-theme";
 import { ion } from "starlight-ion-theme";
 import starlight from "@astrojs/starlight";
+import mdx from "@astrojs/mdx";
+
+import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
   output: "static",
@@ -18,7 +21,7 @@ export default defineConfig({
     react(),
     tailwind({ applyBaseStyles: false }),
     starlight({
-      title: "Hissab",
+      title: "Hissab Docs",
       customCss: [
         // Relative path to your custom CSS file
         "./src/css/tailwind.css",
@@ -30,8 +33,7 @@ export default defineConfig({
       lastUpdated: true,
       tagline: "AI Calculator with superpowers",
       description:
-        "Hissab is an AI calculator that can do more than just basic calculations. " +
-        "It can handle complex math, unit conversions, and even references to variables and dates.",
+        "AI powered natural language calculator that answers accurately. Just type & calculate anything with ease. Perform basic to advanced calculations instantly.",
       plugins: [starlightLlmsTxt(), starlightNextjsTheme()],
       head: [
         {
@@ -111,5 +113,7 @@ export default defineConfig({
         },
       ],
     }),
+    mdx(),
+    sitemap(),
   ],
 });
