@@ -1,7 +1,7 @@
-import { Image, type NavbarProps } from "@heroui/react";
-
-import React from "react";
 import {
+  cn,
+  Image,
+  Link,
   Navbar,
   NavbarBrand,
   NavbarContent,
@@ -9,114 +9,127 @@ import {
   NavbarMenu,
   NavbarMenuItem,
   NavbarMenuToggle,
-  Link,
-  Button,
-  Divider,
+  type NavbarProps,
 } from "@heroui/react";
 
-import { cn } from "@heroui/react";
+import React, { useState } from "react";
+import { Banner } from "@/components/Banner.tsx";
+
+const now = new Date();
+const start = new Date("2025-06-19T00:00:00-07:00"); // PDT is UTC-7
+const end = new Date("2025-06-20T00:01:00-07:00");
+const isBannerTime = now >= start && now <= end;
 
 export default function Header(props: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [showAnnouncement, setShowAnnouncement] = useState(isBannerTime);
 
   return (
-    <Navbar
-      {...props}
-      className={"bg-[#530e97]"}
-      classNames={{
-        base: cn("border-default-100 text-light h-12", {
-          "bg-[#530e97]": isMenuOpen,
-        }),
-        wrapper: "w-full justify-around",
-        item: "hidden md:flex",
-      }}
-      isMenuOpen={isMenuOpen}
-      onMenuOpenChange={setIsMenuOpen}
-    >
-      {/* Left Content */}
-      <NavbarBrand>
-        <Link href="/" className={"flex items-center gap-1 text-white"}>
-          <Image
-            src="/img/logomark.svg"
-            className={"w-8 drop-shadow"}
-            alt="Hissab logo"
-          />
-          <h2 className={"shadow"}>Hissab</h2>
-        </Link>
-      </NavbarBrand>
+    <>
+      {showAnnouncement && <Banner />}
 
-      {/* Center Content */}
-      <NavbarContent justify="center" className={"gap-5"}>
-        <NavbarItem>
-          <Link className="text-light" href="/faqs" size="sm">
-            Docs
+      <Navbar
+        {...props}
+        className={cn("bg-[#530e97]", isBannerTime ? "mt-10" : "mt-0")}
+        classNames={{
+          base: cn("border-default-100 text-light h-12", {
+            "bg-[#530e97]": isMenuOpen,
+          }),
+          wrapper: "w-full justify-around",
+          item: "hidden md:flex",
+        }}
+        isMenuOpen={isMenuOpen}
+        onMenuOpenChange={setIsMenuOpen}
+      >
+        {/* Left Content */}
+        <NavbarBrand>
+          <Link href="/" className={"flex items-center gap-1 text-white"}>
+            <Image
+              src="/img/logomark.svg"
+              className={"w-8 drop-shadow"}
+              alt="Hissab logo"
+            />
+            <h2 className={"shadow"}>Hissab</h2>
           </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link className="text-light" href="/pricing" size="sm">
-            Pricing
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link className="text-light" href="/roadmap" size="sm">
-            Roadmap
-          </Link>
-        </NavbarItem>
-      </NavbarContent>
+        </NavbarBrand>
 
-      {/* Right Content */}
-      <NavbarContent className="hidden md:flex" justify="end">
-        <NavbarItem className="!flex gap-2">
-          <Link
-            href={import.meta.env.PUBLIC_HISSAB_APP_URL}
-            target={"_blank"}
-            className={
-              "hissab-app-nav drop-shadow-2xl h-8 px-2 pt-1 text-white hover:text-[#efefef]"
-            }
-          >
-            Hissab App
-          </Link>
-        </NavbarItem>
-      </NavbarContent>
+        {/* Center Content */}
+        <NavbarContent justify="center" className={"gap-5"}>
+          <NavbarItem>
+            <Link className="text-light" href="/faqs" size="sm">
+              Docs
+            </Link>
+          </NavbarItem>
+          <NavbarItem>
+            <Link className="text-light" href="/pricing" size="sm">
+              Pricing
+            </Link>
+          </NavbarItem>
+          <NavbarItem>
+            <Link className="text-light" href="/roadmap" size="sm">
+              Roadmap
+            </Link>
+          </NavbarItem>
+        </NavbarContent>
 
-      <NavbarMenuToggle className="text-default-400 md:hidden" />
+        {/* Right Content */}
+        <NavbarContent className="hidden md:flex" justify="end">
+          <NavbarItem className="!flex gap-2">
+            <Link
+              href={import.meta.env.PUBLIC_HISSAB_APP_URL}
+              target={"_blank"}
+              className={
+                "hissab-app-nav drop-shadow-2xl h-8 px-2 pt-1 text-white hover:text-[#efefef]"
+              }
+            >
+              Hissab App
+            </Link>
+          </NavbarItem>
+        </NavbarContent>
 
-      <NavbarMenu className="top-[calc(var(--navbar-height)_-_1px)] max-h-fit bg-default-200/50 pb-6 pt-6 shadow-medium backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50">
-        <NavbarMenuItem className="mb-4">
-          <Link
-            href={import.meta.env.PUBLIC_HISSAB_APP_URL}
-            target={"_blank"}
-            className={
-              "hissab-app-nav drop-shadow-2xl shadow-2xl h-10 p-2 text-white hover:text-[#efefef]"
-            }
-          >
-            Hissab App
-          </Link>
-        </NavbarMenuItem>
-        <NavbarMenuItem>
-          <Link className="mb-2 w-full text-default-500" href="/faqs" size="md">
-            Docs
-          </Link>
-        </NavbarMenuItem>
-        <NavbarMenuItem>
-          <Link
-            className="mb-2 w-full text-default-500"
-            href="/pricing"
-            size="md"
-          >
-            Pricing
-          </Link>
-        </NavbarMenuItem>
-        <NavbarMenuItem>
-          <Link
-            className="mb-2 w-full text-default-500"
-            href="/roadmap"
-            size="md"
-          >
-            Roadmap
-          </Link>
-        </NavbarMenuItem>
-      </NavbarMenu>
-    </Navbar>
+        <NavbarMenuToggle className="text-default-400 md:hidden" />
+
+        <NavbarMenu className="top-[calc(var(--navbar-height)_-_1px)] max-h-fit bg-default-200/50 pb-6 pt-6 shadow-medium backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50">
+          <NavbarMenuItem className="mb-4">
+            <Link
+              href={import.meta.env.PUBLIC_HISSAB_APP_URL}
+              target={"_blank"}
+              className={
+                "hissab-app-nav drop-shadow-2xl shadow-2xl h-10 p-2 text-white hover:text-[#efefef]"
+              }
+            >
+              Hissab App
+            </Link>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <Link
+              className="mb-2 w-full text-default-500"
+              href="/faqs"
+              size="md"
+            >
+              Docs
+            </Link>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <Link
+              className="mb-2 w-full text-default-500"
+              href="/pricing"
+              size="md"
+            >
+              Pricing
+            </Link>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <Link
+              className="mb-2 w-full text-default-500"
+              href="/roadmap"
+              size="md"
+            >
+              Roadmap
+            </Link>
+          </NavbarMenuItem>
+        </NavbarMenu>
+      </Navbar>
+    </>
   );
 }
