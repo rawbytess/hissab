@@ -1,6 +1,6 @@
 import { StreamableHTTPTransport } from "@hono/mcp";
 import documentation from "@lib/ai/instructions/documentation";
-import systemInstructions from "@lib/ai/instructions/system-instructions";
+import { mcpInstructions } from "@lib/ai/instructions/system-instructions";
 import type { MetaBindings } from "@lib/types/envTypes";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { Hono } from "hono";
@@ -16,7 +16,7 @@ server.registerTool(
   "Hissab",
   {
     title: "Hissab Math & calculation Tool",
-    description: systemInstructions() + documentation,
+    description: mcpInstructions + documentation,
     inputSchema: { hissab_expressions: z.array(z.string()) },
   },
   async ({ hissab_expressions }) => {
