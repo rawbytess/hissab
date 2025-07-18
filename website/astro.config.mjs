@@ -1,14 +1,12 @@
-import { defineConfig } from "astro/config";
+import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
-
+import sitemap from "@astrojs/sitemap";
+import starlight from "@astrojs/starlight";
 import tailwind from "@astrojs/tailwind";
+import { defineConfig } from "astro/config";
+import { ion } from "starlight-ion-theme";
 import starlightLlmsTxt from "starlight-llms-txt";
 import starlightNextjsTheme from "starlight-nextjs-theme";
-import { ion } from "starlight-ion-theme";
-import starlight from "@astrojs/starlight";
-import mdx from "@astrojs/mdx";
-
-import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
   output: "static",
@@ -59,7 +57,11 @@ export default defineConfig({
           link: "/api",
         },
         {
-          label: "Classic",
+          label: "MCP Server",
+          link: "/mcp",
+        },
+        {
+          label: "Guide",
           items: [
             {
               label: "Introduction",

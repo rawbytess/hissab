@@ -1,11 +1,12 @@
+import type { Bindings } from "@lib/types/envTypes";
 import { Hono } from "hono";
+import adminUser from "./routes/admin/user/route";
 import ai from "./routes/ai/route";
 import classic from "./routes/classic/route";
+import mcp from "./routes/mcp/route";
 import userAI from "./routes/user/ai/route";
-import lemonsqueezy from "./routes/webhook/lemonsqueezy/route";
 import userUpload from "./routes/user/upload/route";
-import adminUser from "./routes/admin/user/route";
-import { Bindings } from "@lib/types/envTypes";
+import lemonsqueezy from "./routes/webhook/lemonsqueezy/route";
 
 const app = new Hono<{ Bindings: Bindings }>();
 
@@ -18,6 +19,7 @@ app.route("/user/ai", userAI);
 app.route("/webhook/lemonsqueezy", lemonsqueezy);
 app.route("/user/upload", userUpload);
 app.route("/admin/user", adminUser);
+app.route("/mcp", mcp);
 
 app.notFound((c) => c.json({ message: "Not Found", ok: false }, 404));
 
