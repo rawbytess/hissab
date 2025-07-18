@@ -40,6 +40,8 @@
   "dependencies": {
     "@google/genai": "^1.1.0",
     "@hono/zod-validator": "^0.6.0",
+    "@hono/mcp": "^0.1.0",
+    "@modelcontextprotocol/sdk": "^1.15.1",
     "@supabase/supabase-js": "^2.49.8",
     "date-fns": "^4.1.0",
     "engine": "workspace:*",
