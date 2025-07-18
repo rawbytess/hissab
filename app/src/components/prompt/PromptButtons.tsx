@@ -1,34 +1,34 @@
 import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
   Button,
   cn,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
   DropdownSection,
-  Selection,
+  DropdownTrigger,
+  type Selection,
   Tooltip,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { getMaxCharacterLimit } from "../../../../lib/getPremiumStatus.ts";
-import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
 import UploadModal from "@/components/prompt/UploadModal.tsx";
 import {
-  chatDefaultModel,
-  modelRateLimits,
-  Models,
-  ModelSize,
-  ModelsMap,
-} from "../../../../lib/types/AITypes.ts";
-import {
-  ChatPage,
+  type ChatPage,
   PageContext,
 } from "@/components/sidebar/pages/PagesProvider.tsx";
-import { ProductNames } from "../../../../lib/types/userMetadata.ts";
+import { useAuth } from "@/components/user/auth/AuthProvider.tsx";
+import { getMaxCharacterLimit } from "../../../../lib/getPremiumStatus.ts";
+import {
+  chatDefaultModel,
+  type ModelSize,
+  Models,
+  ModelsMap,
+  modelRateLimits,
+} from "../../../../lib/types/AITypes.ts";
+import type { ProductNames } from "../../../../lib/types/userMetadata.ts";
 
 export function PromptButtons({ prompt }: { prompt: string }) {
-  const { isPremium } = useContext(SessionContext);
+  const { isPremium } = useAuth();
   const { currentPage, toggleExplain, toggleFallback } =
     useContext(PageContext);
   const maxPromptLength = useMemo(

@@ -1,16 +1,16 @@
+import { Chip, cn, HeroUIProvider, ToastProvider } from "@heroui/react";
+import { Icon } from "@iconify/react";
+import { infinity } from "ldrs";
+import { NuqsAdapter } from "nuqs/adapters/react";
+import { useContext } from "react";
 import Editor from "@/components/Editor/Editor.tsx";
+import Footer from "@/components/Editor/Footer.tsx";
+import Header from "@/components/Editor/Header.tsx";
 import Sidebar from "@/components/sidebar/AppSidebar.tsx";
 import PagesProvider, {
   PageContext,
 } from "@/components/sidebar/pages/PagesProvider.tsx";
-import Header from "@/components/Editor/Header.tsx";
-import Footer from "@/components/Editor/Footer.tsx";
-import { SessionProvider } from "@/components/user/auth/SessionProvider.tsx";
-import { Chip, cn, HeroUIProvider, ToastProvider } from "@heroui/react";
-import { NuqsAdapter } from "nuqs/adapters/react";
-import { infinity } from "ldrs";
-import { Icon } from "@iconify/react";
-import { useContext } from "react";
+import { AuthProvider } from "@/components/user/auth/AuthProvider.tsx";
 
 infinity.register();
 
@@ -22,10 +22,10 @@ function App() {
         "dark text-foreground bg-background",
       )}
     >
-      <NuqsAdapter>
-        <HeroUIProvider>
-          <ToastProvider toastOffset={50} disableAnimation />
-          <SessionProvider>
+      <AuthProvider>
+        <NuqsAdapter>
+          <HeroUIProvider>
+            <ToastProvider toastOffset={50} disableAnimation />
             <PagesProvider>
               <Sidebar>
                 <div
@@ -40,9 +40,9 @@ function App() {
                 </div>
               </Sidebar>
             </PagesProvider>
-          </SessionProvider>
-        </HeroUIProvider>
-      </NuqsAdapter>
+          </HeroUIProvider>
+        </NuqsAdapter>
+      </AuthProvider>
     </div>
   );
 }

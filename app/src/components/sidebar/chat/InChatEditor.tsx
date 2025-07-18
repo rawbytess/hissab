@@ -1,16 +1,16 @@
-import { useContext, useEffect, useRef } from "react";
-import HissabEditor, {
-  hissabEditorIf,
-  HissabEditorType,
-} from "@/lib/editor/editor.ts";
-import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
-import { Icon } from "@iconify/react";
 import { Tooltip } from "@heroui/react";
+import { Icon } from "@iconify/react";
+import { useContext, useEffect, useRef } from "react";
+import { useAuth } from "@/components/user/auth/AuthProvider";
+import HissabEditor, {
+  type HissabEditorType,
+  type hissabEditorIf,
+} from "@/lib/editor/editor.ts";
 
 export function InChatEditor({ expressions }: { expressions: string[] }) {
   const heRef = useRef<HTMLDivElement>(null);
   const heeditorRef = useRef<HissabEditorType | null>(null);
-  const { isPremium } = useContext(SessionContext);
+  const { isPremium } = useAuth();
 
   useEffect(() => {
     if (!heRef.current) return;

@@ -13,38 +13,37 @@ import {
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import React, { useContext, useEffect, useState } from "react";
-import {
-  FileWithPreview,
-  useSupabaseUpload,
-} from "@/hooks/use-supabase-upload.ts";
+import { PageContext } from "@/components/sidebar/pages/PagesProvider.tsx";
 import {
   Dropzone,
   DropzoneContent,
   DropzoneEmptyState,
 } from "@/components/ui/dropzone.tsx";
-import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
-import { uploadFile } from "@/queries/useAIFileUpload.tsx";
-import { supabase } from "@/lib/supabase/client.ts";
-import { cn } from "@/lib/utils.ts";
-import { PageContext } from "@/components/sidebar/pages/PagesProvider.tsx";
-import { getFileInfoFromUrl } from "@/lib/fileMetaData.ts";
+import { useAuth } from "@/components/user/auth/AuthProvider";
 import {
-  FileObject,
+  FileWithPreview,
+  useSupabaseUpload,
+} from "@/hooks/use-supabase-upload.ts";
+import { getFileInfoFromUrl } from "@/lib/fileMetaData.ts";
+import { cn } from "@/lib/utils.ts";
+import { uploadFile } from "@/queries/useAIFileUpload.tsx";
+import { getMaxFileSize } from "../../../../lib/getPremiumStatus.ts";
+import {
+  type FileObject,
   FileUpload,
   supportedMimeTypes,
 } from "../../../../lib/types/fileTypes.ts";
-import { getMaxFileSize } from "../../../../lib/getPremiumStatus.ts";
 
 const BucketName = "context";
 
 export default function UploadModal() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { session, isPremium } = useContext(SessionContext);
+  const { user, isPremium } = useAuth();
   const { updateNote, currentPageNumber } = useContext(PageContext);
 
   const props = useSupabaseUpload({
     bucketName: BucketName,
-    path: `${session?.user.id}`,
+    path: `${user.id}`,
     maxFiles: 1,
     maxFileSize: getMaxFileSize(isPremium ?? ""),
     upsert: true,
@@ -55,7 +54,7 @@ export default function UploadModal() {
       onOpenChange();
 
       const file = props.acceptedFiles[0];
-      const url = `${import.meta.env.VITE_SUPABASE_PROJECT_URL}/storage/v1/object/public/${BucketName}/${session?.user.id}/${file.name}`;
+      const url = `${import.meta.env.VITE_SUPABASE_PROJECT_URL}/storage/v1/object/public/${BucketName}/${user.id}/${file.name}`;
 
       uploadFile({
         url: url,
@@ -147,14 +146,14 @@ const DropzoneFileList = ({
 }) => {
   const [recentFiles, setrecentFiles] = useState<FileObject[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const { session } = useContext(SessionContext);
+  const { user } = useAuth();
 
   //console.log(recentFiles);
   useEffect(() => {
     async function fetchFiles() {
-      const { data, error } = await supabase.storage
+      /* const { data, error } = await supabase.storage
         .from(bucket)
-        .list(`${session?.user.id}`, {
+        .list(`${user.id}`, {
           limit: 10,
           offset: 0,
           sortBy: { column: "updated_at", order: "asc" },
@@ -164,13 +163,13 @@ const DropzoneFileList = ({
         setError("Error fetching your files.");
       } else {
         setrecentFiles(data);
-      }
+      }*/
     }
     //console.log("Fetching files");
     fetchFiles();
-  }, [bucket, session]);
+  }, [bucket, user]);
 
-  if (!session) {
+  if (!user) {
     return null;
   }
   if (error) {
@@ -190,7 +189,7 @@ const DropzoneFileList = ({
             onClick={() => {
               onOpenChange();
               uploadFile({
-                url: `${import.meta.env.VITE_SUPABASE_PROJECT_URL}/storage/v1/object/public/${bucket}/${session?.user.id}/${file.name}`,
+                url: `${import.meta.env.VITE_SUPABASE_PROJECT_URL}/storage/v1/object/public/${bucket}/${user.id}/${file.name}`,
                 name: file.name,
               })
                 .then((file) => {
@@ -216,6 +215,7 @@ const DropzoneFileList = ({
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
+                  /*
                   supabase.storage
                     .from(bucket)
                     .remove([`${session?.user.id}/${file.name}`])
@@ -228,6 +228,7 @@ const DropzoneFileList = ({
                         );
                       }
                     });
+                    */
                 }}
               />
             }

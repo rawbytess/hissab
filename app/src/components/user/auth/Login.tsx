@@ -1,8 +1,15 @@
+import {
+  Button,
+  cn,
+  Form,
+  Input,
+  InputOtp,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+} from "@heroui/react";
 import { useContext, useState } from "react";
-import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
-import { Button, Input, Form, InputOtp, cn } from "@heroui/react";
-import { ModalContent, ModalHeader, ModalBody } from "@heroui/react";
-import { supabase } from "@/lib/supabase/client.ts";
+import { useAuth } from "@/components/user/auth/AuthProvider";
 
 export function LoginForm({
   setOpen,
@@ -16,11 +23,7 @@ export function LoginForm({
   const [errorEmail, setErrorEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { setSession, signInWithOTP, verifyOTP } = useContext(SessionContext);
-
-  if (!setSession || !signInWithOTP || !verifyOTP) {
-    return null;
-  }
+  const { login, verifyOtp } = useAuth();
 
   return (
     <ModalContent className="text-white p-5">
@@ -40,26 +43,21 @@ export function LoginForm({
             event.preventDefault();
             setLoading(true);
             if (showOTP) {
-              const res = await verifyOTP(email, otp);
-              if (res.error) {
-                setErrorOTP(res.error.message);
-              } else {
-                setShowOTP(false);
-                setOpen(false);
-                const tzUpdate = await supabase.auth.updateUser({
-                  data: {
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                  },
-                });
-              }
+              const { user } = await verifyOtp(email, otp).catch((error) => {
+                setErrorOTP(error.message);
+              });
+              setShowOTP(false);
+              setOpen(false);
+              /* const tzUpdate = await supabase.auth.updateUser({
+                data: {
+                  timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                },
+              }); TODO */
             } else {
-              const res = await signInWithOTP(email);
-              if (res.error) {
-                setErrorEmail(res.error.message);
-              } else {
-                setSession(res.data.session);
-                setShowOTP(true);
-              }
+              const { newUser } = await login(email).catch((e) =>
+                setErrorEmail(e.message),
+              ); // TODO
+              setShowOTP(true);
             }
             setLoading(false);
           }}

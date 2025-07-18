@@ -1,17 +1,16 @@
 import {
   Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
   DropdownItem,
-  User,
+  DropdownMenu,
   DropdownSection,
+  DropdownTrigger,
+  User,
 } from "@heroui/react";
-import { useContext } from "react";
-import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
 import { Icon } from "@iconify/react";
+import { useAuth } from "@/components/user/auth/AuthProvider";
 
 export default function UserDropdown() {
-  const { session, logout, isPremium, metadata } = useContext(SessionContext);
+  const { user, logout, isPremium } = useAuth();
 
   return (
     <div className="flex items-center gap-4 mt-10">
@@ -22,12 +21,12 @@ export default function UserDropdown() {
             avatarProps={{
               className: "bg-purple-700 border-2 border-purple-500",
               isBordered: true,
-              src: `https://robohash.org/${session?.user.email}.png`,
-              fallback: metadata?.user_name || session?.user.email,
+              src: `https://robohash.org/${user.email}.png`,
+              fallback: user?.name || user.email,
             }}
             className="transition-transform "
             description={isPremium ?? "Free Plan"}
-            name={metadata?.user_name || session?.user?.email}
+            name={user.name || user?.email}
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" className={"text-gray-300"}>
@@ -38,6 +37,7 @@ export default function UserDropdown() {
                   href={"https://store.hissab.io/billing"}
                   target={"_blank"}
                   className="flex items-center justify-start gap-2"
+                  rel="noopener"
                 >
                   <Icon
                     icon="material-symbols:manage-accounts-outline-rounded"
@@ -62,7 +62,7 @@ export default function UserDropdown() {
               className={"text-red-700"}
               onPress={logout}
               textValue={"Log Out"}
-              description={session?.user?.email}
+              description={user?.email}
             >
               <div className={"flex items-center justify-start gap-2"}>
                 <Icon icon="humbleicons:logout" width="16" height="16" />

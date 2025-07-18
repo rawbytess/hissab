@@ -1,4 +1,4 @@
-import { format, add } from "date-fns";
+import { add, format } from "date-fns";
 
 export function hexToUint8Array(hex: string) {
   const x = hex.match(/.{1,2}/g);
@@ -37,4 +37,15 @@ export function getFormattedUtcDateString(
     targetDate = baseDate;
   }
   return format(targetDate, "yyyy-MM-dd HH:mm:ss") + "+00";
+}
+
+export function addDaysToDate(d: Date, days: number): Date {
+  const date = d.setDate(d.getDate() + days);
+  return new Date(date);
+}
+
+export function addDaysToDateStr(date: string, days: number): string {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split("T")[0]; // Return in YYYY-MM-DD format
 }

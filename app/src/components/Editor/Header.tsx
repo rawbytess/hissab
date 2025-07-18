@@ -1,14 +1,14 @@
+import { Tooltip } from "@heroui/react";
+import { Icon } from "@iconify/react";
 import { useContext } from "react";
 import { PageContext } from "@/components/sidebar/pages/PagesProvider.tsx";
 import { SidebarTrigger } from "@/components/ui/sidebar.tsx";
-import { Icon } from "@iconify/react";
-import { Tooltip } from "@heroui/react";
-import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
+import { useAuth } from "@/components/user/auth/AuthProvider.tsx";
 
 export default function Header() {
   const { editorOperations, currentPage } = useContext(PageContext);
-  const { isPremium } = useContext(SessionContext);
-
+  const { isPremium, user } = useAuth();
+  console.log(isPremium);
   return (
     <header className=" h-11 w-fill flex items-center justify-between px-4 bg-purple-700 text-[#dddddd] drop-shadow fixed z-40">
       <SidebarTrigger />

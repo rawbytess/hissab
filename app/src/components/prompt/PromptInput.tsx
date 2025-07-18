@@ -1,13 +1,11 @@
 import type { TextAreaProps } from "@heroui/react";
-
+import { cn, Textarea } from "@heroui/react";
 import React, { useContext } from "react";
-import { Textarea } from "@heroui/react";
-import { cn } from "@heroui/react";
-import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
+import { useAuth } from "@/components/user/auth/AuthProvider";
 
 const PromptInput = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ({ classNames = {}, ...props }, ref) => {
-    const { isPremium } = useContext(SessionContext);
+    const { isPremium } = useAuth();
     return (
       <Textarea
         ref={ref}

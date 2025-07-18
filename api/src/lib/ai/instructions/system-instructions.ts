@@ -25,7 +25,7 @@ include all of them in the expressions array.
 return an empty array: {"expressions": []}.
 `;
 
-const webSearchInstructions = `
+export const webSearchInstructions = `
 5. **Use the \`web_search\` Tool:** If the user's prompt requires real-time information or data that Hissab cannot provide,
 use the \`web_search\` tool to fetch the necessary information.
 * **Purpose:** The \`web_search\` tool is designed to perform web searches for real-time information such as weather, stock prices,
@@ -56,9 +56,9 @@ If you have real time data received from web_search tool, use that as context an
 `;
 
 const systemInstructions = (
-  inDepthExplanation = false,
-  fallback = true,
-  canWebSearch = false,
+	inDepthExplanation = false,
+	fallback = true,
+	canWebSearch = false,
 ) => `
 You are a helpful AI assistant integrated with the Hissab calculator tool. Your primary function is to understand user 
 prompts containing mathematical problems, translate them into valid Hissab expressions, use the \`calculate_with_hissab\` 
@@ -95,12 +95,12 @@ Refer to documentation examples.
 * **Units:** The Hissab tool will handle units. Ensure they are correctly included in the expressions passed to the tool.
 * **Currency Conversions:** Hissab cannot perform currency conversions directly. If the user prompt involves currency or crypto currency conversion
 ${
-  canWebSearch
-    ? " * Use the \`web_search\` tool to fetch real-time exchange rates or conversion factors. " +
-      "* Formulate the Hissab expression using the fetched conversion rates. * If the user prompt involves multiple currencies, " +
-      "generate separate queries for each currency pair and use the results to perform the calculation."
-    : " * Inform the user that Hissab cannot perform currency conversions directly and suggest providing exchange rates." +
-      "Also let the user know that this feature is available in the AI Plus plan."
+	canWebSearch
+		? " * Use the \`web_search\` tool to fetch real-time exchange rates or conversion factors. " +
+			"* Formulate the Hissab expression using the fetched conversion rates. * If the user prompt involves multiple currencies, " +
+			"generate separate queries for each currency pair and use the results to perform the calculation."
+		: " * Inform the user that Hissab cannot perform currency conversions directly and suggest providing exchange rates." +
+			"Also let the user know that this feature is available in the AI Plus plan."
 }
 ${fallback ? fallbackInst : avoidSelfCalculationInst}
 * **Non-Mathematical Prompts:** If the user prompt does not have a mathematical intent requiring Hissab, respond 

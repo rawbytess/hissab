@@ -6,7 +6,21 @@
   "main": "src/index.ts",
   "compatibility_date": "2025-05-01",
   "build": {
-    "command": "pnpm build"
+    "command": "pnpm build",
+    "upload": {
+      "format": "modules",
+      "rules": [
+        {
+          "type": "ESModule",
+          "include": ["**/*.ts"],
+          "esbuild": {
+            "external": [
+              "@polar-sh/sdk/src/models/components/webhookorderpaidpayload"
+            ]
+          }
+        }
+      ]
+    }
   },
   "observability": {
     "enabled": true
@@ -30,7 +44,13 @@
       "binding": "LOGS_DB", // available in your Worker on env.DB
       "database_name": "dev-logs",
       "database_id": "b09e290c-7458-4f9c-9c24-5c2bc4f53a50",
-      "migrations_dir": "migrations"
+      "migrations_dir": "migrations/logs"
+    },
+    {
+      "binding": "USER_DB",
+      "database_name": "hsb-dev-user",
+      "database_id": "eec9843e-0bab-483b-8d04-2bccf0541a19",
+      "migrations_dir": "migrations/user"
     }
   ],
   "env": {
@@ -45,7 +65,13 @@
           "binding": "LOGS_DB", // available in your Worker on env.DB
           "database_name": "prod-logs",
           "database_id": "3a00b3d0-98ad-4c7c-abbb-5aebcdf46104",
-          "migrations_dir": "migrations"
+          "migrations_dir": "migrations/logs"
+        },
+        {
+          "binding": "USER_DB",
+          "database_name": "hsb-prod-user",
+          "database_id": "0bf45c8d-eec1-42de-a1a4-1b23ac79714a",
+          "migrations_dir": "migrations/user"
         }
       ],
       "durable_objects": {
@@ -74,7 +100,13 @@
           "binding": "LOGS_DB", // available in your Worker on env.DB
           "database_name": "dev-logs",
           "database_id": "b09e290c-7458-4f9c-9c24-5c2bc4f53a50",
-          "migrations_dir": "migrations"
+          "migrations_dir": "migrations/logs"
+        },
+        {
+          "binding": "USER_DB",
+          "database_name": "hsb-dev-user",
+          "database_id": "eec9843e-0bab-483b-8d04-2bccf0541a19",
+          "migrations_dir": "migrations/user"
         }
       ],
       "durable_objects": {

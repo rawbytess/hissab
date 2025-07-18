@@ -1,24 +1,27 @@
-import { AIFormatResponseType, AIRequest } from "../../../lib/types/AITypes.ts";
-import { supabase } from "@/lib/supabase/client.ts";
+import { useAuth } from "@/components/user/auth/AuthProvider.tsx";
 import { aicache } from "@/lib/cache.ts";
+import { BACKEND_URL } from "@/lib/utils.ts";
+import { CustomError, fetchPost, run } from "../../../lib/errors.ts";
 import {
   getMaxCharacterLimit,
   isPremiumUser,
 } from "../../../lib/getPremiumStatus.ts";
+import type {
+  AIFormatResponseType,
+  AIRequest,
+} from "../../../lib/types/AITypes.ts";
 import { userMetadata } from "../../../lib/types/userMetadata.ts";
-import { CustomError, fetchPost, run } from "../../../lib/errors.ts";
-import { BACKEND_URL } from "@/lib/utils.ts";
 
 export async function getAIResult(req: AIRequest) {
-  const { data, error } = await supabase.auth.getSession();
-  if (error || !data || !data.session || !data.session.user)
+  const { user, isAuthenticated, isPremium } = useAuth();
+  if (!isAuthenticated)
     throw new CustomError(
       "NotLoggedIn",
-      error?.message ?? "No session found",
+      "No session found",
       "Subscribe to use AI features",
     );
 
-  if (!isPremiumUser(data.session.user.user_metadata as userMetadata))
+  if (!isPremium)
     throw new CustomError(
       "NotSubscribed",
       "User not subscribed",
@@ -28,9 +31,7 @@ export async function getAIResult(req: AIRequest) {
   if (req.prompt.length === 0)
     throw new CustomError("EmptyPrompt", "Empty Prompt", "");
 
-  const maxPromptLength = getMaxCharacterLimit(
-    data.session.user.user_metadata.subscription.product_name,
-  );
+  const maxPromptLength = getMaxCharacterLimit(isPremium);
 
   if (req.prompt.length > maxPromptLength)
     req.prompt = req.prompt.substring(0, maxPromptLength);
@@ -46,12 +47,7 @@ export async function getAIResult(req: AIRequest) {
     return cacheResult;
   }
 
-  const responseResult = await run(
-    fetchPost(`${BACKEND_URL}/user/ai`, req, {
-      Authorization: `Bearer ${data?.session?.access_token}`,
-      Refresh: data?.session?.refresh_token || "",
-    }),
-  );
+  const responseResult = await run(fetchPost(`${BACKEND_URL}/user/ai`, req));
   if (responseResult.failed) {
     if (req.inline)
       aicache.set(req.prompt, {

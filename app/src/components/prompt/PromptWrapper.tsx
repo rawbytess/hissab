@@ -1,20 +1,18 @@
-import React, { useContext } from "react";
-import { addToast, Button, Tooltip } from "@heroui/react";
+import { addToast, Button, cn, Tooltip } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import { cn } from "@heroui/react";
-
-import PromptInput from "./PromptInput.tsx";
 import { Infinity } from "ldrs/react";
+import React, { useContext } from "react";
+import { PromptButtons } from "@/components/prompt/PromptButtons.tsx";
 import {
-  ChatPage,
+  type ChatPage,
   PageContext,
 } from "@/components/sidebar/pages/PagesProvider.tsx";
+import { useAuth } from "@/components/user/auth/AuthProvider.tsx";
 import { getAIResult } from "@/queries/useAIPromptQuery.tsx";
-import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
-import { AIRequestChat } from "../../../../lib/types/AITypes.ts";
-import { PromptButtons } from "@/components/prompt/PromptButtons.tsx";
 import { run } from "../../../../lib/errors.ts";
+import type { AIRequestChat } from "../../../../lib/types/AITypes.ts";
 import { sleep } from "../../../../lib/utils.ts";
+import PromptInput from "./PromptInput.tsx";
 
 export function PromptWrapper() {
   const [prompt, setPrompt] = React.useState<string>("");
@@ -22,7 +20,7 @@ export function PromptWrapper() {
 
   const { updateNote, currentPageNumber, currentPage } =
     useContext(PageContext);
-  const { isPremium } = useContext(SessionContext);
+  const { isPremium } = useAuth();
 
   const currPage = currentPage as ChatPage;
 

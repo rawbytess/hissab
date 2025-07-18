@@ -1,12 +1,18 @@
-import { ChatPage } from "@/components/sidebar/pages/PagesProvider.tsx";
-import { PromptWrapper } from "@/components/prompt/PromptWrapper.tsx";
-import { forwardRef, useContext, useEffect, useRef } from "react";
-import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
-import { InChatEditor } from "@/components/sidebar/chat/InChatEditor.tsx";
-import { cn } from "@/lib/utils.ts";
-import ChatMessageOptions from "@/components/sidebar/chat/ChatMessageOptions.tsx";
-import { Avatar, Card, CardBody, CardHeader, CardProps } from "@heroui/react";
+import {
+  Avatar,
+  Card,
+  CardBody,
+  CardHeader,
+  type CardProps,
+} from "@heroui/react";
 import { Icon } from "@iconify/react";
+import { forwardRef, useContext, useEffect, useRef } from "react";
+import { PromptWrapper } from "@/components/prompt/PromptWrapper.tsx";
+import ChatMessageOptions from "@/components/sidebar/chat/ChatMessageOptions.tsx";
+import { InChatEditor } from "@/components/sidebar/chat/InChatEditor.tsx";
+import type { ChatPage } from "@/components/sidebar/pages/PagesProvider.tsx";
+import { useAuth } from "@/components/user/auth/AuthProvider";
+import { cn } from "@/lib/utils.ts";
 
 const featuresCategories = [
   {
@@ -46,7 +52,7 @@ const featuresCategories = [
 ];
 
 export function ChatPageWrapper({ page }: { page: ChatPage }) {
-  const { session } = useContext(SessionContext);
+  const { user } = useAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { messages } = page.chats;
   useEffect(() => {
@@ -96,7 +102,7 @@ export function ChatPageWrapper({ page }: { page: ChatPage }) {
             <ChatMessageOptions
               index={index}
               role={"hissab"}
-              email={session?.user.email ?? ""}
+              email={user.email ?? ""}
               message={message.content}
               expressions={message.expressions}
             />
@@ -147,7 +153,7 @@ export function ChatPageWrapper({ page }: { page: ChatPage }) {
               <ChatMessageOptions
                 index={index}
                 role={"user"}
-                email={session?.user.email ?? ""}
+                email={user.email ?? ""}
                 message={message.content}
               />
             )}

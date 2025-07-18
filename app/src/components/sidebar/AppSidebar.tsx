@@ -1,23 +1,23 @@
+import { ExternalLink } from "lucide-react";
+import { useContext } from "react";
+import Pages from "@/components/sidebar/pages/Pages.tsx";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarProvider,
 } from "@/components/ui/sidebar";
-import Pages from "@/components/sidebar/pages/Pages.tsx";
-import UserDropdown from "@/components/user/UserDropdown.tsx";
+import { useAuth } from "@/components/user/auth/AuthProvider.tsx";
 import GetStarted from "@/components/user/GetStarted.tsx";
-import { ExternalLink } from "lucide-react";
-import { useContext } from "react";
-import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
+import UserDropdown from "@/components/user/UserDropdown.tsx";
 
 export default function AppSidebar({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { session, metadata, isPremium } = useContext(SessionContext);
-  const status = metadata?.subscription?.status;
+  const { isPremium, isAuthenticated } = useAuth();
+
   return (
     <SidebarProvider>
       <Sidebar
@@ -37,7 +37,7 @@ export default function AppSidebar({
                 <GetStarted />
               </>
             )}
-            {session && <UserDropdown />}
+            {isAuthenticated && <UserDropdown />}
           </SidebarGroup>
 
           <SidebarGroup
@@ -51,6 +51,7 @@ export default function AppSidebar({
                   href={"https://hissab.io/faqs"}
                   target={"_blank"}
                   className={"text-sm"}
+                  rel="noopener"
                 >
                   <div className={"flex gap-1 items-center"}>
                     <ExternalLink className={"w-4"} />
@@ -63,6 +64,7 @@ export default function AppSidebar({
                   href={"https://hissab.io/privacy-app"}
                   target={"_blank"}
                   className={"text-sm"}
+                  rel="noopener"
                 >
                   <div className={"flex gap-1 items-center"}>
                     <ExternalLink className={"w-4"} />

@@ -1,19 +1,19 @@
-import HissabEditor, {
-  hissabEditorIf,
-  HissabEditorType,
-} from "@/lib/editor/editor";
 import { useContext, useEffect, useRef } from "react";
+import { ChatPageWrapper } from "@/components/sidebar/chat/ChatPage.tsx";
 import {
-  notePage,
+  type notePage,
   PageContext,
 } from "@/components/sidebar/pages/PagesProvider.tsx";
-import { ChatPageWrapper } from "@/components/sidebar/chat/ChatPage.tsx";
-import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
+import { useAuth } from "@/components/user/auth/AuthProvider";
+import HissabEditor, {
+  type HissabEditorType,
+  type hissabEditorIf,
+} from "@/lib/editor/editor";
 
 export default function Editor({ className }: { className?: string }) {
   const { updateNote, currentPageNumber, setEditorOperations, currentPage } =
     useContext(PageContext);
-  const { isPremium } = useContext(SessionContext);
+  const { isPremium } = useAuth();
 
   const heRef = useRef<HTMLDivElement>(null);
   const pg = currentPage as notePage;

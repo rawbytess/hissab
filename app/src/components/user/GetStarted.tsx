@@ -1,12 +1,12 @@
-import { Button, Card, CardFooter, CardBody, CardHeader } from "@heroui/react";
-import LoginModal from "@/components/user/login/LoginModal.tsx";
-import { SessionContext } from "@/components/user/auth/SessionProvider.tsx";
-import { useContext } from "react";
+import { Button, Card, CardBody, CardFooter, CardHeader } from "@heroui/react";
 import { Icon } from "@iconify/react";
+import { useContext } from "react";
 import { useSidebar } from "@/components/ui/sidebar.tsx";
+import { useAuth } from "@/components/user/auth/AuthProvider";
+import LoginModal from "@/components/user/login/LoginModal.tsx";
 
 export default function GetStarted() {
-  const { session } = useContext(SessionContext);
+  const { isAuthenticated, user } = useAuth();
   const { isMobile } = useSidebar();
 
   return (
@@ -92,7 +92,7 @@ export default function GetStarted() {
         </div>
       </CardBody>
       <CardFooter className="flex flex-col gap-2">
-        {session ? (
+        {isAuthenticated ? (
           <Button
             className="text-white w-full mx-auto drop-shadow-lg
             bg-purple-700"
@@ -103,7 +103,10 @@ export default function GetStarted() {
               <Icon icon="gridicons:external" color={"white"} width={20} />
             }
             onPress={() => {
-              window.open("https://store.hissab.io", "_blank");
+              window.open(
+                `${import.meta.env.VITE_POLAR_CHECKOUT_URL}?customer_email=${user?.email}`,
+                "_blank",
+              );
             }}
           >
             Buy Now
