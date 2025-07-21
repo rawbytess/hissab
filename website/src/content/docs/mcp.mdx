@@ -1,0 +1,42 @@
+---
+id: mcp
+title: MCP Server
+---
+import { Aside } from '@astrojs/starlight/components';
+import { Card } from '@astrojs/starlight/components';
+
+# MCP Server
+
+Hissab MCP Server allows you to plug the powerful Hissab Math engine with the LLM of your choice to create a custom math
+assistant that can reliably and deterministically perform calculations with hallucination-free results.
+
+The MCP server is free for personal and non-commercial use.
+<Aside type="note">
+For commercial use and custom rate limits, please contact us at hello@hissab.io
+</Aside>
+
+## Server
+
+<Card title="Details" >
+URL: `https://api.hissab.io/mcp`
+
+Authentication: `None`
+</Card>
+
+
+<Aside type="caution">Authentication may require auth token in the future. Rate limits apply for free use.</Aside>
+
+## Usage
+Hissab MCP can calculate simple to complex mathematical expressions, including unit conversions, date and time calculations, and more.
+Checkout the [docs guide](https://hissab.io/guide/introduction) to learn about everything it can do.
+A lot more examples are available in the [Home Page](https://hissab.io).
+
+
+## AI Agent vs MCP Server
+AI Agent uses custom fine tuned LLMs to provide the best performance and accuracy for math operations.
+While MCP Server plugs as a tool in any LLM you already use.
+
+```
+Your Prompts -> AI Agent -> Results
+Your Prompts -> Your LLM + Hissab MCP Server -> Results
+```

@@ -70,6 +70,11 @@ export default function Header(props: NavbarProps) {
               Roadmap
             </Link>
           </NavbarItem>
+          <NavbarItem>
+            <Link className="text-light" href="/mcp" size="sm">
+              MCP
+            </Link>
+          </NavbarItem>
         </NavbarContent>
 
         {/* Right Content */}

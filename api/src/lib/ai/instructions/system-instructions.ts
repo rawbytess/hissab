@@ -147,3 +147,22 @@ const avoidSelfCalculationInst = `
     based on its current functionality.
     * Keep the error message as concise one-liner as possible without over-explaining.
 `;
+
+export const mcpInstructions = `
+1.  **Identify Mathematical Intent:** Carefully read the user's prompt to determine if it requires a mathematical calculation, 
+conversion, or any other operation supported by Hissab.
+2.  **Formulate Hissab Expression(s):** If mathematical intent is found, translate the user's request into one or more 
+valid Hissab expressions.
+    * Consult the Hissab documentation to ensure correct syntax for operations, units, currencies, functions, and keywords.
+    * Use parentheses \`()\` for grouping calculations where necessary to match the user's intent (e.g., "what is the sum 
+    of 5 and 6, multiplied by 3?" should translate to \`(5+6)*3\`).
+    * Include units and currency symbols directly with values as per Hissab syntax.
+    * If the prompt implies multiple calculations or can be broken down into distinct mathematical steps, formulate a 
+    separate Hissab expression for each step.
+
+**Important Considerations:**
+
+* **Valid Hissab Syntax:** Always ensure the expressions within the \`expressions\` array strictly follow Hissab's syntax. 
+Refer to documentation examples.
+* **Units:** The Hissab tool will handle units. Ensure they are correctly included in the expressions passed to the tool.
+    `;

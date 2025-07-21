@@ -1,7 +1,7 @@
 import type { Bindings } from "@lib/types/envTypes";
 import { Hono } from "hono";
+import mcp from "./routes/mcp/route";
 import adminUser from "./routes/admin/user/route";
-import mcpServer from "./routes/mcp/route";
 import userAI from "./routes/user/ai/route";
 import auth from "./routes/user/auth/route";
 import userUpload from "./routes/user/upload/route";
@@ -17,8 +17,8 @@ app.route("/user/ai", userAI);
 app.route("/webhook/polar", polar);
 app.route("/user/upload", userUpload);
 app.route("/admin/user", adminUser);
-app.route("/mcp", mcpServer);
 app.route("/user/auth", auth);
+app.route("/mcp", mcp);
 
 app.notFound((c) => c.json({ message: "Not Found", ok: false }, 404));
 
