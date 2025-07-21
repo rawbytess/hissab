@@ -53,12 +53,12 @@ export default defineConfig({
           link: "/installation",
         },
         {
-          label: "API (Coming Soon)",
-          link: "/api",
-        },
-        {
           label: "MCP Server",
           link: "/mcp",
+        },
+        {
+          label: "AI Agent (Coming Soon)",
+          link: "/agent",
         },
         {
           label: "Guide",
