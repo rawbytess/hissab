@@ -125,6 +125,52 @@ export async function sendOtpEmail(
   }
 }
 
+export async function sendAdminEmail(
+    toEmail: string,
+    subject: string,
+    body: string,
+    aws_access_key_id: string,
+    aws_secret_access_key: string,
+) {
+    const sesClient = new SESClient({
+        region: config.email.awsRegion,
+        credentials: {
+        accessKeyId: aws_access_key_id,
+        secretAccessKey: aws_secret_access_key,
+        },
+    });
+
+    const command = new SendEmailCommand({
+        Destination: { ToAddresses: [toEmail] },
+        Message: {
+        Body: {
+            Html: {
+            Charset: "UTF-8",
+            Data: body,
+            },
+            Text: {
+            Charset: "UTF-8",
+            Data: body,
+            },
+        },
+        Subject: {
+            Charset: "UTF-8",
+            Data: subject,
+        },
+        },
+        Source: config.email.sourceEmail,
+    });
+
+    try {
+        const response = await sesClient.send(command);
+        console.log("Admin email sent successfully:", response.MessageId);
+        return { success: true };
+    } catch (error) {
+        console.error("Failed to send admin email:", error);
+        return { success: false, error: "Failed to send admin email" };
+    }
+}
+
 export const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
 });
