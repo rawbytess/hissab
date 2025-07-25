@@ -25,8 +25,8 @@ const app = new Hono<MetaBindings>();
 app.use(
   cors({
     origin: [
-      "https://hissab.app",
-      "https://app.hissab.app",
+      "https://app.hissab.io",
+      "https://dev.app.hissab.io",
       "http://localhost:5173",
     ],
     allowMethods: ["POST"],
