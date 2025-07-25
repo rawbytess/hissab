@@ -88,7 +88,7 @@ app.post(
     const sysInst = systemInstructions(
       body.explain,
       body.fallback,
-      plans.includes("AI Lite"),
+      plans.includes("AI Plus"),
     );
 
     const geminiModel = new Gemini(c.env.GEMINI_API_KEY, modelName);
