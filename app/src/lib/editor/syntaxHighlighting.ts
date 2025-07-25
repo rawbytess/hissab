@@ -1,7 +1,12 @@
+import {
+  StreamLanguage,
+  type StringStream,
+  type TagStyle,
+} from "@codemirror/language";
 import { Tag } from "@lezer/highlight";
-import { StreamLanguage, StringStream, TagStyle } from "@codemirror/language";
 import { doLex, Variables } from "engine";
 import pkg from "lodash";
+
 const { sortedIndexBy } = pkg;
 
 export function HissabHighlightStyle(isDark: boolean): TagStyle[] {

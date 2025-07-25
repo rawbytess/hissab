@@ -1,4 +1,7 @@
-import { AIFormatResponseType, AIRequest } from "../../../lib/types/AITypes.ts";
+import {
+  type AIFormatResponseType,
+  AIRequest,
+} from "../../../lib/types/AITypes.ts";
 
 export class LRUCache<T extends object> {
   private cache: Map<string, T>;

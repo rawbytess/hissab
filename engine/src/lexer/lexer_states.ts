@@ -1,6 +1,6 @@
-import { isMultiSymbol } from "../tokens/tokens";
 import TokenBaseType from "../tokens/token_basetypes";
-import { TokensType } from "./lexer_tokens";
+import { isMultiSymbol } from "../tokens/tokens";
+import type { TokensType } from "./lexer_tokens";
 
 export type LexerStateTypes =
   | typeof FreshState

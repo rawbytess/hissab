@@ -1,6 +1,6 @@
-import TokenBaseType, { TokenType } from "../tokens/token_basetypes";
-import { Variables } from "../tokens/tokens";
+import TokenBaseType, { type TokenType } from "../tokens/token_basetypes";
 import tokenFactory from "../tokens/token_factory";
+import type { Variables } from "../tokens/tokens";
 
 export class Tokens {
   private _thetoken: string;

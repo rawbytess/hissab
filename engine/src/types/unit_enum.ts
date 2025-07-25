@@ -1,4 +1,4 @@
-const enum UnitTypes {
+enum UnitTypes {
   LENGTH,
   TEMPERATURE,
   WEIGHT,

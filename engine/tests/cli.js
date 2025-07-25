@@ -1,6 +1,6 @@
 import { createInterface } from "readline";
-import { doLex, doParse } from "../src/index.ts";
 import context from "../dist/context.js";
+import { doLex, doParse } from "../src/index.ts";
 
 const readline = createInterface({
   input: process.stdin,

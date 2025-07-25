@@ -1,13 +1,13 @@
 /* eslint-disable import/no-unresolved */
-import { readdirSync, lstatSync, readFileSync } from "fs";
+import { lstatSync, readdirSync, readFileSync } from "fs";
 import { resolve } from "path";
-import lexer from "../../src/lexer/lexer";
-import { Units, UnitTypes } from "../../src/types/unit_types";
-import Synonyms from "../../src/types/synonyms";
-import Plurals from "../../src/types/plurals";
-import { Operators, Controllers } from "../../src/types/operator_types";
-import Functions from "../../src/function";
 import DateTimeOperands from "../../src/datetime_operands";
+import Functions from "../../src/function";
+import lexer from "../../src/lexer/lexer";
+import { Controllers, Operators } from "../../src/types/operator_types";
+import Plurals from "../../src/types/plurals";
+import Synonyms from "../../src/types/synonyms";
+import { Units, UnitTypes } from "../../src/types/unit_types";
 
 describe("Valid Tokens", () => {
   const validTestDir = "./tests/tokens/valid/";

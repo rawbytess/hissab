@@ -1,12 +1,28 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
 	"vcs": {
-		"enabled": false,
+		"enabled": true,
 		"clientKind": "git",
-		"useIgnoreFile": false
+		"useIgnoreFile": true
 	},
 	"files": {
-		"ignoreUnknown": false
+		"includes": [
+			"!public/**/*"
+		],
+		"ignoreUnknown": true,
+		"experimentalScannerIgnores": [
+			"node_modules",
+			".wrangler",
+			".astro",
+			"public",
+			".vscode",
+			".idea",
+			"dist",
+			"build",
+			"coverage",
+			"*.log",
+			"RedisCommander.d.ts"
+		]
 	},
 	"formatter": {
 		"enabled": true,
@@ -16,7 +32,17 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"a11y": "warn",
+			"suspicious": {
+				"noDuplicateProperties": "warn",
+				"noArrayIndexKey": "warn",
+				"noSparseArray": "warn"
+			},
+			"correctness": {
+				"noUnusedImports": "warn",
+				"noUnusedVariables": "warn"
+			}
 		}
 	},
 	"javascript": {

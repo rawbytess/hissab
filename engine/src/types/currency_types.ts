@@ -1,5 +1,5 @@
 import UnitTypes from "./unit_enum";
-import { UnitsIF } from "./unit_types";
+import type { UnitsIF } from "./unit_types";
 
 const Currencies: UnitsIF = {
   aed: {

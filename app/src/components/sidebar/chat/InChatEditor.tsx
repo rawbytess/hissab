@@ -10,7 +10,7 @@ import HissabEditor, {
 export function InChatEditor({ expressions }: { expressions: string[] }) {
   const heRef = useRef<HTMLDivElement>(null);
   const heeditorRef = useRef<HissabEditorType | null>(null);
-  const { isPremium } = useAuth();
+  const { isPremium, isAuthenticated } = useAuth();
 
   useEffect(() => {
     if (!heRef.current) return;
@@ -21,6 +21,8 @@ export function InChatEditor({ expressions }: { expressions: string[] }) {
       isWritable: true,
       isDark: true,
       isPro: !!isPremium,
+      isAuthenticated: isAuthenticated,
+      isPremium: isPremium,
     };
     heeditorRef.current = new HissabEditor(heRef.current, hissabEditorOptions);
 

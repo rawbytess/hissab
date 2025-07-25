@@ -1,13 +1,13 @@
-import React, { PropsWithChildren, useState } from "react";
 import { parseAsString, useQueryState } from "nuqs";
-import { FileUpload } from "../../../../../lib/types/fileTypes.ts";
+import React, { type PropsWithChildren, useState } from "react";
 import { useLocalStorage } from "@/hooks/useLocalStorage.tsx";
 import {
   chatDefaultModel,
   inLineDefaultModel,
+  type ModelSize,
   Models,
-  ModelSize,
 } from "../../../../../lib/types/AITypes.ts";
+import type { FileUpload } from "../../../../../lib/types/fileTypes.ts";
 
 export type userMessage = {
   role: "user";

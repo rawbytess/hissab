@@ -102,7 +102,7 @@ export function ChatPageWrapper({ page }: { page: ChatPage }) {
             <ChatMessageOptions
               index={index}
               role={"hissab"}
-              email={user.email ?? ""}
+              email={user?.email ?? ""}
               message={message.content}
               expressions={message.expressions}
             />
@@ -153,7 +153,7 @@ export function ChatPageWrapper({ page }: { page: ChatPage }) {
               <ChatMessageOptions
                 index={index}
                 role={"user"}
-                email={user.email ?? ""}
+                email={user?.email ?? ""}
                 message={message.content}
               />
             )}

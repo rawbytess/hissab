@@ -1,10 +1,10 @@
-import spacetime, { Spacetime, TimeUnit } from "spacetime";
 import chroma from "chroma-js";
-import TokenBaseType, { TokenType } from "./token_basetypes";
+import spacetime, { type Spacetime, type TimeUnit } from "spacetime";
 import { UnhandledError, UserError } from "../exceptions";
 import UnitTypes from "../types/unit_enum";
+import type { UnitsTypeIF } from "../types/unit_types";
+import TokenBaseType, { type TokenType } from "./token_basetypes";
 import tokenFactory from "./token_factory";
-import { UnitsTypeIF } from "../types/unit_types";
 
 export enum Direction {
   LEFT,

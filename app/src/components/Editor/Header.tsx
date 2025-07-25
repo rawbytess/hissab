@@ -8,7 +8,6 @@ import { useAuth } from "@/components/user/auth/AuthProvider.tsx";
 export default function Header() {
   const { editorOperations, currentPage } = useContext(PageContext);
   const { isPremium, user } = useAuth();
-  console.log(isPremium);
   return (
     <header className=" h-11 w-fill flex items-center justify-between px-4 bg-purple-700 text-[#dddddd] drop-shadow fixed z-40">
       <SidebarTrigger />

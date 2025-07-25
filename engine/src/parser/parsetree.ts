@@ -1,14 +1,14 @@
-import {
-  DateToken,
-  Direction,
-  expressionUnit,
-  FunctionToken,
-  OperatorToken,
-  NumberToken,
-} from "../tokens/tokens";
-import tokenFactory from "../tokens/token_factory";
 import { UserError } from "../exceptions";
-import { TokenType } from "../tokens/token_basetypes";
+import type { TokenType } from "../tokens/token_basetypes";
+import tokenFactory from "../tokens/token_factory";
+import {
+  type DateToken,
+  Direction,
+  type expressionUnit,
+  FunctionToken,
+  NumberToken,
+  OperatorToken,
+} from "../tokens/tokens";
 
 export default class ParseTree {
   private _head: TokenType | null;

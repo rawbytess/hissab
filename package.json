@@ -9,6 +9,8 @@
     "test": "pnpm -r test",
     "update": "pnpm update -i --latest",
     "format": "pnpm exec biome format --write",
+    "check:check": "pnpm exec biome check",
+    "check": "pnpm exec biome check --write",
     "pretty-check": "pnpm exec biome format",
     "lint-check": "pnpm exec biome lint",
     "lint": "pnpm exec biome lint --write",

@@ -1,12 +1,12 @@
+import { Button, cn, Divider, Input } from "@heroui/react";
+import { Icon } from "@iconify/react";
 import { useContext, useEffect, useState } from "react";
+import PageOptions from "@/components/sidebar/pages/PageOptions.tsx";
 import {
-  Page,
+  type Page,
   PageContext,
 } from "@/components/sidebar/pages/PagesProvider.tsx";
 import { getRandomPlaceholderName } from "@/lib/placeholder.ts";
-import { Button, Input, cn, Divider } from "@heroui/react";
-import { Icon } from "@iconify/react";
-import PageOptions from "@/components/sidebar/pages/PageOptions.tsx";
 
 export default function Pages() {
   const {

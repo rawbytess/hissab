@@ -1,7 +1,7 @@
-import { Units } from "./types/unit_types";
-import UnitTypes from "./types/unit_enum";
 import { UnhandledError, UserError } from "./exceptions";
-import { NumberToken } from "./tokens/tokens";
+import type { NumberToken } from "./tokens/tokens";
+import UnitTypes from "./types/unit_enum";
+import { Units } from "./types/unit_types";
 
 function humanize(
   resultToken: NumberToken,

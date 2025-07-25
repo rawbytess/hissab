@@ -40,10 +40,8 @@ jobs:
         env:
           VITE_HISSAB_WEBSITE_URL: ${{ secrets.HISSAB_WEBSITE_URL }}
           VITE_HISSAB_SERVER_URL: ${{ secrets.HISSAB_SERVER_URL }}
-          VITE_SUPABASE_PROJECT_URL: ${{ secrets.SUPABASE_PROJECT_URL }}
-          VITE_SUPABASE_PROJECT_ANON_KEY: ${{ secrets.SUPABASE_PROJECT_ANON_KEY }}
-          VITE_PUBLIC_POSTHOG_KEY: ${{ secrets.PUBLIC_POSTHOG_KEY }}
-          VITE_PUBLIC_POSTHOG_HOST: ${{ secrets.PUBLIC_POSTHOG_HOST }}
+          VITE_POLAR_CHECKOUT_URL: ${{ secrets.POLAR_CHECKOUT_URL }}
+          VITE_POLAR_PORTAL_URL: ${{ secrets.POLAR_PORTAL_URL }}
 
       - name: Zip Chrome Extension
         run: zip -r hissab-chrome-extension.zip dist

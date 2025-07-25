@@ -1,6 +1,6 @@
-import { FreshState, LexerStateTypes } from "./lexer_states";
+import type { Variables } from "../tokens/tokens";
+import { FreshState, type LexerStateTypes } from "./lexer_states";
 import { Tokens } from "./lexer_tokens";
-import { Variables } from "../tokens/tokens";
 
 function lexer(line: string, variables: Variables, lineNumber: number) {
   const NUMBERS = "0123456789";

@@ -1,13 +1,13 @@
 import { useAuth } from "@/components/user/auth/AuthProvider.tsx";
 import { getFileInfoFromUrl } from "@/lib/fileMetaData.ts";
-import { BACKEND_URL } from "@/lib/utils.ts";
-import { CustomError, fetchPost, run } from "../../../lib/errors.ts";
+import { BACKEND_URL, fetchPost } from "@/lib/utils.ts";
+import { CustomError, run } from "../../../lib/errors.ts";
 import { isPremiumUser } from "../../../lib/getPremiumStatus.ts";
 import type { FileUpload } from "../../../lib/types/fileTypes.ts";
 import { userMetadata } from "../../../lib/types/userMetadata.ts";
 
 export async function uploadFile(file: FileUpload) {
-  const { user, isAuthenticated, isPremium } = await useAuth();
+  const { user, isAuthenticated, isPremium } = useAuth();
   if (!isAuthenticated)
     throw new CustomError(
       "NotLoggedIn",

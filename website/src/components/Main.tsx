@@ -1,12 +1,12 @@
-import { useState } from "react";
 import { Button, Tooltip } from "@heroui/react";
-import { cn } from "@/lib/utils";
 import { Icon } from "@iconify/react";
-import Classic from "@/components/Home/Classic.tsx";
+import { useState } from "react";
 import AISection from "@/components/Home/AISection.tsx";
 import ApiSection from "@/components/Home/APISection.tsx";
+import Classic from "@/components/Home/Classic.tsx";
 import { Comparison } from "@/components/Home/Comparison.tsx";
 import Platforms from "@/components/Home/Platforms.tsx";
+import { cn } from "@/lib/utils";
 
 const firstPromo = "/resources/home/first-promo.png";
 const freePromo = "/resources/home/free-promo.png";

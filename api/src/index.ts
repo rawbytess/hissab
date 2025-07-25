@@ -1,7 +1,7 @@
 import type { Bindings } from "@lib/types/envTypes";
 import { Hono } from "hono";
-import mcp from "./routes/mcp/route";
 import adminUser from "./routes/admin/user/route";
+import mcp from "./routes/mcp/route";
 import userAI from "./routes/user/ai/route";
 import auth from "./routes/user/auth/route";
 import userUpload from "./routes/user/upload/route";

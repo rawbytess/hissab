@@ -40,8 +40,6 @@ jobs:
         run: pnpm build
         env:
           PUBLIC_HISSAB_APP_URL: ${{ secrets.HISSAB_APP_URL }}
-          PUBLIC_POSTHOG_KEY: ${{ secrets.PUBLIC_POSTHOG_KEY }}
-          PUBLIC_POSTHOG_HOST: ${{ secrets.PUBLIC_POSTHOG_HOST }}
 
       - name: Deploy Website
         uses: cloudflare/wrangler-action@v3
@@ -53,5 +51,3 @@ jobs:
           command: deploy --env dev --no-bundle
         env:
           PUBLIC_HISSAB_APP_URL: ${{ secrets.HISSAB_APP_URL }}
-          PUBLIC_POSTHOG_KEY: ${{ secrets.PUBLIC_POSTHOG_KEY }}
-          PUBLIC_POSTHOG_HOST: ${{ secrets.PUBLIC_POSTHOG_HOST }}

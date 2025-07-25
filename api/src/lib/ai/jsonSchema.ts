@@ -1,10 +1,10 @@
-import { Schema, Type } from "@google/genai";
+import { type Schema, Type } from "@google/genai";
 import {
   RunnableFunctionWithParse,
   RunnableToolFunction,
 } from "openai/lib/RunnableFunction";
+import type { ChatCompletionTool } from "openai/resources/chat/completions";
 import { calcExp, calculateExpressions } from "~lib/calculateExpressions";
-import { ChatCompletionTool } from "openai/resources/chat/completions";
 
 export const hissabExpSchema: Schema = {
   description: "List of Hissab Expressions",

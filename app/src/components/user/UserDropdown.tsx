@@ -9,6 +9,8 @@ import {
 import { Icon } from "@iconify/react";
 import { useAuth } from "@/components/user/auth/AuthProvider";
 
+const customerPortalURL = import.meta.env.VITE_POLAR_PORTAL_URL;
+
 export default function UserDropdown() {
   const { user, logout, isPremium } = useAuth();
 
@@ -21,12 +23,12 @@ export default function UserDropdown() {
             avatarProps={{
               className: "bg-purple-700 border-2 border-purple-500",
               isBordered: true,
-              src: `https://robohash.org/${user.email}.png`,
-              fallback: user?.name || user.email,
+              src: `https://robohash.org/${user?.email}.png`,
+              fallback: user?.name || user?.email,
             }}
             className="transition-transform "
             description={isPremium ?? "Free Plan"}
-            name={user.name || user?.email}
+            name={user?.name || user?.email}
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" className={"text-gray-300"}>
@@ -34,7 +36,7 @@ export default function UserDropdown() {
             {isPremium ? (
               <DropdownItem key="manage_account" textValue={"Manage Account"}>
                 <a
-                  href={"https://store.hissab.io/billing"}
+                  href={customerPortalURL}
                   target={"_blank"}
                   className="flex items-center justify-start gap-2"
                   rel="noopener"

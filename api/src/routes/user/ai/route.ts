@@ -1,51 +1,83 @@
-import { Hono } from "hono";
-import { Gemini } from "@lib/ai/gemini";
-import { Bindings, LogData, MetaBindings, userVars } from "@lib/types/envTypes";
-import { cors } from "hono/cors";
-import { supabaseAppAuth } from "@middlewares/supabaseAppAuth";
-import { getMaxCharacterLimit, isPremiumUser } from "~lib/getPremiumStatus";
-import { zValidator } from "@hono/zod-validator";
-
-import { Models, ModelsList, ModelsMap, zAIRequest } from "~lib/types/AITypes";
-import { createSupabaseClient } from "@middlewares/createSupabaseClient";
-import { run } from "~lib/errors";
-import { ContentfulStatusCode } from "hono/dist/types/utils/http-status";
-import { sleep } from "~lib/utils";
-import { SupabaseClient } from "@supabase/supabase-js";
-import { ProductNames } from "~lib/types/userMetadata";
-import { UserRateLimiter } from "@lib/durableObjects/UserRateLimiter";
-import systemInstructions from "@lib/ai/instructions/system-instructions";
-import { generate, initOpenAI } from "@lib/ai/openai";
 import { Part } from "@google/genai";
+import { zValidator } from "@hono/zod-validator";
+import { Gemini } from "@lib/ai/gemini";
+import systemInstructions from "@lib/ai/instructions/system-instructions";
+import { UserDB } from "@lib/db/UserDB";
+import type { UserRateLimiter } from "@lib/durableObjects/UserRateLimiter";
+import type { LogData, MetaBindings } from "@lib/types/envTypes";
+import { Hono, type MiddlewareHandler } from "hono";
+import { getCookie } from "hono/cookie";
+import { cors } from "hono/cors";
+import type { ContentfulStatusCode } from "hono/dist/types/utils/http-status";
+import { verify } from "hono/jwt";
+import { run } from "~lib/errors";
+import { getMaxCharacterLimit, isPremiumUser } from "~lib/getPremiumStatus";
+import {
+  type Models,
+  ModelsList,
+  ModelsMap,
+  zAIRequest,
+} from "~lib/types/AITypes";
+import type { ProductNames } from "~lib/types/userMetadata";
+import { sleep } from "~lib/utils";
 
 const app = new Hono<MetaBindings>();
-app.use(cors());
-app.use(createSupabaseClient);
-app.use(supabaseAppAuth);
+app.use(
+  cors({
+    origin: [
+      "https://hissab.app",
+      "https://app.hissab.app",
+      "http://localhost:5173",
+    ],
+    allowMethods: ["POST"],
+    allowHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  }),
+);
+
+export const authMiddleware: MiddlewareHandler = async (c, next) => {
+  const token = getCookie(c, "access_token");
+  if (!token) {
+    return c.json({ error: "Unauthorized: No access token" }, 401);
+  }
+  try {
+    const payload = await verify(token, c.env.JWT_SECRET);
+    c.set("user", payload);
+    await next();
+  } catch (err) {
+    return c.json({ error: "Unauthorized: Invalid token" }, 401);
+  }
+  return c.json({ error: "Unauthorized: Invalid token" }, 401);
+};
 
 app.post(
   "/",
+  authMiddleware,
   zValidator("json", zAIRequest, (result, c) => {
     if (!result.success) return c.text("Invalid request", 400);
     return;
   }),
   async (c) => {
-    const { user, supabase } = c.var;
+    const { user } = c.var;
     const body = c.req.valid("json");
-    const isPremium = isPremiumUser(user);
-    if (!isPremium) {
+    const userdb = new UserDB(c.env.USER_DB);
+    const plansdb = await userdb.getActiveUserPlans(user.sub);
+    const plans = plansdb.map((p) => p.product_name);
+    // const isPremium = isPremiumUser(user);
+
+    if (plans.length === 0) {
       return c.body("Not a subscribed user", 403);
     }
     const modelName = ModelsList[body.model].id;
 
-    const id = c.env.USER_RATE_LIMITER.idFromName(user.user_id);
+    const id = c.env.USER_RATE_LIMITER.idFromName(user.sub);
     const rateLimiter = c.env.USER_RATE_LIMITER.get(id);
 
     const hasRateLimit = await rateLimiter.checkRateLimit(
-      isPremium,
+      plans,
       body.model,
-      user.timezone,
-      user.user_id,
+      user.metadata.timezone || "UTC",
+      user.sub,
     );
     if (!hasRateLimit) {
       return c.body(
@@ -56,13 +88,13 @@ app.post(
     const sysInst = systemInstructions(
       body.explain,
       body.fallback,
-      isPremium === "AI Plus",
+      plans.includes("AI Lite"),
     );
 
     const geminiModel = new Gemini(c.env.GEMINI_API_KEY, modelName);
     // const openAI = initOpenAI(c.env.GEMINI_API_KEY, "gemini");
     const maxPromptLength = getMaxCharacterLimit(
-      user.subscription.product_name,
+      user?.metadata?.subscription?.product_name || "free",
     );
     const sliced_prompt =
       body.prompt.length > maxPromptLength
@@ -99,8 +131,9 @@ app.post(
         sliced_prompt,
         history,
         body.file,
-        isPremium,
+        plans,
         c.env.PERPLEXITY_API_KEY,
+        c.env.FILES_R2_BUCKET,
       ),
       // generate(openAI, modelName, sysInst, prompt, body.file, isPremium),
     );
@@ -128,9 +161,9 @@ app.post(
             final_answer: null,
           },
           null,
-          isPremium,
+          plans,
           modelName,
-          user.timezone,
+          user.metadata.timezone || "UTC",
         ),
       );
       console.error({ message: AIResponse.error.message });
@@ -153,9 +186,9 @@ app.post(
           final_answer: AIResponse.data.naturalAnswer,
         },
         rateLimiter,
-        isPremium,
+        plans,
         modelName,
-        user.timezone,
+        user.metadata.timezone || "UTC",
       ),
     );
 
@@ -167,13 +200,13 @@ async function logData(
   db: D1Database,
   log: LogData,
   rateLimiter: DurableObjectStub<UserRateLimiter> | null,
-  isPremium: ProductNames,
+  plans: ProductNames[],
   modelName: Models,
   timezone: string,
 ) {
   if (rateLimiter)
     await rateLimiter.incrementRateLimit(
-      isPremium,
+      plans,
       ModelsMap[modelName].size,
       timezone,
     );

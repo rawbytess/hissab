@@ -1,29 +1,27 @@
 import {
+  createPartFromBase64,
   createPartFromUri,
   createUserContent,
   GoogleGenAI,
-  Part,
+  type Part,
 } from "@google/genai";
 import documentation from "@lib/ai/instructions/documentation";
-import { hissabExpFunction, webSearchFunction } from "./jsonSchema";
+import { webSearch } from "@lib/webSearch";
+import { calculateExpressions } from "~lib/calculateExpressions";
+import { CustomError, run } from "~lib/errors";
 import {
-  AIFormatResponseType,
-  ExpWithResult,
+  type AIFormatResponseType,
+  type ExpWithResult,
   inLineDefaultModel,
-  Models,
+  type Models,
   ModelsMap,
 } from "~lib/types/AITypes";
-import { CustomError, run } from "~lib/errors";
-import { FileUpload } from "~lib/types/fileTypes";
-import { calculateExpressions } from "~lib/calculateExpressions";
-import { ProductNames } from "~lib/types/userMetadata";
-import { webSearch } from "@lib/webSearch";
+import type { FileUpload } from "~lib/types/fileTypes";
+import type { ProductNames } from "~lib/types/userMetadata";
 import { print } from "~lib/utils";
+import { hissabExpFunction, webSearchFunction } from "./jsonSchema";
 
-async function blobToBase64(blob: any) {
-  // Convert the Blob to an ArrayBuffer
-  const arrayBuffer = await blob.arrayBuffer();
-
+async function blobToBase64(arrayBuffer: ArrayBuffer): Promise<string> {
   // Convert the ArrayBuffer to a Uint8Array
   const uint8Array = new Uint8Array(arrayBuffer);
 
@@ -52,30 +50,47 @@ export class Gemini {
     files:
       | { url: string; mimeType: string; name: string }
       | undefined = undefined,
-    isPremium: ProductNames | null = null,
+    plans: ProductNames[],
     SEARCH_API_KEY: string | null = null,
+    FILES_R2_BUCKET: R2Bucket | null = null,
   ): Promise<AIFormatResponseType> {
     const contents: (string | Part | {})[] = [
       ...history,
       { role: "user", parts: [{ text: prompt }] },
     ];
 
-    if (files && isPremium && isPremium === "AI Plus") {
+    if (files && plans.includes("AI Plus")) {
+      if (!FILES_R2_BUCKET) {
+        throw new CustomError(
+          "GeminiGenContent",
+          "R2 bucket not configured",
+          "R2 bucket is not configured for file uploads",
+        );
+      }
+      const fileBlob = await FILES_R2_BUCKET.get(files.url);
+      if (!fileBlob) {
+        throw new CustomError(
+          "GeminiGenContent",
+          "File not found",
+          "The specified file could not be found in the R2 bucket",
+        );
+      }
+      const arrayBuffer = await fileBlob.arrayBuffer();
+      const base64Content = await blobToBase64(arrayBuffer);
       contents.push({
         role: "user",
-        parts: [createPartFromUri(files.url, files.mimeType)],
+        parts: [createPartFromBase64(base64Content, files.mimeType)],
       });
     }
     const thinkingConfig = ModelsMap[this.hissabModel].canThink
-      ? { thinkingBudget: 0 }
+      ? { thinkingBudget: -1 }
       : undefined;
 
     const hissabExps: ExpWithResult[] = [];
     let webSearchContext = "";
-    const tools =
-      isPremium === "AI Plus"
-        ? [hissabExpFunction, webSearchFunction]
-        : [hissabExpFunction];
+    const tools = plans.includes("AI Plus")
+      ? [hissabExpFunction, webSearchFunction]
+      : [hissabExpFunction];
 
     for (let i = 0; i < 10; i++) {
       const respResult = await run(
@@ -136,7 +151,7 @@ export class Gemini {
             const results = await run(
               calculateExpressions(
                 toolCall.args!.expressions as string[],
-                !!isPremium,
+                plans.length > 0,
               ),
             );
             if (results.failed) {
@@ -204,7 +219,7 @@ export class Gemini {
     );
   }
 
-  async uploadFile(file: FileUpload, fileBlob?: Blob) {
+  async uploadFile(file: FileUpload, fileBlob: Blob) {
     return await this.ai.files.upload({
       file: fileBlob || file.url,
       config: {

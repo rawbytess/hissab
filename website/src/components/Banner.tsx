@@ -1,6 +1,6 @@
-import React from "react";
 import { Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
+import React from "react";
 
 export const Banner = () => {
   return (
@@ -8,6 +8,7 @@ export const Banner = () => {
       href="https://www.producthunt.com/posts/hissab?launch=hissab-2"
       target={"_blank"}
       className="cursor-pointer flex  justify-center gap-10 items-center text-light h-10 fixed top-0 z-50 w-full bg-black "
+      rel="noopener"
     >
       <Icon icon="fxemoji:partypopper" width="24" height="24" />
       <div className={"flex flex-row items-center gap-2"}>

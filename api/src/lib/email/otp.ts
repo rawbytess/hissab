@@ -1,11 +1,11 @@
 export function otpEmail(
-	otp: string,
-	expirationWords: string,
-	appName: string,
-	themeColor: string,
-	logoUrl: string,
+  otp: string,
+  expirationWords: string,
+  appName: string,
+  themeColor: string,
+  logoUrl: string,
 ) {
-	return `
+  return `
   <!--
 * This email was built using Tabular.
 * For more information, visit https://tabular.email

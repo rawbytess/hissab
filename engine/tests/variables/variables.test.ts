@@ -1,6 +1,6 @@
-import { doLex, doParse, Variables } from "../../src";
 import { lstatSync, readdirSync, readFileSync } from "fs";
 import { resolve } from "path";
+import { doLex, doParse, type Variables } from "../../src";
 
 describe("Variable Expressions", () => {
   const validTestDir = "./tests/variables/valid/";

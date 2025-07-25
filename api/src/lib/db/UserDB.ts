@@ -1,10 +1,11 @@
 import { config } from "@lib/config";
 import { nanoid } from "nanoid";
-import type {
-  DemoUser,
-  User,
+import {
+  type DemoUser,
+  type User,
   UserMetadata,
-  UserPlan,
+  type UserPlan,
+  type UserStatus,
 } from "~lib/types/userMetadata";
 
 export class UserDB {
@@ -20,16 +21,19 @@ export class UserDB {
       .first();
   }
 
-  async createUser(email: string): Promise<User> {
+  async createUser(
+    email: string,
+    status: UserStatus = "unverified",
+  ): Promise<User> {
     const newUserId = nanoid(30);
     await this.d1
       .prepare("INSERT INTO users (id, email, status) VALUES (?, ?, ?)")
-      .bind(newUserId, email, "unverified")
+      .bind(newUserId, email, status)
       .run();
     return {
       id: newUserId,
       email,
-      status: "unverified",
+      status,
     };
   }
 
@@ -188,5 +192,9 @@ export class UserDB {
       .prepare("INSERT INTO demo_users (id, otp, expires_at) VALUES (?, ?, ?)")
       .bind(userId, otp, expiresAt)
       .run();
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    await this.d1.prepare("DELETE FROM users WHERE id = ?").bind(userId).run();
   }
 }

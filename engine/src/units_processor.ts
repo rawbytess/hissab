@@ -1,13 +1,13 @@
 import { UserError } from "./exceptions";
-import tokenFactory from "./tokens/token_factory";
 import TokenBaseType from "./tokens/token_basetypes";
-import UnitTypes from "./types/unit_enum";
+import tokenFactory from "./tokens/token_factory";
 import {
-  DateToken,
   ColorToken,
-  expressionUnit,
+  DateToken,
+  type expressionUnit,
   NumberToken,
 } from "./tokens/tokens";
+import UnitTypes from "./types/unit_enum";
 
 class ProcessConversions {
   _token: NumberToken | DateToken | ColorToken;

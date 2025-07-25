@@ -1,12 +1,12 @@
-import soft from "timezone-soft";
 import chroma from "chroma-js";
-import TokenBaseType, { TokenType } from "./token_basetypes";
+import soft from "timezone-soft";
+import DateTimeOperands from "../datetime_operands";
+import Functions from "../function";
 import { Controllers, Operators } from "../types/operator_types";
-import { Constants, Units, UnitTypes } from "../types/unit_types";
 import Plurals from "../types/plurals";
 import Synonyms from "../types/synonyms";
-import Functions from "../function";
-import DateTimeOperands from "../datetime_operands";
+import { Constants, Units, UnitTypes } from "../types/unit_types";
+import TokenBaseType, { type TokenType } from "./token_basetypes";
 import {
   ColorToken,
   ControllerToken,
@@ -19,7 +19,7 @@ import {
   UndefinedToken,
   UnitToken,
   VariableNameToken,
-  Variables,
+  type Variables,
   VariableToken,
 } from "./tokens";
 

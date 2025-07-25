@@ -1,18 +1,23 @@
-import { doLex, doParse, Variables } from "engine";
-import { Range, StateEffectType } from "@codemirror/state";
+import type { Range, StateEffectType } from "@codemirror/state";
+import {
+  Decoration,
+  type DecorationSet,
+  type EditorView,
+} from "@codemirror/view";
+import { doLex, doParse, type Variables } from "engine";
+import { aicache } from "@/lib/cache.ts";
+import { ResultWidget } from "@/lib/editor/resultWidget.ts";
 import { getAIResult } from "@/queries/useAIPromptQuery.tsx";
 import {
   calculatePrev,
   calculateTotal,
 } from "../../../../lib/calculateExpressions.ts";
+import { CustomError } from "../../../../lib/errors.ts";
 import {
-  AIRequest,
+  type AIRequest,
   inLineDefaultModel,
 } from "../../../../lib/types/AITypes.ts";
-import { Decoration, DecorationSet, EditorView } from "@codemirror/view";
-import { ResultWidget } from "@/lib/editor/resultWidget.ts";
-import { aicache } from "@/lib/cache.ts";
-import { CustomError } from "../../../../lib/errors.ts";
+import type { ProductNames } from "../../../../lib/types/userMetadata.ts";
 
 export interface Results {
   result: string;
@@ -32,6 +37,8 @@ export async function getResult(
   storePage: (content: string) => void,
   oldResults: Results[],
   isPro: boolean,
+  isAuthenticated: boolean,
+  isPremium: ProductNames | null,
 ) {
   const state = view.state;
   const data = state.doc.toString();
@@ -115,7 +122,7 @@ export async function getResult(
           });
           continue;
         }
-        getAIResult(req)
+        getAIResult(req, isAuthenticated, isPremium)
           .then((res) => {
             oldResults[index] = results[index];
             results[index] = {

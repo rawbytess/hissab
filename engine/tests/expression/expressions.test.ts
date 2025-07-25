@@ -1,8 +1,8 @@
-import { readdirSync, lstatSync, readFileSync } from "fs";
+import { lstatSync, readdirSync, readFileSync } from "fs";
 import { resolve } from "path";
-import { UserError } from "../../src/exceptions";
 import spacetime from "spacetime";
 import { doLex, doParse } from "../../src";
+import { UserError } from "../../src/exceptions";
 
 /*
 describe("Valid Expressions", () => {

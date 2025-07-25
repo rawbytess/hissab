@@ -1,21 +1,20 @@
-import ProcessConversions from "../units_processor";
+import { UnhandledError, UserError } from "../exceptions";
+import TokenBaseType, { type TokenType } from "../tokens/token_basetypes";
+import tokenFactory from "../tokens/token_factory";
 import {
-  ColorToken,
-  DateToken,
-  expressionUnit,
+  type ColorToken,
+  type DateToken,
+  type expressionUnit,
   FunctionToken,
   NumberToken,
   OperatorToken,
-  StringToken,
-  UnitToken,
-  VariableNameToken,
+  type StringToken,
+  type UnitToken,
+  type VariableNameToken,
 } from "../tokens/tokens";
-
-import { UnhandledError, UserError } from "../exceptions";
-import tokenFactory from "../tokens/token_factory";
-import TokenBaseType, { TokenType } from "../tokens/token_basetypes";
-import { ParseTreeType } from "./parsetree";
 import UnitTypes from "../types/unit_enum";
+import ProcessConversions from "../units_processor";
+import type { ParseTreeType } from "./parsetree";
 
 export type ParserStateTypes =
   | typeof FreshParseState

@@ -9,75 +9,104 @@ import {
   ModalBody,
   ModalContent,
   ModalFooter,
+  Progress,
   useDisclosure,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import Dropzone, { type FileRejection, useDropzone } from "react-dropzone";
 import { PageContext } from "@/components/sidebar/pages/PagesProvider.tsx";
-import {
-  Dropzone,
-  DropzoneContent,
-  DropzoneEmptyState,
-} from "@/components/ui/dropzone.tsx";
 import { useAuth } from "@/components/user/auth/AuthProvider";
-import {
-  FileWithPreview,
-  useSupabaseUpload,
-} from "@/hooks/use-supabase-upload.ts";
-import { getFileInfoFromUrl } from "@/lib/fileMetaData.ts";
-import { cn } from "@/lib/utils.ts";
+import { BACKEND_URL, cn } from "@/lib/utils.ts";
 import { uploadFile } from "@/queries/useAIFileUpload.tsx";
 import { getMaxFileSize } from "../../../../lib/getPremiumStatus.ts";
 import {
+  ALLOWED_MIME_TYPES,
   type FileObject,
-  FileUpload,
+  type FileUpload,
   supportedMimeTypes,
 } from "../../../../lib/types/fileTypes.ts";
-
-const BucketName = "context";
 
 export default function UploadModal() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { user, isPremium } = useAuth();
   const { updateNote, currentPageNumber } = useContext(PageContext);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<FileUpload | null>(null);
 
-  const props = useSupabaseUpload({
-    bucketName: BucketName,
-    path: `${user.id}`,
-    maxFiles: 1,
-    maxFileSize: getMaxFileSize(isPremium ?? ""),
-    upsert: true,
-    allowedMimeTypes: supportedMimeTypes,
-  });
-  useEffect(() => {
-    if (props.isSuccess) {
-      onOpenChange();
+  // This function is called when a file is dropped or selected
+  const onDrop = useCallback(
+    async (acceptedFiles: File[], fileRejections: FileRejection[]) => {
+      // Reset state on new upload attempt
+      setUploadError(null);
+      setUploadedFile(null);
 
-      const file = props.acceptedFiles[0];
-      const url = `${import.meta.env.VITE_SUPABASE_PROJECT_URL}/storage/v1/object/public/${BucketName}/${user.id}/${file.name}`;
+      // Handle rejected files (e.g., wrong type or too large)
+      if (fileRejections.length > 0) {
+        const firstError = fileRejections[0].errors[0];
+        setUploadError(firstError.message);
+        return;
+      }
 
-      uploadFile({
-        url: url,
-        name: props.acceptedFiles[0].name,
-        mimeType: props.acceptedFiles[0].type,
-      })
-        .then((file) => {
-          updateNote(currentPageNumber, "", "chat", file);
-        })
-        .catch(() => {
-          addToast({
-            title: "Error",
-            description: `Error uploading file: ${props.acceptedFiles[0].name}`,
-            timeout: 5000,
-            shouldShowTimeoutProgress: true,
-            variant: "flat",
-            color: "danger",
-            icon: <Icon icon="bxs:error" width="20" height="20" />,
-          });
+      if (acceptedFiles.length === 0) {
+        return;
+      }
+
+      const file = acceptedFiles[0];
+      const formData = new FormData();
+      formData.append("file", file);
+
+      setIsUploading(true);
+
+      try {
+        // The endpoint for your worker route
+        const response = await fetch(`${BACKEND_URL}/user/upload`, {
+          method: "POST",
+          // If your auth middleware expects a token, add it here
+          // headers: { 'Authorization': `Bearer ${yourAuthToken}` },
+          body: formData,
+          credentials: "include", // Include credentials for session management
         });
-      props.setFiles([]);
-    }
-  }, [props.isSuccess]);
+
+        if (!response.ok) {
+          // Use the error message from the backend if available
+          throw new Error(`Upload failed with status: ${response.status}`);
+        }
+        const result = await response.json();
+
+        updateNote(currentPageNumber, "", "chat", {
+          name: file.name,
+          url: result.url,
+          mimeType: file.type,
+        });
+
+        setUploadedFile(result as FileUpload);
+      } catch (error: any) {
+        addToast({
+          title: "Error",
+          description: `Error uploading file: ${file.name}`,
+          timeout: 5000,
+          shouldShowTimeoutProgress: true,
+          variant: "flat",
+          color: "danger",
+          icon: <Icon icon="bxs:error" width="20" height="20" />,
+        });
+      } finally {
+        setIsUploading(false);
+      }
+    },
+    [],
+  );
+
+  const { getRootProps, getInputProps, isDragActive, acceptedFiles } =
+    useDropzone({
+      onDrop,
+      accept: ALLOWED_MIME_TYPES,
+      maxFiles: 1,
+      maxSize: getMaxFileSize(isPremium ?? ""),
+      multiple: false, // Allow only a single file upload
+    });
 
   return (
     <>
@@ -94,6 +123,12 @@ export default function UploadModal() {
       <Modal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
+        onClose={() => {
+          setIsUploading(false);
+          setUploadError(null);
+          setUploadedFile(null);
+          onOpenChange();
+        }}
         size={"xl"}
         hideCloseButton={true}
         className={"ring-2 ring-gray-950 shadow"}
@@ -103,16 +138,67 @@ export default function UploadModal() {
             <>
               <ModalBody className={"text-white mt-5"}>
                 <div className="w-[500px]">
-                  <Dropzone {...props}>
-                    <DropzoneEmptyState />
-                    <DropzoneContent />
-                  </Dropzone>
-                  <DropzoneFileList
-                    bucket={BucketName}
-                    currentPageNumber={currentPageNumber}
-                    updateNote={updateNote}
-                    onOpenChange={onOpenChange}
-                  />
+                  <div
+                    {...getRootProps()}
+                    className={`p-8 border-2 border-dashed rounded-xl text-center cursor-pointer transition-colors duration-300 ease-in-out
+                ${isDragActive ? "border-primary bg-primary-50" : "border-default-300 hover:border-default-500"}
+                ${uploadError ? "border-danger bg-danger-50" : ""}`}
+                  >
+                    <input {...getInputProps()} />
+                    {isDragActive ? (
+                      <p className="text-primary">Drop the file here...</p>
+                    ) : (
+                      <p className="text-default-500">
+                        Drag & drop a file, or click to select
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="mt-4 space-y-2">
+                    <p className="text-xs text-default-400 text-center">
+                      Allowed types: JPG, PNG, PDF, TXT. Max size:{" "}
+                      {getMaxFileSize(isPremium ?? "")}MB.
+                    </p>
+
+                    {isUploading && (
+                      <Progress
+                        size="sm"
+                        isIndeterminate
+                        aria-label="Uploading..."
+                      />
+                    )}
+
+                    {acceptedFiles.length > 0 &&
+                      !isUploading &&
+                      !uploadedFile &&
+                      !uploadError && (
+                        <Chip color="default" variant="flat">
+                          {acceptedFiles[0].name}
+                        </Chip>
+                      )}
+
+                    {uploadError && (
+                      <Chip color="danger" variant="solid">
+                        {uploadError}
+                      </Chip>
+                    )}
+
+                    {uploadedFile && (
+                      <div className="p-3 border rounded-lg bg-success-50 border-success-200">
+                        <p className="font-semibold text-success-800">
+                          Upload Successful!
+                        </p>
+                        <a
+                          href={uploadedFile.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary-600 break-all hover:underline"
+                        >
+                          View File: {uploadedFile.name}
+                        </a>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </ModalBody>
               <ModalFooter className={"text-white"}>
@@ -133,6 +219,7 @@ export default function UploadModal() {
   );
 }
 
+/*
 const DropzoneFileList = ({
   bucket,
   updateNote,
@@ -151,7 +238,7 @@ const DropzoneFileList = ({
   //console.log(recentFiles);
   useEffect(() => {
     async function fetchFiles() {
-      /* const { data, error } = await supabase.storage
+       const { data, error } = await supabase.storage
         .from(bucket)
         .list(`${user.id}`, {
           limit: 10,
@@ -163,7 +250,7 @@ const DropzoneFileList = ({
         setError("Error fetching your files.");
       } else {
         setrecentFiles(data);
-      }*/
+      }
     }
     //console.log("Fetching files");
     fetchFiles();
@@ -215,7 +302,7 @@ const DropzoneFileList = ({
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  /*
+
                   supabase.storage
                     .from(bucket)
                     .remove([`${session?.user.id}/${file.name}`])
@@ -228,7 +315,7 @@ const DropzoneFileList = ({
                         );
                       }
                     });
-                    */
+
                 }}
               />
             }
@@ -241,3 +328,5 @@ const DropzoneFileList = ({
     </Card>
   );
 };
+
+*/

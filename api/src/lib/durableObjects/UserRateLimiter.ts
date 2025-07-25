@@ -1,22 +1,23 @@
 import { DurableObject } from "cloudflare:workers";
-import { ProductNames } from "~lib/types/userMetadata";
-import { modelRateLimits, Models, ModelSize } from "~lib/types/AITypes";
-import { getTodayTimestamp } from "~lib/timeutils";
 import {
   Bindings,
-  MetaBindings,
-  RateLimitStorage,
+  type MetaBindings,
+  type RateLimitStorage,
   userVars,
 } from "@lib/types/envTypes";
+import { getTodayTimestamp } from "~lib/timeutils";
+import { type ModelSize, Models, modelRateLimits } from "~lib/types/AITypes";
+import type { ProductNames } from "~lib/types/userMetadata";
 
 export class UserRateLimiter extends DurableObject<MetaBindings> {
   async checkRateLimit(
-    isPremium: ProductNames,
+    plans: ProductNames[],
     modelSize: ModelSize,
     timezone: string,
     userId: string,
   ): Promise<boolean> {
     const today = getTodayTimestamp();
+    const isPremium = plans.includes("AI Plus") ? "AI Plus" : "AI Lite";
     const limit = modelRateLimits[modelSize][isPremium];
     if (limit === 0) {
       return false;
@@ -51,11 +52,12 @@ export class UserRateLimiter extends DurableObject<MetaBindings> {
   }
 
   async incrementRateLimit(
-    isPremium: ProductNames,
+    plans: ProductNames[],
     modelSize: ModelSize,
     timezone: string,
   ) {
     const today = getTodayTimestamp();
+    const isPremium = plans.includes("AI Plus") ? "AI Plus" : "AI Lite";
     const limit = modelRateLimits[modelSize][isPremium];
     if (limit === 0) {
       return;

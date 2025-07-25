@@ -25,6 +25,12 @@
   "observability": {
     "enabled": true
   },
+  "r2_buckets": [
+    {
+      "binding": "FILES_R2_BUCKET",
+      "bucket_name": "hissab-files-dev"
+    }
+  ],
   "durable_objects": {
     "bindings": [
       {
@@ -60,6 +66,12 @@
         "pattern": "api.hissab.io",
         "custom_domain": true
       },
+      "r2_buckets": [
+        {
+          "binding": "FILES_R2_BUCKET",
+          "bucket_name": "hissab-files"
+        }
+      ],
       "d1_databases": [
         {
           "binding": "LOGS_DB", // available in your Worker on env.DB
@@ -95,6 +107,12 @@
         "pattern": "dev.api.hissab.io",
         "custom_domain": true
       },
+      "r2_buckets": [
+        {
+          "binding": "FILES_R2_BUCKET",
+          "bucket_name": "hissab-files-dev"
+        }
+      ],
       "d1_databases": [
         {
           "binding": "LOGS_DB", // available in your Worker on env.DB

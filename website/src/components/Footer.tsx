@@ -1,5 +1,5 @@
-import { Icon } from "@iconify/react";
 import { Button } from "@heroui/react";
+import { Icon } from "@iconify/react";
 
 export default function Footer() {
   return (
@@ -17,10 +17,14 @@ export default function Footer() {
             Made by: Mufaddal Makati
           </a>
           <div className={"flex items-center gap-5"}>
-            <a href={"https://www.reddit.com/r/hissab/"} target={"_blank"}>
+            <a
+              href={"https://www.reddit.com/r/hissab/"}
+              target={"_blank"}
+              rel="noopener"
+            >
               <Icon icon="logos:reddit-icon" width={24} />
             </a>
-            <a href={"https://x.com/prenx4x"} target={"_blank"}>
+            <a href={"https://x.com/prenx4x"} target={"_blank"} rel="noopener">
               <Icon icon="hugeicons:new-twitter" width={24} />
             </a>
           </div>

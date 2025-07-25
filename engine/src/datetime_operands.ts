@@ -1,4 +1,4 @@
-import spacetime, { Spacetime } from "spacetime";
+import spacetime, { type Spacetime } from "spacetime";
 
 type dtType = {
   [dt: string]: {

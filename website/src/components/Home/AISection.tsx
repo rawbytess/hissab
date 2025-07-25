@@ -1,8 +1,8 @@
 import { Button, Card, CardBody, CardHeader, Tab, Tabs } from "@heroui/react";
-import Video from "@/components/Video.tsx";
 import { Icon } from "@iconify/react";
-import HissabExample from "@/components/HissabExample.tsx";
 import { useEffect, useState } from "react";
+import HissabExample from "@/components/HissabExample.tsx";
+import Video from "@/components/Video.tsx";
 
 const prompts = [
   "how much should I pay per month if I want my $50K loan at 4% interest to be paid of in 5 years",

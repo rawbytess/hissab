@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
 import {
-  Tabs,
-  Tab,
+  Button,
   Card,
   CardBody,
-  Switch,
   CardHeader,
-  Button,
+  Switch,
+  Tab,
+  Tabs,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
+import { useEffect, useState } from "react";
 import HissabExample from "@/components/HissabExample.tsx";
 import Video from "@/components/Video.tsx";
 import { cn } from "@/lib/utils.ts";

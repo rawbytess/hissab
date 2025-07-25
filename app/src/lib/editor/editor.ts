@@ -1,3 +1,10 @@
+import { closeBrackets } from "@codemirror/autocomplete";
+import { defaultKeymap, history, redo, undo } from "@codemirror/commands";
+import {
+  bracketMatching,
+  HighlightStyle,
+  syntaxHighlighting,
+} from "@codemirror/language";
 import { EditorState, StateEffect } from "@codemirror/state";
 import {
   EditorView,
@@ -6,27 +13,19 @@ import {
   lineNumbers,
   placeholder,
 } from "@codemirror/view";
-import { prompt } from "./promptWidget";
-import { defaultKeymap, history, redo, undo } from "@codemirror/commands";
-import {
-  bracketMatching,
-  HighlightStyle,
-  syntaxHighlighting,
-} from "@codemirror/language";
-import { closeBrackets } from "@codemirror/autocomplete";
-
 import pkg from "lodash";
-
-import {
-  getStreamLanguage,
-  HissabHighlightStyle,
-} from "./syntaxHighlighting.ts";
+import { hissabTheme } from "@/lib/editor/cmTheme.ts";
+import type { Results } from "@/lib/editor/getResults.ts";
 import {
   getResultExtension,
   resultStateField,
 } from "@/lib/editor/resultWidget.ts";
-import { Results } from "@/lib/editor/getResults.ts";
-import { hissabTheme } from "@/lib/editor/cmTheme.ts";
+import type { ProductNames } from "../../../../lib/types/userMetadata.ts";
+import { prompt } from "./promptWidget";
+import {
+  getStreamLanguage,
+  HissabHighlightStyle,
+} from "./syntaxHighlighting.ts";
 
 const { debounce } = pkg;
 
@@ -41,6 +40,8 @@ interface hissabEditorIf {
   editorBackground?: string;
   borderRadius?: string;
   innerPadding?: string;
+  isAuthenticated?: boolean;
+  isPremium?: ProductNames | null;
 }
 
 export default class HissabEditor {
@@ -70,6 +71,10 @@ export default class HissabEditor {
 
   private view: EditorView | null;
 
+  private isAuthenticated: boolean;
+
+  private isPremium: ProductNames | null;
+
   constructor(parent: Element | ShadowRoot, options: hissabEditorIf) {
     this.parent = parent;
     this.currentPage = options.currentPage;
@@ -85,6 +90,9 @@ export default class HissabEditor {
 
     this.oldResults = [];
     this.view = null;
+
+    this.isAuthenticated = options.isAuthenticated ?? false;
+    this.isPremium = options.isPremium ?? null;
 
     this.clearEditor = this.clearEditor.bind(this);
     this.focusEditor = this.focusEditor.bind(this);
@@ -205,6 +213,8 @@ export default class HissabEditor {
       this.storePage,
       this.oldResults,
       this.isPro,
+      this.isAuthenticated,
+      this.isPremium,
     );
     const undoRedoKeymap = keymap.of([
       {

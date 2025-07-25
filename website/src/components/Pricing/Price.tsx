@@ -260,6 +260,7 @@ export default function Price() {
               href={"https://store.hissab.io"}
               target={"_blank"}
               className={"w-full"}
+              rel="noopener"
             >
               <Button className={"mx-auto w-full bg-cyan-700"}>
                 $10 / month
@@ -269,6 +270,7 @@ export default function Price() {
               href={"https://store.hissab.io"}
               target={"_blank"}
               className={"w-full"}
+              rel="noopener"
             >
               <Button className={"mx-auto w-full bg-cyan-700"}>
                 $50 / year
@@ -372,6 +374,7 @@ export default function Price() {
               href={"https://store.hissab.io"}
               target={"_blank"}
               className={"w-full"}
+              rel="noopener"
             >
               <Button className={"mx-auto bg-fuchsia-700 w-full"}>
                 $20 / month
@@ -381,6 +384,7 @@ export default function Price() {
               href={"https://store.hissab.io"}
               target={"_blank"}
               className={"w-full"}
+              rel="noopener"
             >
               <Button className={"mx-auto bg-fuchsia-700 w-full"}>
                 $125 / year

@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { Messages } from "@/components/sidebar/pages/PagesProvider.tsx";
+import { useCallback, useState } from "react";
+import type { Messages } from "@/components/sidebar/pages/PagesProvider.tsx";
 
 function useMessageOptions(messages: Messages[]) {
   // State to keep track of the ID of the message currently being hovered or touched.

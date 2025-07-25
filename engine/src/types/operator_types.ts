@@ -1,17 +1,17 @@
 import chroma from "chroma-js";
 import * as arith from "../arithmetic_functions";
-import ProcessConversions from "../units_processor";
 import { UnhandledError, UserError } from "../exceptions";
+import TokenBaseType, { type TokenType } from "../tokens/token_basetypes";
 import tokenFactory from "../tokens/token_factory";
-import UnitTypes from "./unit_enum";
-import TokenBaseType, { TokenType } from "../tokens/token_basetypes";
 import {
   ColorToken,
   DateToken,
-  expressionUnit,
+  type expressionUnit,
   NumberToken,
   UnitToken,
 } from "../tokens/tokens";
+import ProcessConversions from "../units_processor";
+import UnitTypes from "./unit_enum";
 
 type operatorType = {
   [op: string]: {

@@ -1,13 +1,13 @@
-import { ExpWithResult } from "./types/AITypes";
 import {
   doLex,
   doParse,
   TokenBaseType,
+  type TokenType,
   tokenFactory,
-  TokenType,
-  Variables,
+  type Variables,
 } from "../engine";
 import { run } from "./errors";
+import type { ExpWithResult } from "./types/AITypes";
 
 export async function calculateTotal(index: number, variables: Variables) {
   const tokens: TokenType[] = [];

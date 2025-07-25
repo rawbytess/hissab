@@ -1,14 +1,14 @@
 import {
+  Button,
   Dropdown,
-  DropdownTrigger,
+  DropdownItem,
   DropdownMenu,
   DropdownSection,
-  DropdownItem,
-  Button,
+  DropdownTrigger,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import { Dispatch, SetStateAction } from "react";
-import { Page } from "@/components/sidebar/pages/PagesProvider.tsx";
+import type { Dispatch, SetStateAction } from "react";
+import type { Page } from "@/components/sidebar/pages/PagesProvider.tsx";
 
 export default function PageOptions({
   pageID,

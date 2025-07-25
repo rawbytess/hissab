@@ -1,4 +1,4 @@
-import { fetchPost } from "~lib/errors";
+import { fetchPost } from "@lib/utils";
 
 const searchInstructions = `
 You art a web search engine assistant to get real time information from web related to weather, finance, stocks, 

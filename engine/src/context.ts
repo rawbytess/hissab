@@ -1,5 +1,5 @@
 import TokenBaseType from "./tokens/token_basetypes";
-import { UnitToken } from "./tokens/tokens";
+import type { UnitToken } from "./tokens/tokens";
 
 interface contextIf {
   isPro: boolean;

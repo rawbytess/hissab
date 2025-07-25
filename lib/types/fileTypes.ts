@@ -57,8 +57,9 @@ export declare interface GeminiFile {
 
 export const zFileUpload = z.object({
   name: z.string(),
-  url: z.string().url(),
-  mimeType: z.string().optional(),
+  mimeType: z.string(),
+  fileBuffer: z.instanceof(ArrayBuffer).optional(),
+  url: z.string().optional(),
 });
 
 type ProviderFileUpload = {
@@ -118,3 +119,27 @@ export const supportedMimeTypes = [
   "image/jpeg",
   "image/webp",
 ];
+export const ALLOWED_MIME_TYPES = {
+  "video/x-flv": [".flv"],
+  "video/quicktime": [".mov"],
+  "video/mpeg": [".mpeg", ".mpg", ".mpegs", ".mpgs"],
+  "video/mp4": [".mp4"],
+  "video/webm": [".webm"],
+  "video/wmv": [".wmv"],
+  "video/3gpp": [".3gp", ".3g2"],
+  "audio/x-aac": [".aac"],
+  "audio/flac": [".flac"],
+  "audio/mp3": [".mp3"],
+  "audio/m4a": [".m4a"],
+  "audio/mpeg": [".mp3", ".mpeg", ".mpga"],
+  "audio/mp4": [".mp4", ".m4a"],
+  "audio/opus": [".opus"],
+  "audio/pcm": [".pcm"],
+  "audio/wav": [".wav"],
+  "audio/webm": [".webm"],
+  "application/pdf": [".pdf"],
+  "text/plain": [".txt", ".text"],
+  "image/png": [".png"],
+  "image/jpeg": [".jpeg", ".jpg"],
+  "image/webp": [".webp"],
+};

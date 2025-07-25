@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
 import { Icon } from "@iconify/react";
+import { useRef, useState } from "react";
 
 export default function Video({
   src,

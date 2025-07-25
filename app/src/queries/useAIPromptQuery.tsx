@@ -1,7 +1,7 @@
 import { useAuth } from "@/components/user/auth/AuthProvider.tsx";
 import { aicache } from "@/lib/cache.ts";
-import { BACKEND_URL } from "@/lib/utils.ts";
-import { CustomError, fetchPost, run } from "../../../lib/errors.ts";
+import { BACKEND_URL, fetchPost } from "@/lib/utils.ts";
+import { CustomError, run } from "../../../lib/errors.ts";
 import {
   getMaxCharacterLimit,
   isPremiumUser,
@@ -10,10 +10,16 @@ import type {
   AIFormatResponseType,
   AIRequest,
 } from "../../../lib/types/AITypes.ts";
-import { userMetadata } from "../../../lib/types/userMetadata.ts";
+import {
+  type ProductNames,
+  userMetadata,
+} from "../../../lib/types/userMetadata.ts";
 
-export async function getAIResult(req: AIRequest) {
-  const { user, isAuthenticated, isPremium } = useAuth();
+export async function getAIResult(
+  req: AIRequest,
+  isAuthenticated: boolean,
+  isPremium: ProductNames | null,
+) {
   if (!isAuthenticated)
     throw new CustomError(
       "NotLoggedIn",

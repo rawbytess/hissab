@@ -20,7 +20,7 @@ export function PromptWrapper() {
 
   const { updateNote, currentPageNumber, currentPage } =
     useContext(PageContext);
-  const { isPremium } = useAuth();
+  const { isPremium, isAuthenticated } = useAuth();
 
   const currPage = currentPage as ChatPage;
 
@@ -32,9 +32,9 @@ export function PromptWrapper() {
     model: currPage.model,
     file: currPage.file
       ? {
-          url: currPage.file?.geminiFile?.uri ?? "",
-          name: currPage.file?.name ?? "",
-          mimeType: currPage.file?.mimeType ?? "",
+          url: currPage.file.url || "",
+          name: currPage.file.name,
+          mimeType: currPage.file.mimeType,
         }
       : undefined,
     history: currPage.chats.messages
@@ -61,7 +61,7 @@ export function PromptWrapper() {
       role: "user",
     });
     setLoading(true);
-    getAIResult(req)
+    getAIResult(req, isAuthenticated, isPremium)
       .then((data) => {
         if (!data) return;
         updateNote(currPage.id, "", "chat", undefined, {

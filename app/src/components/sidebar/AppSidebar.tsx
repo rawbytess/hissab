@@ -16,7 +16,7 @@ export default function AppSidebar({
 }: {
   children: React.ReactNode;
 }) {
-  const { isPremium, isAuthenticated } = useAuth();
+  const { isPremium, isAuthenticated, user } = useAuth();
 
   return (
     <SidebarProvider>

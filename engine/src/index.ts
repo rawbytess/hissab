@@ -1,23 +1,23 @@
+import DateTimeOperands from "./datetime_operands";
+import { ReportError, UserError } from "./exceptions";
+import Functions from "./function";
 import lexer from "./lexer/lexer";
 import parse from "./parser/parser";
-import { UserError, ReportError } from "./exceptions";
+import { humanize } from "./pro";
+import TokenBaseType, { type TokenType } from "./tokens/token_basetypes";
+import tokenFactory from "./tokens/token_factory";
 import {
-  Token,
+  ColorToken,
+  DateToken,
+  NumberToken,
   ResultToken,
   StringToken,
+  Token,
   UndefinedToken,
-  Variables,
-  DateToken,
-  ColorToken,
-  NumberToken,
+  type Variables,
 } from "./tokens/tokens";
-import tokenFactory from "./tokens/token_factory";
-import TokenBaseType, { TokenType } from "./tokens/token_basetypes";
-import { humanize } from "./pro";
-import DateTimeOperands from "./datetime_operands";
-import { Units } from "./types/unit_types";
-import Functions from "./function";
 import { Operators } from "./types/operator_types";
+import { Units } from "./types/unit_types";
 
 interface parseResultIf {
   result: string;

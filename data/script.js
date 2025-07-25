@@ -1,5 +1,5 @@
-import { prompts_with_exp } from "./prompts_small_with_exp";
 import fs from "fs";
+import { prompts_with_exp } from "./prompts_small_with_exp";
 
 // Get all unique headers from all objects
 const headers = Array.from(

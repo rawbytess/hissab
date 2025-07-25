@@ -1,17 +1,18 @@
+import { UserError } from "../exceptions";
+import type { TokenType } from "../tokens/token_basetypes";
 import {
+  ColorToken,
   ControllerToken,
+  DateToken,
   Direction,
   FunctionToken,
+  NumberToken,
   OperatorToken,
   StringToken,
+  UnitToken,
   VariableNameToken,
   VariableToken,
-  DateToken,
-  ColorToken,
-  UnitToken,
-  NumberToken,
 } from "../tokens/tokens";
-
 import {
   CombineNumberState,
   CompleteState,
@@ -19,12 +20,9 @@ import {
   FunctionState,
   NeedNumberState,
   NeedUnitState,
-  ParserStateTypes,
+  type ParserStateTypes,
 } from "./parser_states";
-
-import { UserError } from "../exceptions";
 import ParseTree from "./parsetree";
-import { TokenType } from "../tokens/token_basetypes";
 
 interface parseIf {
   result: TokenType;

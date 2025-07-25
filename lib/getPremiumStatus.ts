@@ -1,4 +1,4 @@
-import { ProductNames, userMetadata } from "./types/userMetadata";
+import type { ProductNames, userMetadata } from "./types/userMetadata";
 
 export function isPremiumUser(
   user: userMetadata | undefined | null,

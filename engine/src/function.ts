@@ -1,9 +1,9 @@
 import chroma from "chroma-js";
 import { UserError } from "./exceptions";
-import ProcessConversions from "./units_processor";
-import tokenFactory from "./tokens/token_factory";
 import TokenBaseType from "./tokens/token_basetypes";
-import { ColorToken, NumberToken } from "./tokens/tokens";
+import tokenFactory from "./tokens/token_factory";
+import type { ColorToken, NumberToken } from "./tokens/tokens";
+import ProcessConversions from "./units_processor";
 
 type functionType = {
   [fn: string]: {

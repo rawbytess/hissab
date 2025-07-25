@@ -1,22 +1,22 @@
+import documentation from "@lib/ai/instructions/documentation";
+import systemInstructions from "@lib/ai/instructions/system-instructions";
+import { hissabExpFunction } from "@lib/ai/jsonSchema";
 import OpenAI from "openai";
-import {
-  ChatCompletionMessageParam,
-  ChatCompletionTool,
-} from "openai/resources/chat/completions";
 import { RunnableToolFunction } from "openai/lib/RunnableFunction";
 import {
-  AIFormatResponseType,
+  type ChatCompletionMessageParam,
+  ChatCompletionTool,
+} from "openai/resources/chat/completions";
+import { calcExp, calculateExpressions } from "~lib/calculateExpressions";
+import { CustomError } from "~lib/errors";
+import {
+  type AIFormatResponseType,
   ExpWithResult,
-  ModelFamily,
-  Models,
+  type ModelFamily,
+  type Models,
   ModelsMap,
 } from "~lib/types/AITypes";
-import { hissabExpFunction } from "@lib/ai/jsonSchema";
-import systemInstructions from "@lib/ai/instructions/system-instructions";
-import documentation from "@lib/ai/instructions/documentation";
-import { ProductNames } from "~lib/types/userMetadata";
-import { CustomError } from "~lib/errors";
-import { calcExp, calculateExpressions } from "~lib/calculateExpressions";
+import type { ProductNames } from "~lib/types/userMetadata";
 
 const urlMap: {
   [key in ModelFamily]: string;

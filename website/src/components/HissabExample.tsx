@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { doLex, doParse } from "engine"; // Assuming 'engine' exports these
 import type { TokenType } from "engine"; // Assuming 'engine' exports this type
+import { doLex, doParse } from "engine"; // Assuming 'engine' exports these
+import type React from "react";
+import { useEffect, useState } from "react";
 
 // Define the structure of the result from doParse (replace 'any' if you know the specific type)
 interface ParseResult {

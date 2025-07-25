@@ -21,41 +21,6 @@ export async function run<T, E = CustomError>(
   }
 }
 
-export async function fetchPost<T>(
-  url: string,
-  body: unknown,
-  headers?: HeadersInit,
-): Promise<T> {
-  const result = await run(
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...headers,
-      },
-      body: JSON.stringify(body),
-    }),
-  );
-  if (result.failed) {
-    throw new CustomError(
-      "FetchNetwork",
-      result.error.message,
-      "Failed to reach the server",
-    );
-  }
-
-  if (!result.data.ok) {
-    const text = await result.data.text();
-    throw new CustomError(
-      "FetchResponse",
-      result.data.statusText,
-      text,
-      result.data.status,
-    );
-  }
-  return result.data.json();
-}
-
 export type ErrorName =
   | "FetchNetwork"
   | "FetchResponse"

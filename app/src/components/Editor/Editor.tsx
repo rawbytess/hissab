@@ -13,7 +13,7 @@ import HissabEditor, {
 export default function Editor({ className }: { className?: string }) {
   const { updateNote, currentPageNumber, setEditorOperations, currentPage } =
     useContext(PageContext);
-  const { isPremium } = useAuth();
+  const { isPremium, isAuthenticated } = useAuth();
 
   const heRef = useRef<HTMLDivElement>(null);
   const pg = currentPage as notePage;
@@ -29,6 +29,8 @@ export default function Editor({ className }: { className?: string }) {
       isWritable: true,
       isDark: true,
       isPro: !!isPremium,
+      isAuthenticated: isAuthenticated,
+      isPremium: isPremium,
     };
 
     const he: HissabEditorType = new HissabEditor(
@@ -48,7 +50,7 @@ export default function Editor({ className }: { className?: string }) {
       });
     });
     return () => he.destroy();
-  }, [currentPageNumber, isPremium]);
+  }, [currentPageNumber, isPremium, isAuthenticated]);
 
   if (!currentPageNumber) return null;
   if (currentPage?.type === "chat")

@@ -1,14 +1,18 @@
 import { StateEffect, StateField } from "@codemirror/state";
 import {
   Decoration,
-  DecorationSet,
+  type DecorationSet,
   EditorView,
   ViewPlugin,
   WidgetType,
 } from "@codemirror/view";
-import { getResult, refreshResults, Results } from "@/lib/editor/getResults.ts";
-
 import { aicache } from "@/lib/cache.ts";
+import {
+  getResult,
+  type Results,
+  refreshResults,
+} from "@/lib/editor/getResults.ts";
+import type { ProductNames } from "../../../../lib/types/userMetadata.ts";
 
 const resultStateEffect = StateEffect.define<{ decorations: DecorationSet }>(
   {},
@@ -35,6 +39,8 @@ export async function getResultExtension(
   storePage: (content: string) => void,
   oldResults: Results[],
   isPro: boolean,
+  isAuthenticated: boolean,
+  isPremium: ProductNames | null,
 ) {
   return ViewPlugin.define(() => {
     return {
@@ -46,6 +52,8 @@ export async function getResultExtension(
             storePage,
             oldResults,
             isPro,
+            isAuthenticated,
+            isPremium,
           ).then((result) => {
             oldResults = result;
             refreshResults(

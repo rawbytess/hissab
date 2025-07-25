@@ -66,7 +66,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         setIsLoading(false);
       }
     };
-    if (user) checkUserSession();
+    checkUserSession();
   }, []);
 
   const login = async (email: string) => {
