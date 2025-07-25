@@ -61,16 +61,16 @@ app.post("/login", zValidator("json", loginSchema), async (c) => {
         message: `An OTP has been sent to ${email}. It will expire in ${config.email.otpExpirationWords}.`,
       });
     }
-    const otp = "123456";
-    //const otp = generateOtp();
+    //const otp = "123456";
+    const otp = generateOtp();
 
     await db.insertOtp(user.id, otp, expiresAt);
-    /* await sendOtpEmail(
+    await sendOtpEmail(
       email,
       otp,
       c.env.AWS_ACCESS_KEY_ID,
       c.env.AWS_SECRET_ACCESS_KEY,
-    ); */
+    );
 
     return c.json({
       newUser,
