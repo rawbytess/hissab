@@ -6,21 +6,7 @@
   "main": "src/index.ts",
   "compatibility_date": "2025-05-01",
   "build": {
-    "command": "pnpm build",
-    "upload": {
-      "format": "modules",
-      "rules": [
-        {
-          "type": "ESModule",
-          "include": ["**/*.ts"],
-          "esbuild": {
-            "external": [
-              "@polar-sh/sdk/src/models/components/webhookorderpaidpayload"
-            ]
-          }
-        }
-      ]
-    }
+    "command": "pnpm build"
   },
   "observability": {
     "enabled": true
