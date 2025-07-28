@@ -18,7 +18,7 @@
     "d1:migrate:user:dev": "wrangler d1 migrations apply hsb-dev-user --remote --env dev",
     "d1:migrate:user:prod": "wrangler d1 migrations apply hsb-prod-user --remote --env prod",
     "d1:migrate:all:dev": "pnpm d1:migrate:logs:dev && pnpm d1:migrate:user:dev",
-    "d1:migrate:all:prod": "pnpm d1:migrate:apply:prod && pnpm d1:migrate:apply:user:prod",
+    "d1:migrate:all:prod": "pnpm d1:migrate:logs:prod && pnpm d1:migrate:apply:user:prod",
     "d1:migrate:local": "pnpm d1:migrate:logs:local && pnpm d1:migrate:user:local",
     "source:env:dev": "set -o allexport; source .dev.vars; set +o allexport"
   },
