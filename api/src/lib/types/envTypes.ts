@@ -21,6 +21,7 @@ export type Bindings = {
   POLAR_ACCESS_TOKEN: string; // Access token for Polar API
   JWT_SECRET: string; // Secret for signing access tokens
   JWT_REFRESH_SECRET: string; // Secret for signing refresh tokens
+  ADMIN_AUTH_TOKEN: string; // Token for admin authentication
 };
 
 export type userVars = {

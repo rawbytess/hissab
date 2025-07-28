@@ -1,11 +1,34 @@
 import { UserDB } from "@lib/db/UserDB";
 import type { CreateUser, MetaBindings } from "@lib/types/envTypes";
 import { getFormattedUtcDateString } from "@lib/utils";
-import { Hono } from "hono";
+import {Hono, type MiddlewareHandler} from "hono";
 import { nanoid } from "nanoid";
 import type { userMetadata } from "~lib/types/userMetadata";
+import {getCookie} from "hono/dist/types/helper/cookie";
+import {verify} from "hono/dist/types/middleware/jwt";
 
 const app = new Hono<MetaBindings>();
+
+export const authMiddleware: MiddlewareHandler = async (c, next) => {
+  const authHeader = c.req.header("Authorization");
+  const adminAuthToken = c.env.ADMIN_AUTH_TOKEN;
+  console.log(authHeader, adminAuthToken);
+  if (!authHeader) {
+    return c.json({ error: "Unauthorized: No Authorization header provided" }, 401);
+  }
+
+  try {
+    if (authHeader !== `Bearer ${adminAuthToken}`) {
+        return c.json({ error: "Unauthorized: Invalid token" }, 401);
+    }
+    await next();
+  } catch (err) {
+    return c.json({ error: "Unauthorized: Invalid token" }, 401);
+  }
+  return c.json({ error: "Unauthorized: Invalid token" }, 401);
+};
+
+app.use(authMiddleware);
 
 app.get("/:user_id", async (c) => {
   const user_id = c.req.param("user_id");
