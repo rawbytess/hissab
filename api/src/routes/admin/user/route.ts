@@ -64,7 +64,7 @@ app.post("/", async (c) => {
   }
   await userdb.updateUserName(user_id, userData.name);
   if (userData.demo)
-    await userdb.insertDemoUser(user_id, String(userData.demo), expire);
+    await userdb.insertDemoUser(user_id, userData.email, String(userData.demo), expire);
 
   return c.json({ user_id });
 });

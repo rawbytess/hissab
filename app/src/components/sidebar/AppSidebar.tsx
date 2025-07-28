@@ -72,6 +72,19 @@ export default function AppSidebar({
                   </div>
                 </a>
               </li>
+              <li>
+                <a
+                    href={"https://hissab.io/mcp"}
+                    target={"_blank"}
+                    className={"text-sm"}
+                    rel="noopener"
+                >
+                  <div className={"flex gap-1 items-center"}>
+                    <ExternalLink className={"w-4"} />
+                    MCP
+                  </div>
+                </a>
+              </li>
             </ul>
           </SidebarGroup>
         </SidebarContent>

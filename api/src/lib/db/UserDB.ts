@@ -178,19 +178,20 @@ export class UserDB {
 
   async getDemoUserById(userId: string): Promise<DemoUser | null> {
     return await this.d1
-      .prepare("SELECT otp, expires_at FROM demo_users WHERE id = ?")
+      .prepare("SELECT * FROM demo_users WHERE id = ?")
       .bind(userId)
       .first();
   }
 
   async insertDemoUser(
     userId: string,
+    email: string,
     otp: string,
     expiresAt: string,
   ): Promise<void> {
     await this.d1
-      .prepare("INSERT INTO demo_users (id, otp, expires_at) VALUES (?, ?, ?)")
-      .bind(userId, otp, expiresAt)
+      .prepare("INSERT INTO demo_users (id,email, otp, expires_at) VALUES (?,?, ?, ?)")
+      .bind(userId, email, otp, expiresAt)
       .run();
   }
 

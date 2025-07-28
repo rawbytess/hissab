@@ -40,6 +40,7 @@ jobs:
         run: pnpm build
         env:
           PUBLIC_HISSAB_APP_URL: ${{ secrets.HISSAB_APP_URL }}
+          PUBLIC_POLAR_CHECKOUT_URL: ${{ secrets.POLAR_CHECKOUT_URL }}
 
       - name: Deploy Website
         uses: cloudflare/wrangler-action@v3
@@ -51,3 +52,4 @@ jobs:
           command: deploy --env dev --no-bundle
         env:
           PUBLIC_HISSAB_APP_URL: ${{ secrets.HISSAB_APP_URL }}
+          PUBLIC_POLAR_CHECKOUT_URL: ${{ secrets.POLAR_CHECKOUT_URL }}

@@ -257,7 +257,7 @@ export default function Price() {
           </CardBody>
           <CardFooter className={"mt-auto flex flex-col gap-2"}>
             <a
-              href={"https://store.hissab.io"}
+              href={"https://polar.sh/hissab/portal"}
               target={"_blank"}
               className={"w-full"}
               rel="noopener"
@@ -267,7 +267,7 @@ export default function Price() {
               </Button>
             </a>
             <a
-              href={"https://store.hissab.io"}
+              href={"https://polar.sh/hissab/portal"}
               target={"_blank"}
               className={"w-full"}
               rel="noopener"
@@ -371,7 +371,7 @@ export default function Price() {
           </CardBody>
           <CardFooter className={"mt-auto flex flex-col gap-2"}>
             <a
-              href={"https://store.hissab.io"}
+              href={"https://polar.sh/hissab/portal"}
               target={"_blank"}
               className={"w-full"}
               rel="noopener"
@@ -381,7 +381,7 @@ export default function Price() {
               </Button>
             </a>
             <a
-              href={"https://store.hissab.io"}
+              href={"https://polar.sh/hissab/portal"}
               target={"_blank"}
               className={"w-full"}
               rel="noopener"
