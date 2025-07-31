@@ -84,9 +84,6 @@ importers:
       '@polar-sh/sdk':
         specifier: ^0.34.2
         version: 0.34.6(@modelcontextprotocol/sdk@1.16.0)(zod@3.25.67)
-      '@umami/node':
-        specifier: ^0.4.0
-        version: 0.4.0
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -4222,9 +4219,6 @@ packages:
 
   '@types/yauzl@2.10.3':
     resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
-
-  '@umami/node@0.4.0':
-    resolution: {integrity: sha512-pyphprbiF7KiDSc+SWZ4/rVM8B5vU27zIiFfEPj2lEqczpI4xAKSp+dM3tlzyRAWJL32fcbCfAaLGhJZQV13Rg==}
 
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
@@ -14988,8 +14982,6 @@ snapshots:
     dependencies:
       '@types/node': 22.15.32
     optional: true
-
-  '@umami/node@0.4.0': {}
 
   '@ungap/structured-clone@1.3.0': {}
 
