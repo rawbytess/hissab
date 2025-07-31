@@ -42,7 +42,6 @@ app.use(
 
 app.all("/", async (c) => {
   const body = await c.req.text();
-  console.log(body);
   const db = c.env.LOGS_DB;
   const transport = new StreamableHTTPTransport();
   await server.connect(transport);
