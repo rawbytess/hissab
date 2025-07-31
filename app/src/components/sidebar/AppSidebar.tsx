@@ -74,10 +74,10 @@ export default function AppSidebar({
               </li>
               <li>
                 <a
-                    href={"https://hissab.io/mcp"}
-                    target={"_blank"}
-                    className={"text-sm"}
-                    rel="noopener"
+                  href={"https://hissab.io/mcp"}
+                  target={"_blank"}
+                  className={"text-sm"}
+                  rel="noopener"
                 >
                   <div className={"flex gap-1 items-center"}>
                     <ExternalLink className={"w-4"} />

@@ -1,11 +1,11 @@
 import { UserDB } from "@lib/db/UserDB";
 import type { CreateUser, MetaBindings } from "@lib/types/envTypes";
 import { getFormattedUtcDateString } from "@lib/utils";
-import {Hono, type MiddlewareHandler} from "hono";
+import { Hono, type MiddlewareHandler } from "hono";
 import { nanoid } from "nanoid";
 import type { userMetadata } from "~lib/types/userMetadata";
-import {getCookie} from "hono/dist/types/helper/cookie";
-import {verify} from "hono/dist/types/middleware/jwt";
+import { getCookie } from "hono/dist/types/helper/cookie";
+import { verify } from "hono/dist/types/middleware/jwt";
 
 const app = new Hono<MetaBindings>();
 
@@ -14,12 +14,15 @@ export const authMiddleware: MiddlewareHandler = async (c, next) => {
   const adminAuthToken = c.env.ADMIN_AUTH_TOKEN;
   console.log(authHeader, adminAuthToken);
   if (!authHeader) {
-    return c.json({ error: "Unauthorized: No Authorization header provided" }, 401);
+    return c.json(
+      { error: "Unauthorized: No Authorization header provided" },
+      401,
+    );
   }
 
   try {
     if (authHeader !== `Bearer ${adminAuthToken}`) {
-        return c.json({ error: "Unauthorized: Invalid token" }, 401);
+      return c.json({ error: "Unauthorized: Invalid token" }, 401);
     }
     await next();
   } catch (err) {
@@ -87,7 +90,12 @@ app.post("/", async (c) => {
   }
   await userdb.updateUserName(user_id, userData.name);
   if (userData.demo)
-    await userdb.insertDemoUser(user_id, userData.email, String(userData.demo), expire);
+    await userdb.insertDemoUser(
+      user_id,
+      userData.email,
+      String(userData.demo),
+      expire,
+    );
 
   return c.json({ user_id });
 });

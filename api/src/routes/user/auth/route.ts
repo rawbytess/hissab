@@ -5,7 +5,8 @@ import type { MetaBindings } from "@lib/types/envTypes";
 import {
   generateOtp,
   generateTokens,
-  loginSchema, sendAdminEmail,
+  loginSchema,
+  sendAdminEmail,
   sendOtpEmail,
   verifySchema,
 } from "@routes/user/auth/helpers";
@@ -50,8 +51,13 @@ app.post("/login", zValidator("json", loginSchema), async (c) => {
     }
     if (user.status === "demo") {
       const demoUser: DemoUser | null = await db.getDemoUserById(user.id);
-      await sendAdminEmail("admin@hissab.io", `Demo user login ${demoUser?.email}`,
-          `Demo user login ${demoUser?.email}`, c.env.AWS_ACCESS_KEY_ID, c.env.AWS_SECRET_ACCESS_KEY);
+      await sendAdminEmail(
+        "admin@hissab.io",
+        `Demo user login ${demoUser?.email}`,
+        `Demo user login ${demoUser?.email}`,
+        c.env.AWS_ACCESS_KEY_ID,
+        c.env.AWS_SECRET_ACCESS_KEY,
+      );
       if (!demoUser || new Date(demoUser.expires_at).getTime() < Date.now()) {
         return c.json({ error: "Demo account expired." }, 403);
       }

@@ -6,6 +6,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { Hono } from "hono";
 import { z } from "zod";
 import { calculateExpressions } from "~lib/calculateExpressions";
+import {cloudflareRateLimiter} from "@hono-rate-limiter/cloudflare";
+import {safeGet} from "~lib/utils";
 
 const server = new McpServer({
   name: "hissab-mcp",
@@ -21,18 +23,49 @@ server.registerTool(
   },
   async ({ hissab_expressions }) => {
     const results = await calculateExpressions(hissab_expressions, true);
+    const formattedResults = results
+      .map((item) => `${item.expression} = ${item.result}`)
+      .join("\n");
     return {
-      content: [{ type: "text", text: results.join("\n") }],
+      content: [{ type: "text", text: formattedResults }],
     };
   },
 );
 
 const app = new Hono<MetaBindings>();
+app.use(
+    cloudflareRateLimiter<MetaBindings>({
+      rateLimitBinding: (c) => c.env.MCP_FREE_RATE_LIMITER,
+      keyGenerator: (c) => c.req.header("cf-connecting-ip") ?? "", // Method to generate custom identifiers for clients.
+    })
+);
 
 app.all("/", async (c) => {
+  const body = await c.req.text();
+  console.log(body);
+  const db = c.env.LOGS_DB;
   const transport = new StreamableHTTPTransport();
   await server.connect(transport);
+  c.executionCtx.waitUntil(logdata(db, body));
   return transport.handleRequest(c);
 });
+
+async function logdata(db: D1Database, data: string) {
+    try {
+        const jsonData = JSON.parse(data);
+        const method = jsonData.method || "unknown";
+        const client = safeGet(jsonData, "params.clientInfo.name")
+        await db
+            .prepare(
+                `INSERT INTO mcplogs (body, method, client)
+    VALUES (?, ?, ?)`,
+            )
+            .bind(data, method, client)
+            .run();
+    } catch (error) {
+
+    }
+
+}
 
 export default app;

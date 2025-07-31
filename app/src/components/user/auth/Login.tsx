@@ -43,27 +43,27 @@ export function LoginForm({
             event.preventDefault();
             setLoading(true);
             if (showOTP) {
-                try {
-                    const {user} = await verifyOtp(email, otp);
-                    setShowOTP(false);
-                    setOpen(false);
-                } catch (e: any) {
-                    setErrorOTP("Invalid OTP. Please try again.");
-                }
+              try {
+                const { user } = await verifyOtp(email, otp);
+                setShowOTP(false);
+                setOpen(false);
+              } catch (e: any) {
+                setErrorOTP("Invalid OTP. Please try again.");
+              }
               /* const tzUpdate = await supabase.auth.updateUser({
                 data: {
                   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 },
               }); TODO */
             } else {
-                try {
-                    const {newUser} = await login(email);
-                    setShowOTP(true);
-                } catch (e: any) {
-                    setErrorEmail(e.message);
-                }
+              try {
+                const { newUser } = await login(email);
+                setShowOTP(true);
+              } catch (e: any) {
+                setErrorEmail(e.message);
+              }
 
-                setLoading(false);
+              setLoading(false);
             }
           }}
         >

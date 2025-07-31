@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS mcplogs (
+   id INTEGER PRIMARY KEY AUTOINCREMENT,
+   created_at DATETIME DEFAULT (STRFTIME('%Y-%m-%d %H:%M:%S', 'NOW')),
+   method TEXT NOT NULL,
+   client TEXT NOT NULL,
+   body TEXT NOT NULL
+);

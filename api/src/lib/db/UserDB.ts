@@ -190,7 +190,9 @@ export class UserDB {
     expiresAt: string,
   ): Promise<void> {
     await this.d1
-      .prepare("INSERT INTO demo_users (id,email, otp, expires_at) VALUES (?,?, ?, ?)")
+      .prepare(
+        "INSERT INTO demo_users (id,email, otp, expires_at) VALUES (?,?, ?, ?)",
+      )
       .bind(userId, email, otp, expiresAt)
       .run();
   }
