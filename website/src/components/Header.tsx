@@ -16,8 +16,8 @@ import React, { useState } from "react";
 import { Banner } from "@/components/Banner.tsx";
 
 const now = new Date();
-const start = new Date("2025-06-19T00:00:00-07:00"); // PDT is UTC-7
-const end = new Date("2025-06-20T00:01:00-07:00");
+const start = new Date("2025-08-05T00:00:00-07:00"); // PDT is UTC-7
+const end = new Date("2025-08-06T00:01:00-07:00");
 const isBannerTime = now >= start && now <= end;
 
 export default function Header(props: NavbarProps) {

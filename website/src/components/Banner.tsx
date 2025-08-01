@@ -5,7 +5,7 @@ import React from "react";
 export const Banner = () => {
   return (
     <a
-      href="https://www.producthunt.com/posts/hissab?launch=hissab-2"
+      href="https://www.producthunt.com/products/hissab?launch=hissab-math-engine-for-llms"
       target={"_blank"}
       className="cursor-pointer flex  justify-center gap-10 items-center text-light h-10 fixed top-0 z-50 w-full bg-black "
       rel="noopener"
