@@ -22,7 +22,7 @@ export type Bindings = {
   JWT_SECRET: string; // Secret for signing access tokens
   JWT_REFRESH_SECRET: string; // Secret for signing refresh tokens
   ADMIN_AUTH_TOKEN: string; // Token for admin authentication
-  MCP_FREE_RATE_LIMITER: RateLimit
+  MCP_FREE_RATE_LIMITER: RateLimit;
 };
 
 export type userVars = {

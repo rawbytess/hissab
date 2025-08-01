@@ -98,6 +98,11 @@ table {
   --ifm-table-stripe-background: none;
 }
 
+.content-panel ul li {
+  @apply list-disc;
+  margin-left: 1.5rem /* 24px */;
+}
+
 td blockquote {
   margin-top: 1rem /* 16px */;
   border-style: none;
