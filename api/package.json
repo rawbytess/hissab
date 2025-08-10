@@ -20,6 +20,7 @@
     "d1:migrate:all:dev": "pnpm d1:migrate:logs:dev && pnpm d1:migrate:user:dev",
     "d1:migrate:all:prod": "pnpm d1:migrate:logs:prod && pnpm d1:migrate:user:prod",
     "d1:migrate:local": "pnpm d1:migrate:logs:local && pnpm d1:migrate:user:local",
+    "d1:export:logs": "wrangler d1 export prod-logs --remote --output=./prodlogs.sql",
     "source:env:dev": "set -o allexport; source .dev.vars; set +o allexport"
   },
   "devDependencies": {
