@@ -10,6 +10,29 @@ import { calculateExpressions } from "~lib/calculateExpressions";
 import { safeGet } from "~lib/utils";
 
 const app = new Hono<MetaBindings>();
+
+const server = new McpServer({
+  name: "hissab-mcp",
+  version: "0.1.0",
+});
+server.registerTool(
+  "Hissab",
+  {
+    title: "Hissab Math & calculation Tool",
+    description: mcpInstructions + documentation,
+    inputSchema: { hissab_expressions: z.array(z.string()) },
+  },
+  async ({ hissab_expressions }) => {
+    const results = await calculateExpressions(hissab_expressions, true);
+    const formattedResults = results
+      .map((item) => `${item.expression} = ${item.result}`)
+      .join("\n");
+    return {
+      content: [{ type: "text", text: formattedResults }],
+    };
+  },
+);
+
 app.use(
   cloudflareRateLimiter<MetaBindings>({
     rateLimitBinding: (c) => c.env.MCP_FREE_RATE_LIMITER,
@@ -21,50 +44,12 @@ app.all("/", async (c) => {
   const body = await c.req.text();
   const db = c.env.LOGS_DB;
   const transport = new StreamableHTTPTransport();
-  const server = new McpServer({
-    name: "hissab-mcp",
-    version: "0.1.0",
-  });
-  server.registerTool(
-    "Hissab",
-    {
-      title: "Hissab Math & calculation Tool",
-      description: mcpInstructions + documentation,
-      inputSchema: { hissab_expressions: z.array(z.string()) },
-    },
-    async ({ hissab_expressions }) => {
-      c.executionCtx.waitUntil(logExps(db, hissab_expressions));
-      const results = await calculateExpressions(hissab_expressions, true);
-      const formattedResults = results
-        .map((item) => `${item.expression} = ${item.result}`)
-        .join("\n");
-      return {
-        content: [{ type: "text", text: formattedResults }],
-      };
-    },
-  );
 
   await server.connect(transport);
 
   c.executionCtx.waitUntil(logdata(db, body));
   return transport.handleRequest(c);
 });
-
-async function logExps(db: D1Database, expressions: string[]) {
-  try {
-    const method = "expressions";
-    const client = "unknown";
-    await db
-      .prepare(
-        `INSERT INTO mcplogs (body, method, client)
-    VALUES (?, ?, ?)`,
-      )
-      .bind(expressions, method, client)
-      .run();
-  } catch (e: any) {
-    console.error(e?.message || e);
-  }
-}
 
 async function logdata(db: D1Database, data: string) {
   try {
