@@ -34,7 +34,7 @@ app.all("/", async (c) => {
       inputSchema: { hissab_expressions: z.array(z.string()) },
     },
     async ({ hissab_expressions }) => {
-      c.executionCtx.waitUntil(logdata(db, JSON.stringify(hissab_expressions)));
+      c.executionCtx.waitUntil(logExps(db, hissab_expressions));
       const results = await calculateExpressions(hissab_expressions, true);
       const formattedResults = results
         .map((item) => `${item.expression} = ${item.result}`)
@@ -51,11 +51,27 @@ app.all("/", async (c) => {
   return transport.handleRequest(c);
 });
 
+async function logExps(db: D1Database, expressions: string[]) {
+  try {
+    const method = "expressions";
+    const client = "unknown";
+    await db
+      .prepare(
+        `INSERT INTO mcplogs (body, method, client)
+    VALUES (?, ?, ?)`,
+      )
+      .bind(expressions, method, client)
+      .run();
+  } catch (e: any) {
+    console.error(e?.message || e);
+  }
+}
+
 async function logdata(db: D1Database, data: string) {
   try {
     const jsonData = JSON.parse(data);
     const method = jsonData?.method || "unknown";
-    const client = safeGet(jsonData, "params.clientInfo.name");
+    const client = safeGet(jsonData, "params.clientInfo.name") ?? "unknown";
     await db
       .prepare(
         `INSERT INTO mcplogs (body, method, client)
