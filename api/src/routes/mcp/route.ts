@@ -9,11 +9,6 @@ import { z } from "zod";
 import { calculateExpressions } from "~lib/calculateExpressions";
 import { safeGet } from "~lib/utils";
 
-const server = new McpServer({
-  name: "hissab-mcp",
-  version: "0.1.0",
-});
-
 const app = new Hono<MetaBindings>();
 app.use(
   cloudflareRateLimiter<MetaBindings>({
@@ -26,6 +21,10 @@ app.all("/", async (c) => {
   const body = await c.req.text();
   const db = c.env.LOGS_DB;
   const transport = new StreamableHTTPTransport();
+  const server = new McpServer({
+    name: "hissab-mcp",
+    version: "0.1.0",
+  });
   server.registerTool(
     "Hissab",
     {
