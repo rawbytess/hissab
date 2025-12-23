@@ -4,7 +4,6 @@ import sitemap from "@astrojs/sitemap";
 import starlight from "@astrojs/starlight";
 import tailwind from "@astrojs/tailwind";
 import { defineConfig } from "astro/config";
-import { ion } from "starlight-ion-theme";
 import starlightLlmsTxt from "starlight-llms-txt";
 import starlightNextjsTheme from "starlight-nextjs-theme";
 
