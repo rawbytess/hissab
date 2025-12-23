@@ -23,9 +23,9 @@ server.registerTool(
     inputSchema: { hissab_expressions: z.array(z.string()) },
     annotations: {
       title: "Hissab Math & calculation Tool",
-      readOnlyHint: false,
+      readOnlyHint: true,
       destructiveHint: false,
-      idempotentHint: false,
+      idempotentHint: true,
       openWorldHint: false,
     },
   },
