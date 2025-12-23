@@ -1,8 +1,8 @@
 import type { Bindings } from "@lib/types/envTypes";
 import { Hono } from "hono";
 import adminUser from "./routes/admin/user/route";
-import mcp from "./routes/mcp/route";
 import agent from "./routes/agent/route";
+import mcp from "./routes/mcp/route";
 import userAI from "./routes/user/ai/route";
 import auth from "./routes/user/auth/route";
 import userUpload from "./routes/user/upload/route";
@@ -21,6 +21,10 @@ app.route("/admin/user", adminUser);
 app.route("/user/auth", auth);
 app.route("/mcp", mcp);
 app.route("/agent", agent);
+
+app.get("/.well-known/openai-apps-challenge", (c) => {
+  return c.text("MKbGcY74Bq2SpIoDSTtTgBHVkQjwpbnRiu1D6yUDNzg");
+});
 
 app.notFound((c) => c.json({ message: "Not Found", ok: false }, 404));
 

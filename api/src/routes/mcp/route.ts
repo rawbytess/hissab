@@ -21,6 +21,13 @@ server.registerTool(
     title: "Hissab Math & calculation Tool",
     description: mcpInstructions + documentation,
     inputSchema: { hissab_expressions: z.array(z.string()) },
+    annotations: {
+      title: "Hissab Math & calculation Tool",
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
+    },
   },
   async ({ hissab_expressions }) => {
     const results = await calculateExpressions(hissab_expressions, true);
