@@ -5,7 +5,6 @@ import starlight from "@astrojs/starlight";
 import tailwind from "@astrojs/tailwind";
 import { defineConfig } from "astro/config";
 import starlightLlmsTxt from "starlight-llms-txt";
-import starlightNextjsTheme from "starlight-nextjs-theme";
 
 export default defineConfig({
   output: "static",
@@ -31,7 +30,7 @@ export default defineConfig({
       tagline: "AI Calculator with superpowers",
       description:
         "AI powered natural language calculator that answers accurately. Just type & calculate anything with ease. Perform basic to advanced calculations instantly.",
-      plugins: [starlightLlmsTxt(), starlightNextjsTheme()],
+      plugins: [starlightLlmsTxt()],
       head: [
         {
           tag: "script",
