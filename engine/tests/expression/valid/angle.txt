@@ -1,0 +1,5 @@
+["50 degree + 50.45 radian to degree", "2,940.5721 degree"]
+["11.56 grad to arcminute", "624.24 arcminute"]
+["6 degree to arcsecond", "21,600 arcsecond"]
+["1 turn to degree", "360 degree"]
+["2 turn to radian", "12.5664 radian"]

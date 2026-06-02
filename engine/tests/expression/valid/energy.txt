@@ -1,0 +1,6 @@
+["1 calorie to joule", "4.184 joule"]
+["1 kilocalorie to calorie", "1,000 calorie"]
+["1 watt hour to joule", "3,600 joule"]
+["1 kilo watt hour to joule", "3,600,000 joule"]
+["1 btu to joule", "1,055.06 joule"]
+["1 foot pound to joule", "1.3558 joule"]

@@ -1,0 +1,80 @@
+name: Deploy on Prod Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  setup:
+    name: Setup Environment
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.0.9
+          run_install: false
+
+      - name: Setup Node.js v24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24.x"
+          cache: "pnpm"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Engine Package
+        run: pnpm build
+        working-directory: engine
+
+      - name: Build CLI Package
+        run: pnpm build
+        working-directory: cli
+
+      - name: Publish Engine Package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          package_name="$(node -p "require('./package.json').name")"
+          package_version="$(node -p "require('./package.json').version")"
+
+          if npm view "${package_name}@${package_version}" version > /dev/null 2>&1; then
+            echo "${package_name}@${package_version} already exists on npm. Skipping publish."
+          else
+            pnpm publish --access public --no-git-checks
+          fi
+        working-directory: engine
+
+      - name: Publish CLI Package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          package_name="$(node -p "require('./package.json').name")"
+          package_version="$(node -p "require('./package.json').version")"
+
+          if npm view "${package_name}@${package_version}" version > /dev/null 2>&1; then
+            echo "${package_name}@${package_version} already exists on npm. Skipping publish."
+          else
+            pnpm publish --access public --no-git-checks
+          fi
+        working-directory: cli
+
+      - name: Build App
+        run: pnpm build:pwa
+        working-directory: app
+
+      - name: Deploy APP
+        uses: cloudflare/wrangler-action@v3
+        with:
+          workingDirectory: app
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          packageManager: pnpm
+          command: deploy --env="" --no-bundle

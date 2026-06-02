@@ -1,0 +1,4 @@
+["1 pound force to newton", "4.4482 newton"]
+["1 kilogram force to newton", "9.8066 newton"]
+["100000 dyne to newton", "1 newton"]
+["1 kip to pound force", "1,000 pound force"]

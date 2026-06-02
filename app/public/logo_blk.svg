@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <g id="icon-2" transform="matrix(6.50178, 0, 0, 6.50178, 511.999969, 511.918701)" style="">
+    <path d="M 9.5 43.5 c -11.3 11.3 -11.3 29.7 0 41 C 15.2 90.2 22.6 93 30 93 s 14.9 -2.8 20.5 -8.5 l -7.1 -7.1 c -7.4 7.4 -19.5 7.4
+    -26.9 0 C 9.2 70 9.2 58 16.6 50.5 c 7.4 -7.4 19.5 -7.4 26.9 0 L 56.9 64 l 7.1 -7.1 L 50.5 43.5 C 39.2 32.2 20.8 32.2 9.5 43.5 z"
+    style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4;
+    fill: #efefef; fill-rule: nonzero; opacity: 1;" transform="translate(-31.4875 0.0125) translate(-32.5125, -64.0125) "
+    stroke-linecap="round"/>
+    <path d="M 84.5 77.5 L 71.1 64 L 64 71.1 l 13.5 13.5 C 83.1 90.2 90.5 93 98 93 c 7.4 0 14.9 -2.8 20.5 -8.5 c 11.3 -11.3 11.3
+     -29.7 0 -41 c -11.3 -11.3 -29.7 -11.3 -41 0 L 77 43.9 l 7.1 7.1 l 0.5 -0.5 c 7.4 -7.4 19.5 -7.4 26.9 0 c 7.4 7.4 7.4 19.5 0
+     26.9 C 104 84.9 91.9 84.9 84.5 77.5 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt;
+     stroke-linejoin: miter; stroke-miterlimit: 4; fill: #efefef; fill-rule: nonzero; opacity: 1;" transform="translate(31.4875 0.0125)
+      translate(-95.48750000000001, -64.0125) " stroke-linecap="round"/>
+  </g>
+</svg>

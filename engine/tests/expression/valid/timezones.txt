@@ -1,0 +1,8 @@
+["2021.06.05 10:37 am in Vancouver", "Sat 5 Jun 2021, 7:37 am Vancouver"]
+["2021.06.05 10:37 am to Vancouver", "Sat 5 Jun 2021, 7:37 am Vancouver"]
+["6 pm toronto to vancouver", "3 pm vancouver"]
+["6:40 est to ist", "17:10 ist"]
+["8:23:32 to mst", "6:23:32 mst"]
+["14:23:32 to mst", "12:23:32 mst"]
+["6:23 pm - 4 hr", "2:23 pm"]
+["8 am paris to mumbai", "12:30 pm mumbai"]

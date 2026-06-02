@@ -1,0 +1,3 @@
+["14 celsius to kelvin", "287.15 kelvin"]
+["11 rankine + 6 fahrenheit", "476.67 rankine"]
+["200 kelvin + 166 celsius to rankine", "1,150.47 rankine"]

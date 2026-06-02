@@ -1,0 +1,17 @@
+["1 petaliter + 1 liter to gallon", "264,172,052,400,000.3 gallon"]
+["1 teraliter +10 cu mile to cu km", "42.6818 cu km"]
+["1 gigaliter - 10 quart - 15 cubic feet to pint", "2,113,375,501.2377 pint"]
+["50 megaliter - 10 kiloliter - 15 cubic inch - 5 cubic hectometer", "-4,950,011 kiloliter -25 centiliter -6 milliliter -806 microliter -610.3053 nanoliter"]
+["1 hectoliter + 1 decaliter + 1 deciliter + 1 cubic yard to barrel", "7.3352 barrel"]
+["10 centiliter - 1 milliliter - 5 microliter - 20 cubic centimeter - 20 fluid ounce to cup", "-2.1661 cup"]
+["10 centiliter - 1 milliliter - 5 microliter - 20 cubic centimeter - 20 fl oz to cup", "-2.1661 cup"]
+["1 nanoliter + 1 picoliter + 100 femtoliter + 5 cubic millimeter to cubic micrometer", "5,001,001,100 cubic micrometer"]
+["10 tablespoon to teaspoon", "30 teaspoon"]
+
+# Less common volume units
+["1 imperial gallon to liter", "4.5461 liter"]
+["1 bushel to peck", "4 peck"]
+["1 hogshead to gallon", "63 gallon"]
+
+# Plural "cubic inches" (irregular plural last word) must resolve to "cubic inch"
+["1 cubic feet to cubic inches", "1,728 cubic inches"]

@@ -1,0 +1,38 @@
+{
+  "name": "hissab-app",
+  "account_id": "a0609a9b2f23cde30f9f3a87339196b8",
+  "compatibility_date": "2025-05-01",
+  "workers_dev": false,
+  "route": {
+    "pattern": "hissab.io",
+    "custom_domain": true
+  },
+  "assets": {
+    "directory": "dist",
+    // Serve index.html (200) for unmatched paths so clean docs URLs like
+    // /docs/<slug> work on refresh/deep-link; the in-app NotFound view then
+    // handles genuinely unknown routes.
+    "not_found_handling": "single-page-application"
+  },
+  "env": {
+    // Legacy frozen deployment. Do not deploy --env prod unless intentionally
+    // updating app.hissab.io.
+    "prod": {
+      "workers_dev": false,
+      "route": {
+        "pattern": "app.hissab.io",
+        "custom_domain": true
+      }
+    },
+    "dev": {
+      "workers_dev": true,
+      "route": {
+        "pattern": "dev.app.hissab.io",
+        "custom_domain": true
+      }
+    }
+  },
+  "observability": {
+    "enabled": true
+  }
+}

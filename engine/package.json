@@ -1,0 +1,70 @@
+{
+  "name": "@rawbytes/hissab",
+  "version": "1.0.0",
+  "description": "Hissab engine NPM module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "sideEffects": false,
+  "scripts": {
+    "update": "pnpm update -i --latest",
+    "test": "jest",
+    "test-single": "jest --config jest_single.config.cjs",
+    "test:Expressions": "npm run build && node --experimental-specifier-resolution=node tests/cli.js",
+    "build": "tsup",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.60.0",
+    "@types/chroma-js": "3.1.2",
+    "@types/jest": "30.0.0",
+    "jest": "30.4.2",
+    "jest-playwright-preset": "4.0.0",
+    "playwright": "1.60.0",
+    "regenerator-runtime": "0.14.1",
+    "ts-jest": "29.4.11",
+    "tsup": "8.5.1"
+  },
+  "dependencies": {
+    "chroma-js": "3.2.0",
+    "spacetime": "7.7.0",
+    "timezone-soft": "1.5.2"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Mufaddal Makati <mufaddal@rawbytes.com> (https://hissab.io)",
+  "license": "MIT",
+  "homepage": "https://hissab.io",
+  "keywords": [
+    "calculator",
+    "units",
+    "unit-conversion",
+    "natural-language",
+    "math",
+    "expression-evaluator",
+    "hissab"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rawbytess/hissab.git",
+    "directory": "engine"
+  },
+  "bugs": {
+    "url": "https://github.com/rawbytess/hissab/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "name": "hissab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hissab Monorepo",
+  "main": "index.js",
+  "scripts": {
+    "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "update": "pnpm update -i --latest --recursive",
+    "format": "pnpm exec biome format --write",
+    "check:check": "pnpm exec biome check",
+    "check": "pnpm exec biome check --write",
+    "pretty-check": "pnpm exec biome format",
+    "lint-check": "pnpm exec biome lint",
+    "lint": "pnpm exec biome lint --write",
+    "ready": "pnpm exec biome check --write && pnpm -r test && pnpm -r build",
+    "sync:skill-docs": "bun run scripts/sync-skill-docs.ts",
+    "sync:skill-docs:check": "bun run scripts/sync-skill-docs.ts --check",
+    "clear:cache": "pnpm store prune"
+  },
+  "keywords": [],
+  "author": "Mufaddal Makati <mufaddal@rawbytes.com> (https://hissab.io)",
+  "license": "MIT",
+  "homepage": "https://hissab.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rawbytess/hissab.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rawbytess/hissab/issues"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.15",
+    "@types/node": "25.9.1",
+    "@types/react": "19.2.15",
+    "@types/react-dom": "19.2.3",
+    "typescript": "6.0.3",
+    "wrangler": "4.91.0"
+  },
+  "dependencies": {
+    "@iconify/react": "6.0.2",
+    "@rawbytes/hissab": "workspace:*",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "postcss": "8.5.15",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "tailwindcss": "4.3.0",
+    "zod": "4.4.3"
+  },
+  "packageManager": "pnpm@11.0.9"
+}

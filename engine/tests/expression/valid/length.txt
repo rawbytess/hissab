@@ -1,0 +1,30 @@
+["5 mile to kilometer", "8.0467 kilometer"]
+["11 meter + 6 mile", "9 kilometer 667 meter 6 centimeter 4 millimeter"]
+["3 PetaMeter - 6 megAmeter", "2,999,999,994,000 kilometer"]
+["5 terameter + 20 hectometer to gigameter", "5,000 gigameter"]
+["2 yard to decameter", "0.183 decameter"]
+["1 decimeter + 50000 picometer + 300000 nanometer to decimeter", "1.003 decimeter"]
+["3 centimeter - 10 millimeter to inch", "0.787 inch"]
+["1 micrometer + 5000 femtometer", "1 micrometer"]
+["10000 micron + 20000 parsec to feet", "2.0246982015E21 feet"]
+["500 Meters to KilomEters", "0.5 KilomEters"]
+["5 hundred meter to mile", "0.311 mile"]
+["5 meter 30 cm", "5 meter 30 centimeter"]
+["502066 meter to km,cm", "502 kilometer 6,600 centimeter"]
+["502066 meter to miles,km", "311 mile 1.56 kilometer"]
+["5 meter 30 cm - 3 meter 52 mm", "2 meter 24 centimeter 8 millimeter"]
+["((10 miles to cm) to km)", "16.0934 km"]
+
+# Less common length units
+["10 fathom to feet", "60 feet"]
+["1 league to mile", "3 mile"]
+["8 furlong to mile", "1 mile"]
+["1 chain to feet", "66 feet"]
+["1 hand to inch", "4 inch"]
+
+# Plural "inches" is an irregular plural — it must resolve to "inch", not be
+# silently dropped (regression: "9 inches" once parsed as bare "9").
+["9 inches to cm", "22.86 cm"]
+["3 feet to inches", "36 inches"]
+["2 inches + 3 inches", "5 inch"]
+["5 feet + 9 inches to centimeter", "175.26 centimeter"]

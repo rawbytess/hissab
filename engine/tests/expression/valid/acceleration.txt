@@ -1,0 +1,1 @@
+["1 standard gravity to meter/second^2", "9.8066 meter/second^2"]

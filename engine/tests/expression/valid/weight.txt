@@ -1,0 +1,15 @@
+["5 pound to kg", "2.268 kg"]
+["5 lb to kg", "2.268 kg"]
+["5 lbs to kg", "2.268 kg"]
+["1000 decagram + 100 hectogram + 100 decigram to megagram", "0.02 megagram"]
+["100 teragram - 100 kg - 5 gigagram - 500 gram to petagram", "0.1 petagram"]
+["10 centigram + 5 milligram + 1 ton to microgram", "1,000,000,105,000 microgram"]
+["10 pound + 5 nanogram + 10 picogram to ounce", "160 ounce"]
+["1 carat - 5 femtogram to amu", "1.20442733E23 amu"]
+
+# Less common weight units
+["1 stone to pound", "14 pound"]
+["10 stone to kilo gram", "63.5029 kilo gram"]
+["1 tonne to kilo gram", "1,000 kilo gram"]
+["1 troy ounce to gram", "31.1035 gram"]
+["7000 grain to pound", "1 pound"]

@@ -1,0 +1,2 @@
+["1 foot candle to lux", "10.7639 lux"]
+["10000 lux to phot", "1 phot"]

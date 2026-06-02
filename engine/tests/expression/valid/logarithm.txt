@@ -1,0 +1,11 @@
+["log2 100", "6.6439"]
+["log10 100", "2"]
+["loge 100", "4.6052"]
+
+# Prefix function (sin/cos/log/…) on the RHS of a binary operator must nest as
+# that operator's operand, not replace the tree (regression: 2 / log 7 → log 7).
+["2 / log 7", "1.0278"]
+["log 343 / log 7", "3"]
+["sin 30 / sin 30", "1"]
+["log10 100 / log10 10", "2"]
+["log log 100", "1.5272"]

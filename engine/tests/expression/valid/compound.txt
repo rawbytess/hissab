@@ -1,0 +1,40 @@
+# Recognition — literals
+["9.8 meter/second^2", "9.8 meter/second^2"]
+["60 mile/hour", "60 mile/hour"]
+["60 mph", "60 mile/hour"]
+["5 newton*meter", "5 newton*meter"]
+
+# SI-derived named units
+["1 newton", "1 newton"]
+["1 pascal", "1 pascal"]
+["1 hertz", "1 hertz"]
+
+# Named SI <-> canonical base product
+["1 newton to kilo gram*meter/second^2", "1 kilo gram*meter/second^2"]
+["1 atmosphere to pascal", "101,325 pascal"]
+["1 bar to pascal", "100,000 pascal"]
+
+# Velocity
+["60 mph to kilo meter/hour", "96.5606 kilo meter/hour"]
+["100 kph to mile/hour", "62.1371 mile/hour"]
+
+# Fuel economy
+["60 mile/gallon to kilo meter/liter", "25.5086 kilo meter/liter"]
+
+# Cross-family: m^2 compound vs square meter named single
+["5 meter^2 to square meter", "5 square meter"]
+
+# Order-independent dim equivalence
+["1 newton*meter^2/kilo gram^2 to meter^2*newton/(kilo gram*kilo gram)", "1 meter^2*newton/kilo gram^2"]
+
+# Unit-aware arithmetic via raw * /
+["60 kilo meter/hour * 2 hour", "120 kilometer"]
+["5 kilo meter / 2 meter", "2,500"]
+["10 newton * 5 meter to joule", "50 joule"]
+
+# Unit absorption on ^ vs arithmetic ^ on parenthesised group
+["5 meter ^ 2", "5 meter^2"]
+["(5 meter) ^ 2", "25 meter"]
+
+# Reciprocal via division -> frequency
+["1 / (5 second) to hertz", "0.2 hertz"]
