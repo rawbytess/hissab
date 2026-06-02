@@ -52,7 +52,18 @@ jobs:
           if npm view "${package_name}@${package_version}" version > /dev/null 2>&1; then
             echo "${package_name}@${package_version} already exists on npm. Skipping publish."
           else
-            pnpm publish --access public --no-git-checks
+            if publish_output="$(pnpm publish --access public --no-git-checks 2>&1)"; then
+              echo "$publish_output"
+            else
+              publish_status=$?
+              echo "$publish_output"
+
+              if echo "$publish_output" | grep -q "You cannot publish over the previously published versions"; then
+                echo "${package_name}@${package_version} already exists on npm. Continuing."
+              else
+                exit "$publish_status"
+              fi
+            fi
           fi
         working-directory: engine
 
@@ -66,7 +77,18 @@ jobs:
           if npm view "${package_name}@${package_version}" version > /dev/null 2>&1; then
             echo "${package_name}@${package_version} already exists on npm. Skipping publish."
           else
-            pnpm publish --access public --no-git-checks
+            if publish_output="$(pnpm publish --access public --no-git-checks 2>&1)"; then
+              echo "$publish_output"
+            else
+              publish_status=$?
+              echo "$publish_output"
+
+              if echo "$publish_output" | grep -q "You cannot publish over the previously published versions"; then
+                echo "${package_name}@${package_version} already exists on npm. Continuing."
+              else
+                exit "$publish_status"
+              fi
+            fi
           fi
         working-directory: cli
 
@@ -80,4 +102,4 @@ jobs:
           workingDirectory: app
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           packageManager: pnpm
-          command: deploy --env="" --no-bundle
+          command: deploy --no-bundle
