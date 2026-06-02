@@ -6,6 +6,7 @@ export const OPERATION_TAGS = [
   "set_operations",
   "logarithm",
   "statistics",
+  "finance",
   "trigonometry",
   "date_time",
   "number_systems",
@@ -27,6 +28,8 @@ export const tagDescriptions: Record<OperationTag, string> = {
   logarithm: "Natural log, log10, log2",
   statistics:
     "avg, median, range, variance, standard / harmonic / geometric mean",
+  finance:
+    "Simple & compound interest, future/present value, loan & mortgage EMI, annuities, CAGR, ROI, APY, profit margin, markup, break-even, runway",
   trigonometry:
     "sin / cos / tan and inverse + hyperbolic variants; default unit is degree",
   date_time:

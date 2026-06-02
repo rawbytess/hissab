@@ -1,6 +1,6 @@
 {
   "name": "@rawbytes/hissab-cli",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "description": "Hissab CLI — natural-language calculator in your terminal, powered by the Hissab engine",
   "type": "module",
   "bin": {

@@ -1,0 +1,58 @@
+# Finance functions. Rates may be written `5%` or `5` (both mean five percent).
+# Terms may carry a time unit (years/months) or be a bare number read as years.
+# `$` and other currency glyphs are stripped by the lexer, so `$10000` == `10000`.
+
+# Simple interest: principal * rate * time
+["simple interest(10000, 5%, 2 years)", "1,000"]
+["simple interest(10000, 5, 2 years)", "1,000"]
+["simple interest(10000, 20%, 30 years 12 months)", "62,000"]
+["simple interest($10000, 20%, 30 years 12 months)", "62,000"]
+
+# Compound interest earned. Frequency (compounds/year) defaults to 1; the term
+# is identified by its time unit so order of the bare frequency does not matter.
+["compound interest(1000, 10%, 2 years)", "210"]
+["compound interest(10000, 5%, 10, 30 years)", "34,649.6981"]
+["compound interest(1000, 12%, 24 months, 12)", "269.7346"]
+["compound interest(1000, 10%, 5 years, 4)", "638.6164"]
+
+# Future value (compound amount) and present value
+["future value(1000, 10%, 2 years)", "1,210"]
+["future value(1000, 10%, 30 years, 12)", "19,837.3994"]
+["present value(1210, 10%, 2 years)", "1,000"]
+
+# Compound annual growth rate (returns a percentage value)
+["cagr(1000, 2000, 10 years)", "7.1773"]
+["cagr(50000, 75000, 5 years)", "8.4472"]
+
+# Loans & mortgage: monthly amortizing payment, and total interest over the loan
+["emi(100000, 12%, 1 year)", "8,884.8789"]
+["mortgage(100000, 12%, 1 year)", "8,884.8789"]
+["emi(500000, 6.5%, 30 years)", "3,160.3401"]
+["loan interest(100000, 12%, 1 year)", "6,618.5464"]
+
+# Annuities: future / present value of equal periodic payments
+["future value annuity(1000, 10%, 3 years)", "3,310"]
+["future value annuity(500, 8%, 10 years, 12)", "91,473.0176"]
+["present value annuity(1000, 10%, 3 years)", "2,486.852"]
+["present value annuity(2000, 5%, 20 years, 12)", "303,050.6261"]
+
+# Returns & banking (percentage values)
+["roi(1000, 1500)", "50"]
+["roi(10000, 13500)", "35"]
+["apy(12%, 12)", "12.6825"]
+["apy(5%, 365)", "5.1267"]
+
+# Business & startup
+["profit margin(200, 150)", "25"]
+["profit margin(100, 80)", "20"]
+["markup(150, 200)", "33.3333"]
+["markup(80, 100)", "25"]
+["break even(10000, 50, 30)", "500"]
+["break even(50000, 120, 70)", "1,000"]
+["runway(100000, 8000)", "12.5"]
+["runway(2000000, 150000)", "13.3333"]
+["doubling time(8%)", "9"]
+["doubling time(6%)", "12"]
+
+# Finance results compose with the rest of the language
+["100 + simple interest(100, 10%, 1 year)", "110"]

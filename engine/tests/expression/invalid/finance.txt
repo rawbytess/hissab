@@ -1,0 +1,15 @@
+# Finance functions reject wrong argument counts and degenerate inputs.
+
+# Wrong argument counts
+simple interest(10000, 5%)
+simple interest(1, 2, 3, 4)
+roi(1000)
+emi(100000, 8%)
+
+# Degenerate inputs (division by zero / undefined growth)
+cagr(0, 2000, 10 years)
+runway(100000, 0)
+doubling time(0%)
+markup(0, 100)
+profit margin(0, 50)
+break even(1000, 50, 50)

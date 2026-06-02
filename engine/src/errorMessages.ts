@@ -62,6 +62,32 @@ export const userErrorMessages: Record<number, string> = {
 
   // Arithmetic on non-numeric operands (operator_types.ts, tokens.ts)
   8651: "This operation expects numeric values.",
+
+  // Finance (function.ts)
+  7701: "`simple interest` takes (principal, rate, time), e.g. `simple interest(10000, 5%, 2 years)`.",
+  7702: "`compound interest` takes (principal, rate, time, [frequency]), e.g. `compound interest(10000, 5%, 30 years, 12)`.",
+  7703: "`future value` takes (principal, rate, time, [frequency]).",
+  7704: "`present value` takes (futureValue, rate, time, [frequency]).",
+  7705: "`cagr` takes (beginValue, endValue, time), e.g. `cagr(1000, 2000, 10 years)`.",
+  7706: "`cagr` needs a non-zero begin value and a non-zero time.",
+  7707: "`emi`/`mortgage` takes (principal, annualRate, time), e.g. `emi(100000, 8%, 20 years)`.",
+  7708: "The loan term must be greater than zero.",
+  7709: "`loan interest` takes (principal, annualRate, time).",
+  7710: "`future value annuity` takes (payment, rate, time, [frequency]).",
+  7711: "`present value annuity` takes (payment, rate, time, [frequency]).",
+  7712: "`roi` takes (initialValue, finalValue).",
+  7713: "`roi` needs a non-zero initial value.",
+  7714: "`apy` takes (nominalRate, frequency) with a non-zero frequency.",
+  7715: "`profit margin` takes (revenue, cost).",
+  7716: "`profit margin` needs a non-zero revenue.",
+  7717: "`markup` takes (cost, price).",
+  7718: "`markup` needs a non-zero cost.",
+  7719: "`break even` takes (fixedCost, pricePerUnit, variableCostPerUnit).",
+  7720: "Price per unit must differ from variable cost per unit (otherwise there is no contribution margin).",
+  7721: "`runway` takes (cash, monthlyBurn).",
+  7722: "`runway` needs a non-zero monthly burn.",
+  7723: "`doubling time` takes a single rate, e.g. `doubling time(8%)`.",
+  7724: "`doubling time` needs a non-zero rate.",
 };
 
 export default userErrorMessages;

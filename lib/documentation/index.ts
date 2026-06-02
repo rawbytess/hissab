@@ -4,6 +4,7 @@ import { bitwise } from "./chunks/bitwise";
 import { color } from "./chunks/color";
 import { compound_units } from "./chunks/compound_units";
 import { date_time } from "./chunks/date_time";
+import { finance } from "./chunks/finance";
 import { labels_and_prev } from "./chunks/labels_and_prev";
 import { logarithm } from "./chunks/logarithm";
 import { number_systems } from "./chunks/number_systems";
@@ -29,6 +30,7 @@ export const chunks: Record<OperationTag, string> = {
   set_operations,
   logarithm,
   statistics,
+  finance,
   trigonometry,
   date_time,
   number_systems,
