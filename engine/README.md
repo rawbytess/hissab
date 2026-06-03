@@ -2,6 +2,7 @@
 
 Hissab's TypeScript calculation engine. It lexes natural-language-ish math
 expressions, parses them, and returns formatted results with token metadata.
+The user-facing syntax reference lives in [`../lib/documentation`](../lib/documentation).
 
 ## Install
 
@@ -19,6 +20,11 @@ const result = await calculate("15 kilometers to miles");
 console.log(result.result); // "9.3206 miles"
 console.log(result.resultToken); // parsed result token
 ```
+
+Supported expression families include arithmetic, percentages, unit conversion,
+compound units, sets/combinatorics, number theory, logarithms, statistics,
+probability, finance, trigonometry, dates/times, number systems, bitwise
+operations, colors, IP addresses, symbolic algebra, and complex numbers.
 
 ## Advanced Usage
 
@@ -74,6 +80,26 @@ Converts an expression string into `TokenType[]`.
 
 Parses and evaluates tokens returned by `doLex`.
 
+### Symbolic helpers
+
+Symbolic and complex expressions evaluate through the same `calculate`,
+`doLex`, and `doParse` APIs. The root export also exposes `exprToLatex` and the
+symbolic token classes for consumers that need structured rendering.
+
+```ts
+import { calculate, exprToLatex } from "@rawbytes/hissab";
+
+const derivative = await calculate("derivative(2x^2, x)");
+console.log(derivative.result); // "4x"
+
+const product = await calculate("(2 + 3i) * (1 - i)");
+console.log(product.result); // "5 + i"
+
+if ("expr" in derivative.resultToken) {
+  console.log(exprToLatex(derivative.resultToken.expr));
+}
+```
+
 ## Errors
 
 Invalid expressions throw `UserError`.
@@ -98,6 +124,11 @@ The public root export includes:
 - `doLex`
 - `doParse`
 - `UserError`
+- `DateTimeOperands`
+- `ComplexToken`
+- `ExprToken`
+- `SymbolToken`
+- `exprToLatex`
 - `TokenBaseType`
 - `tokenFactory`
 - `Functions`

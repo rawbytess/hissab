@@ -25,6 +25,20 @@ In Hissab, **`m` is the million multiplier.** Use `meter` for length.
 scope while the REPL is open, but separate app or tool calls should define the
 labels they need.
 
+## Does Hissab solve equations?
+
+**Not yet.** Hissab supports symbolic simplification, expansion, derivatives,
+integrals, and limits for expressions involving `x`, `y`, and `z`, but it does
+not solve equations for a variable.
+
+## Does Hissab support imaginary numbers?
+
+**Yes.** Use `i` as the imaginary unit.
+
+```hissab
+(2 + 3i) * (1 - i)
+```
+
 ## Why did a date become a number?
 
 **Dashes and slashes are arithmetic operators.** Use dot-separated dates or

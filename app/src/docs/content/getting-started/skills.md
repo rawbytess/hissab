@@ -35,19 +35,19 @@ hissab eval "15 kilometers to miles"
 Install the Hissab CLI-backed skill with Vercel's Skills CLI:
 
 ```sh
-npx skills add rawbytes/hissab --skill hissab-cli
+npx skills add rawbytess/hissab --skill hissab-cli
 ```
 
 If your agent supports global skill installation, install it globally:
 
 ```sh
-npx skills add rawbytes/hissab --skill hissab-cli -g
+npx skills add rawbytess/hissab --skill hissab-cli -g
 ```
 
 You can also target a specific supported agent:
 
 ```sh
-npx skills add rawbytes/hissab --skill hissab-cli -g -a claude-code
+npx skills add rawbytess/hissab --skill hissab-cli -g -a claude-code
 ```
 
 :::tip
@@ -71,6 +71,7 @@ The skill tells the agent to call commands such as:
 ```sh
 hissab eval "25% of 200"
 hissab docs unit_conversion
+hissab docs symbolic
 ```
 
 ## Good skill behavior
@@ -78,6 +79,6 @@ hissab docs unit_conversion
 A Hissab skill should make the agent:
 
 - **Strip filler words** and send only valid Hissab expressions.
-- **Fetch docs first** for unfamiliar categories such as compound units, dates, colors, or bitwise operations.
+- **Fetch docs first** for unfamiliar categories such as compound units, dates, colors, bitwise operations, probability, finance, IP addresses, symbolic algebra, or complex numbers.
 - **Use the calculator result as the source of truth.**
 - **Ask for missing current facts** — or look them up with an available realtime tool — before calculating rates, prices, or other changing values.

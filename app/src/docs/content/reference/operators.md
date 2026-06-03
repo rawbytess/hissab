@@ -1,8 +1,9 @@
 # Operators & precedence
 
 Every operator Hissab understands, and the order it applies them in. For the
-details of each group, see **Arithmetic**, **Percentages**, **Bitwise
-operations**, and **Sets and combinatorics**.
+details of each group, see **Arithmetic**, **Percentages**, **Probability**,
+**Bitwise operations**, **Symbolic algebra**, **Complex numbers**, and **Sets
+and combinatorics**.
 
 ## Precedence
 
@@ -102,6 +103,34 @@ explicit.
 `^` is **power**, not XOR — use `xor`. The words `and` / `or` are not bitwise
 operators; use `&` and `|`.
 :::
+
+## Probability operators
+
+When at least one operand is a `P(...)` probability, the bitwise operators switch
+to probability math for independent events.
+
+| Operator | Meaning | Example |
+| -------- | --------------------- | -------------------- |
+| `~` | Complement | `~P(0.2)` |
+| `&` | Intersection / AND | `P(0.5) & P(0.3)` |
+| `\|` | Union / OR | `P(0.5) \| P(0.3)` |
+| `xor` | Exactly one | `P(0.5) xor P(0.3)` |
+
+Without `P(...)`, these remain integer bitwise operators.
+
+## Symbolic and complex arithmetic
+
+The normal arithmetic operators also apply to symbolic and complex values.
+
+```hissab
+2x^2 - 4x^2
+(x + 1)*(x + 2)
+(2 + 3i) * (1 - i)
+i^2
+```
+
+Implicit multiplication works for numbers next to symbols (`2x`), but use an
+operator or a space between symbols (`x*y` or `x y`).
 
 ## Conversion and assignment
 

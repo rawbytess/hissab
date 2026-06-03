@@ -39,6 +39,10 @@ The assistant receives Hissab's syntax documentation and a calculator tool. It
 should **produce Hissab expressions, call the calculator, and explain the
 result**.
 
+For unfamiliar Hissab syntax, the assistant can fetch focused documentation
+chunks for categories such as compound units, probability, finance, IP address
+math, symbolic algebra, and complex numbers before calculating.
+
 For current public facts such as exchange rates, stocks, crypto, weather, or
 news, the assistant should use realtime search when the selected provider path
 supports it. If realtime lookup is unavailable or fails, the answer should say

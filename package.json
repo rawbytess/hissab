@@ -1,6 +1,6 @@
 {
   "name": "hissab",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "private": true,
   "description": "Hissab Monorepo",
   "main": "index.js",
@@ -16,6 +16,7 @@
     "lint-check": "pnpm exec biome lint",
     "lint": "pnpm exec biome lint --write",
     "ready": "pnpm exec biome check --write && pnpm -r test && pnpm -r build",
+    "bump": "bun run scripts/bump-package-versions.ts",
     "sync:skill-docs": "bun run scripts/sync-skill-docs.ts",
     "sync:skill-docs:check": "bun run scripts/sync-skill-docs.ts --check",
     "clear:cache": "pnpm store prune"

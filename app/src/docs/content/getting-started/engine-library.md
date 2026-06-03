@@ -26,6 +26,14 @@ console.log(answer.result);
 console.log(answer.resultToken);
 ```
 
+The same API handles every expression family, including symbolic algebra and
+complex numbers.
+
+```ts
+await calculate("derivative(2x^2, x)");
+await calculate("(2 + 3i) * (1 - i)");
+```
+
 The returned object includes:
 
 - **`result`** — formatted text for display.
@@ -130,6 +138,9 @@ console.log(Units);
 
 These are useful for autocomplete, help panels, validation UIs, and agent tool
 descriptions.
+
+Symbolic consumers can also import `exprToLatex`, `ExprToken`, `SymbolToken`,
+and `ComplexToken` for structured rendering.
 
 ## Practical notes
 

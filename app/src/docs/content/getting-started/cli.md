@@ -33,6 +33,8 @@ hissab --help
 | `hissab run <file>` | run a file of expressions |
 | `hissab list <kind>` | list functions, units, or operators |
 | `hissab docs [chunk]` | print the syntax reference |
+| `hissab docs --list` | list documentation chunks |
+| `hissab docs --all` | print the full reference |
 
 ## Evaluate one expression
 
@@ -42,6 +44,8 @@ Use `eval` for one-shot calculations.
 hissab eval "15 kilometers to miles"
 hissab eval "25% of 200"
 hissab eval "today - 1 feb 1990 to years"
+hissab eval "derivative(2x^2, x)"
+hissab eval "(2 + 3i) * (1 - i)"
 ```
 
 Results are printed to stdout. **Invalid expressions print errors to stderr** and
@@ -66,7 +70,8 @@ Exit with `q`, `.exit`, or `Ctrl+D`.
 
 ## Run a file
 
-Use `run` for scripts. Put **one expression per line**.
+Use `run` for scripts. Put **one expression per line**. Empty lines and lines
+starting with `#` are skipped.
 
 ```text
 distance = 15 kilometers
@@ -81,7 +86,8 @@ Then run:
 hissab run trip.hsb
 ```
 
-Expressions in the file share scope, so later lines can use earlier labels.
+Expressions in the file share scope, so later lines can use earlier labels,
+`prev`, `line<N>` / `l<N>`, and `total<N>`.
 
 ## List built-ins
 
@@ -101,7 +107,10 @@ The CLI can print the same syntax reference used by Hissab agents.
 ```sh
 hissab docs
 hissab docs --list
+hissab docs --all
 hissab docs unit_conversion
+hissab docs symbolic
+hissab docs complex_numbers
 hissab docs date_time
 ```
 

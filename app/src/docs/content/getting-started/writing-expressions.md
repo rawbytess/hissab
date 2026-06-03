@@ -61,6 +61,20 @@ max(10m, 30k, 7.7m, 123123121234)
 gcd(12, 15, 18, 25)
 ```
 
+## Symbols and complex numbers
+
+The symbols `x`, `y`, and `z` create symbolic algebra expressions. The imaginary
+unit `i` creates complex numbers.
+
+```hissab
+2x^2 - 4x^2
+(x + 1)*(x + 2)
+derivative(2x^2, x)
+(2 + 3i) * (1 - i)
+```
+
+Use explicit multiplication between symbols: write `x*y`, not `xy`.
+
 ## Labels and references
 
 Assign a result with `=` and reuse it later in the same batch. **`prev`** points

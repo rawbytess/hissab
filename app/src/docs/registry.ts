@@ -108,6 +108,11 @@ export const docSections: DocSection[] = [
         title: "Logarithms",
         load: () => import("./content/guide/logarithms.md?raw"),
       },
+      {
+        slug: "guide/symbolic-algebra",
+        title: "Symbolic Algebra",
+        load: () => import("./content/guide/symbolic-algebra.md?raw"),
+      },
     ],
   },
   {
@@ -137,6 +142,11 @@ export const docSections: DocSection[] = [
         slug: "science-data/number-systems",
         title: "Number Systems",
         load: () => import("./content/science-data/number-systems.md?raw"),
+      },
+      {
+        slug: "science-data/complex-numbers",
+        title: "Complex Numbers",
+        load: () => import("./content/science-data/complex-numbers.md?raw"),
       },
       {
         slug: "science-data/bitwise",

@@ -2,12 +2,15 @@
 
 **Hissab is a natural-language calculator for exact expression work.** Type one
 calculation per line and Hissab evaluates numbers, units, dates, colors, bases,
-statistics, and chained references in place.
+statistics, probability, finance, IP addresses, symbolic algebra, complex
+numbers, and chained references in place.
 
 ```hissab
 1 + 1
 15 kilometers to miles
 5! + 3^2
+derivative(2x^2, x)
+(2 + 3i) * (1 - i)
 ```
 
 Lines can build on earlier lines when they are evaluated together. Use **labels**
@@ -20,9 +23,10 @@ yearly_savings = monthly_savings monthly to yearly
 
 ## What Hissab is good at
 
-- **Plain math** — arithmetic, percentages, powers, roots, factorials, modulo, and absolute value.
+- **Plain math** — arithmetic, percentages, powers, roots, factorials, modulo, absolute value, symbolic algebra, and complex numbers.
 - **Unit-aware work** — conversions, mixed-unit arithmetic, rates, compound units, prefixes, and dimensional checks.
-- **Data and science** — statistics, trigonometry, dates, times, number systems, bitwise operators, and color operations.
+- **Data and science** — statistics, probability, trigonometry, dates, times, number systems, bitwise operators, IP address math, and color operations.
+- **Finance and business** — interest, growth, loans, mortgages, annuities, returns, margins, break-even, and runway.
 - **Workflows** — labels, `prev`, `line<N>`, and `total<N>` for multi-line calculations.
 - **AI-assisted calculation** — bring your own model provider key, ask in natural language, and let the assistant produce Hissab expressions before answering.
 

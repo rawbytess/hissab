@@ -2,7 +2,8 @@
 
 Hissab is a natural-language calculator and math engine for people and AI
 agents. It accepts expressions such as `15 km to miles`, `25% of 200`,
-`today - 1 feb 1990 to years`, or `avg(10, 20, 30)` and returns deterministic,
+`today - 1 feb 1990 to years`, `avg(10, 20, 30)`,
+`derivative(2x^2, x)`, or `(2 + 3i) * (1 - i)` and returns deterministic,
 formatted results.
 
 The project includes:
@@ -17,13 +18,16 @@ The project includes:
 
 Hissab is built around a small expression language that reads like everyday
 math. You can write plain arithmetic, unit conversions, dates, statistics,
-colors, bitwise operations, and multi-line calculations with named labels.
+probability, finance, IP subnet math, symbolic algebra, complex numbers, colors,
+bitwise operations, and multi-line calculations with named labels.
 
 ```text
 15 kilometers to miles
 240 - 15%
 variance(45, 56, 67, 78, 89)
 today - 15 jun 1995 to years
+network(192.168.1.130/24)
+derivative(2x^2 + 3x, x)
 monthly_savings = 4500 - 1200 - 600
 monthly_savings monthly to yearly
 ```
@@ -43,13 +47,19 @@ Hissab currently supports these operation categories:
 | Unit conversion | `<value> <unit> to <unit>`, mixed-unit math, prefixes, multi-target breakdowns |
 | Compound units | Speed, acceleration, force-like unit expressions, dimensional arithmetic and conversion |
 | Set operations | `max`, `min`, `lcm`, `gcd`, permutations, combinations |
+| Number theory | `fraction`, `mixed fraction`, `isprime`, `factors` |
 | Logarithms | `log`, `log10`, `log2` |
 | Statistics | `avg`, `median`, `range`, `variance`, standard/harmonic/geometric mean |
+| Probability | `P(...)`, complement/AND/OR, conditional probability, Bayes, odds, binomial, expected value |
+| Finance | Simple/compound interest, future/present value, EMI/mortgage, annuities, CAGR, ROI, APY, margin, markup, break-even, runway |
 | Trigonometry | `sin`, `cos`, `tan`, inverse trig, hyperbolic variants |
 | Date and time | Date arithmetic, durations, timezones, Unix epoch/timestamp conversion |
 | Number systems | Decimal, binary, octal, hexadecimal conversion and arithmetic |
 | Bitwise operations | `~`, `&`, `|`, `xor`, `<<`, `>>` |
 | Color math | Hex, RGB, RGBA, HSL, named colors, mixing, shading, complement, color temperature |
+| IP address math | IPv4/IPv6 literals, CIDR blocks, masks, address arithmetic, subnet functions, classification |
+| Symbolic algebra | Free variables `x`, `y`, `z`, simplify/expand, derivatives, integrals, limits |
+| Complex numbers | Imaginary unit `i` and complex arithmetic in `a + bi` form |
 | Multi-line scope | Labels, `prev`, `line<N>`, `total<N>` |
 
 The canonical operation docs live in [`lib/documentation`](./lib/documentation).
@@ -156,6 +166,8 @@ hissab repl                 # interactive REPL
 hissab run <file>           # one expression per line, shared variable scope
 hissab list <kind>          # kind = functions | units | operators
 hissab docs [tag]           # base docs or a specific docs chunk
+hissab docs --list          # list documentation tags
+hissab docs --all           # base docs plus every chunk
 ```
 
 ### Running from source
@@ -258,6 +270,10 @@ try {
   }
 }
 ```
+
+The root export also includes `Functions`, `Operators`, `Units`, symbolic token
+classes (`ExprToken`, `SymbolToken`, `ComplexToken`), and `exprToLatex` for
+consumers that need autocomplete catalogs or structured symbolic rendering.
 
 ## Repository Layout
 

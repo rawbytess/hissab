@@ -64,6 +64,23 @@ max(1, 2)
 avg(1, 2, 3)
 ```
 
+## Symbolic variable names are limited
+
+Only **`x`**, **`y`**, and **`z`** are free symbolic variables. Other names are
+unknown words unless they were defined earlier as labels.
+
+```hissab
+2x + 3y
+```
+
+For multiplying symbols, write an operator or a space. **`xy`** is one unknown
+word, not `x*y`.
+
+```hissab
+x*y
+x y
+```
+
 ## Percent with plus or minus is not a literal decimal
 
 **`10% + 50`** means "add 10 percent of 50 to 50". If you need the bare decimal,
