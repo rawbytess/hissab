@@ -51,6 +51,30 @@ export function hissabTheme(
       cursor: "pointer",
       position: "relative",
     },
+    ".cm-sup": {
+      fontSize: "0.75em",
+      verticalAlign: "super",
+    },
+    ".cm-sup-caret": {
+      fontSize: "0.6em",
+      verticalAlign: "super",
+      opacity: "0.45",
+    },
+    // Math widgets are replace-decorations, so they aren't syntax-highlighted and
+    // would otherwise inherit the dim `.cm-line` text color. KaTeX renders in
+    // `currentColor`, so set an explicit readable color here.
+    ".cm-math-glyph": {
+      fontStyle: "normal",
+      color: themeColors.editorText,
+    },
+    ".cm-math-katex": {
+      display: "inline-block",
+      verticalAlign: "middle",
+      color: themeColors.editorText,
+    },
+    ".cm-math-katex .katex": {
+      fontSize: "1.05em",
+    },
     ".cm-result-fresh": {
       color: themeColors.resultText,
     },

@@ -1,19 +1,42 @@
 import { UserError } from "../exceptions";
+import { evaluate, parseTreeToExpr, simplify } from "../symbolic";
 import type { TokenType } from "../tokens/token_basetypes";
 import {
   ColorToken,
+  ComplexToken,
   ControllerToken,
   DateToken,
   Direction,
+  ExprToken,
   FunctionToken,
   IpToken,
   NumberToken,
   OperatorToken,
   StringToken,
+  SymbolToken,
   UnitToken,
   VariableNameToken,
   VariableToken,
 } from "../tokens/tokens";
+
+// An expression is symbolic when a free variable (or an already-built symbolic
+// sub-expression) appears anywhere in the tree. ComplexToken does NOT count — it
+// is a closed numeric domain handled by the ordinary eager solver.
+function isSymbolic(token: TokenType | null): boolean {
+  if (!token) return false;
+  if (token instanceof SymbolToken || token instanceof ExprToken) return true;
+  if (token instanceof OperatorToken)
+    return (
+      isSymbolic(token.left) ||
+      isSymbolic(token.right) ||
+      token.more.some((t) => isSymbolic(t))
+    );
+  if (token instanceof FunctionToken)
+    return token.args.some((t) => isSymbolic(t));
+  if (token instanceof VariableToken) return isSymbolic(token.valueToken);
+  return false;
+}
+
 import {
   CombineNumberState,
   CompleteState,
@@ -44,7 +67,12 @@ async function parse(
   for (; parseIndex < tokens.length; parseIndex += 1) {
     let token: TokenType = tokens[parseIndex];
     if (token instanceof VariableToken) token = token.valueToken;
-    if (token instanceof NumberToken)
+    if (
+      token instanceof NumberToken ||
+      token instanceof ComplexToken ||
+      token instanceof SymbolToken ||
+      token instanceof ExprToken
+    )
       parseState = await parseState.handleOperand(parseTree, token);
     else if (token instanceof StringToken || token instanceof VariableNameToken)
       parseState = parseState.handleString(parseTree, token);
@@ -107,7 +135,12 @@ async function parse(
             parseIndex = index;
             func = isFunc;
             parseTree.setIsExplicit(isExplicit);
-            if (result instanceof NumberToken)
+            if (
+              result instanceof NumberToken ||
+              result instanceof ComplexToken ||
+              result instanceof SymbolToken ||
+              result instanceof ExprToken
+            )
               parseState = await parseState.handleOperand(parseTree, result);
             else if (result instanceof DateToken)
               parseState = parseState.handleDate(parseTree, result);
@@ -124,7 +157,20 @@ async function parse(
   if (parseState !== CompleteState) throw new UserError(231);
   if (parseTree.head === null) throw new UserError(231);
 
-  await parseTree.solve(parseTree.head, null, Direction.RIGHT);
+  if (isSymbolic(parseTree.head)) {
+    // Symbolic route: skip the numeric solver entirely (it would try to reduce a
+    // free variable to a number). Convert the parse tree to the Expr AST,
+    // compute any calculus nodes (derivative/integral/limit), then simplify to
+    // canonical form and carry it out as an ExprToken. We keep the *captured*
+    // (pre-evaluation) Expr as `source` so consumers can still render the input
+    // notation (∫, d/dx) while the value shows the computed answer. The numeric
+    // path below is byte-for-byte unchanged for non-symbolic input.
+    const captured = parseTreeToExpr(parseTree.head);
+    const expr = simplify(evaluate(captured));
+    parseTree.head = new ExprToken(expr, captured);
+  } else {
+    await parseTree.solve(parseTree.head, null, Direction.RIGHT);
+  }
   const resultToken = parseTree.head;
   return {
     result: resultToken,

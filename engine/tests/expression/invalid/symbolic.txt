@@ -1,0 +1,6 @@
+# Unknown identifiers still error — only the curated single-letter symbol set
+# (x, y, z) is recognised. Glued multi-letter runs are NOT split into a product.
+xy
+xyz
+apples
+2 apples

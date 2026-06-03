@@ -4,14 +4,17 @@ import TokenBaseType, { type TokenType } from "../tokens/token_basetypes";
 import tokenFactory from "../tokens/token_factory";
 import {
   type ColorToken,
+  ComplexToken,
   ControllerToken,
   type DateToken,
+  ExprToken,
   type expressionUnit,
   FunctionToken,
   type IpToken,
   NumberToken,
   OperatorToken,
   type StringToken,
+  SymbolToken,
   type UnitAtom,
   UnitToken,
   type VariableNameToken,
@@ -20,6 +23,22 @@ import UnitTypes from "../types/unit_enum";
 import { dimEquals } from "../types/unit_types";
 import ProcessConversions from "../units_processor";
 import type { ParseTreeType } from "./parsetree";
+
+// Operands the parser state machine accepts in number position. NumberToken is
+// the numeric case; the rest are the symbolic/complex extensions. SymbolToken
+// and ExprToken additionally flip the expression into symbolic mode (see
+// isSymbolic in parser.ts); ComplexToken stays on the numeric solve path.
+type OperandToken = NumberToken | ComplexToken | SymbolToken | ExprToken;
+
+// True when juxtaposing this operand against another implies multiplication
+// (`2x`, `6i`, `(x+1)(x+2)`) rather than the unit implicit-addition case.
+function isMulJuxtapose(t: TokenType | null): boolean {
+  return (
+    t instanceof SymbolToken ||
+    t instanceof ComplexToken ||
+    t instanceof ExprToken
+  );
+}
 
 export type ParserStateTypes =
   | typeof FreshParseState
@@ -282,11 +301,11 @@ function checkCompoundOperands(unit: UnitToken): void {
 class FreshParseState {
   static handleOperand(
     parseTree: ParseTreeType,
-    numberToken: NumberToken,
+    operand: OperandToken,
   ): ParserStateTypes {
-    parseTree.head = numberToken;
-    if (!parseTree.exprUnit && numberToken.unit)
-      parseTree.exprUnit = numberToken.unit;
+    parseTree.head = operand;
+    if (operand instanceof NumberToken && !parseTree.exprUnit && operand.unit)
+      parseTree.exprUnit = operand.unit;
     return CompleteState;
   }
 
@@ -367,27 +386,43 @@ class FreshParseState {
 class CompleteState {
   static handleOperand(
     parseTree: ParseTreeType,
-    numberToken: NumberToken,
+    operand: OperandToken,
   ): ParserStateTypes {
-    // Two operands written next to each other (e.g. `10 meter 30 cm`) get an
-    // implicit `+`. We only allow this when a unit context exists, so compound
-    // quantities work but bare `10 20 30` does not silently become `60`.
-    if (!parseTree.exprUnit) throw new UserError(223);
+    // Walk the right spine to the trailing operand.
     let tempPt: TokenType = parseTree.head!;
     let parentPt: TokenType = tempPt;
     while (tempPt instanceof OperatorToken && tempPt.right) {
       parentPt = tempPt;
       tempPt = tempPt.right;
     }
+
+    const graft = (op: OperatorToken) => {
+      op.left = tempPt;
+      op.right = operand;
+      if (parentPt === tempPt) parseTree.head = op;
+      else if (parentPt instanceof OperatorToken) parentPt.right = op;
+      else throw new UnhandledError(0);
+    };
+
+    // Implicit multiplication: juxtaposed operands where either side is symbolic
+    // or complex (`2x`, `6i`, `(x+1)(x+2)`). Precedence sorts itself out — `*`
+    // grafts at the tail and later operators rebalance via the precedence walk.
+    if (isMulJuxtapose(operand) || isMulJuxtapose(tempPt)) {
+      const mulToken = tokenFactory("*", TokenBaseType.STRING);
+      if (!(mulToken instanceof OperatorToken)) throw new UnhandledError(0);
+      graft(mulToken);
+      return CompleteState;
+    }
+
+    // Otherwise: implicit `+` between adjacent unit quantities (`10 meter 30
+    // cm`). Only when a unit context exists, so bare `10 20 30` does not
+    // silently become `60`.
+    if (!parseTree.exprUnit) throw new UserError(223);
     if (!(tempPt instanceof NumberToken)) throw new UnhandledError(0);
+    if (!(operand instanceof NumberToken)) throw new UnhandledError(0);
     const addToken = tokenFactory("+", TokenBaseType.STRING);
     if (!(addToken instanceof OperatorToken)) throw new UnhandledError(0);
-
-    addToken.left = tempPt;
-    addToken.right = numberToken;
-    if (parentPt === tempPt) parseTree.head = addToken;
-    else if (parentPt instanceof OperatorToken) parentPt.right = addToken;
-    else throw new UnhandledError(0);
+    graft(addToken);
     return CompleteState;
   }
 
@@ -520,24 +555,26 @@ function expectOperator(parseTree: ParseTreeType): OperatorToken {
 class NeedNumberState {
   static async handleOperand(
     parseTree: ParseTreeType,
-    numberToken: NumberToken,
+    operand: OperandToken,
   ): Promise<ParserStateTypes> {
-    if (!parseTree.exprUnit && numberToken.unit)
-      parseTree.exprUnit = numberToken.unit;
-    else if (parseTree.exprUnit && numberToken.unit) {
-      if (dimEquals(parseTree.exprUnit.dim, numberToken.unit.dim)) {
-        if (!sameUnitIdentity(parseTree.exprUnit, numberToken.unit)) {
-          const newPt = await new ProcessConversions(numberToken)
-            .to(parseTree.exprUnit)
-            .convert();
-          numberToken.value = newPt.value;
-          numberToken.unit =
-            newPt instanceof NumberToken ? newPt.unit : undefined;
+    if (operand instanceof NumberToken) {
+      if (!parseTree.exprUnit && operand.unit)
+        parseTree.exprUnit = operand.unit;
+      else if (parseTree.exprUnit && operand.unit) {
+        if (dimEquals(parseTree.exprUnit.dim, operand.unit.dim)) {
+          if (!sameUnitIdentity(parseTree.exprUnit, operand.unit)) {
+            const newPt = await new ProcessConversions(operand)
+              .to(parseTree.exprUnit)
+              .convert();
+            operand.value = newPt.value;
+            operand.unit =
+              newPt instanceof NumberToken ? newPt.unit : undefined;
+          }
         }
+        // Different dim — keep as-is for operators to resolve.
       }
-      // Different dim — keep as-is for operators to resolve.
     }
-    expectOperator(parseTree).right = numberToken;
+    expectOperator(parseTree).right = operand;
     return CompleteState;
   }
 
@@ -674,27 +711,27 @@ class NeedUnitState {
 class FunctionState {
   static async handleOperand(
     parseTree: ParseTreeType,
-    numberToken: NumberToken,
+    operand: OperandToken,
   ): Promise<ParserStateTypes> {
     if (!(parseTree.currentpt instanceof FunctionToken))
       throw new UnhandledError(1234);
-    if (!parseTree.currentpt?.isRaw) {
-      if (!parseTree.exprUnit && numberToken.unit)
-        parseTree.exprUnit = numberToken.unit;
-      else if (parseTree.exprUnit && numberToken.unit) {
-        if (dimEquals(parseTree.exprUnit.dim, numberToken.unit.dim)) {
-          if (!sameUnitIdentity(parseTree.exprUnit, numberToken.unit)) {
-            const newPt = await new ProcessConversions(numberToken)
+    if (!parseTree.currentpt?.isRaw && operand instanceof NumberToken) {
+      if (!parseTree.exprUnit && operand.unit)
+        parseTree.exprUnit = operand.unit;
+      else if (parseTree.exprUnit && operand.unit) {
+        if (dimEquals(parseTree.exprUnit.dim, operand.unit.dim)) {
+          if (!sameUnitIdentity(parseTree.exprUnit, operand.unit)) {
+            const newPt = await new ProcessConversions(operand)
               .to(parseTree.exprUnit)
               .convert();
-            numberToken.value = newPt.value;
-            numberToken.unit =
+            operand.value = newPt.value;
+            operand.unit =
               newPt instanceof NumberToken ? newPt.unit : undefined;
           }
         }
       }
     }
-    parseTree.currentpt?.insertChild(numberToken);
+    parseTree.currentpt?.insertChild(operand);
     return FunctionState;
   }
 
@@ -742,20 +779,31 @@ class FunctionState {
 class PreNumberState {
   static handleOperand(
     parseTree: ParseTreeType,
-    numberToken: NumberToken,
+    operand: OperandToken,
   ): ParserStateTypes {
-    if (parseTree.currentpt === null) {
-      if (parseTree.head!.value === "-") {
-        numberToken.value = (numberToken.toNumber() * -1).toString();
-        parseTree.head = numberToken;
+    // Apply unary minus to the operand. Numbers negate in place; complex negates
+    // both parts; a symbol/sub-expression becomes `(-1) * operand`.
+    const negate = (): TokenType => {
+      if (operand instanceof NumberToken) {
+        operand.value = (operand.toNumber() * -1).toString();
+        return operand;
       }
+      if (operand instanceof ComplexToken) {
+        return new ComplexToken(-operand.re, -operand.im);
+      }
+      const mulToken = tokenFactory("*", TokenBaseType.STRING);
+      const minusOne = tokenFactory("-1", TokenBaseType.DECIMAL);
+      if (!(mulToken instanceof OperatorToken)) throw new UnhandledError(0);
+      mulToken.left = minusOne;
+      mulToken.right = operand;
+      return mulToken;
+    };
+
+    if (parseTree.currentpt === null) {
+      if (parseTree.head!.value === "-") parseTree.head = negate();
     } else {
       const cp = expectOperator(parseTree);
-      const current = cp.right;
-      if (current?.value === "-") {
-        numberToken.value = (numberToken.toNumber() * -1).toString();
-        cp.right = numberToken;
-      }
+      if (cp.right?.value === "-") cp.right = negate();
     }
     return CompleteState;
   }
@@ -795,8 +843,10 @@ class PreNumberState {
 class CombineNumberState {
   static handleOperand(
     parseTree: ParseTreeType,
-    numberToken: NumberToken,
+    operand: OperandToken,
   ): ParserStateTypes {
+    // Digit grouping (`1,234`) only ever combines plain numbers.
+    if (!(operand instanceof NumberToken)) throw new UnhandledError(0);
     let tempPt: TokenType = parseTree.head!;
     let parentPt: TokenType = tempPt;
     while (tempPt instanceof OperatorToken && tempPt.right) {
@@ -805,7 +855,7 @@ class CombineNumberState {
     }
     if (tempPt instanceof NumberToken) {
       const newValue = tokenFactory(
-        `${tempPt.value}${numberToken.value}`,
+        `${tempPt.value}${operand.value}`,
         tempPt.numbertype,
       ) as NumberToken;
 

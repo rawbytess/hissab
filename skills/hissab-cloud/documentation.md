@@ -79,6 +79,8 @@ about.
 - `bitwise` — NOT (~), AND (&), OR (|), XOR (xor), left/right shifts
 - `color` — Hex / rgb / rgba / hsl / named colors; format conversion, mixing, shading, complement, temperature
 - `ip_address` — IPv4 & IPv6 addresses and CIDR: format conversion, address arithmetic, bitwise masking, subnet/network/broadcast/host math, classification
+- `symbolic` — Free variables (x, y, z), implicit multiplication, simplify / collect like terms; derivative/integral/limit structure captured
+- `complex_numbers` — Imaginary unit i and complex arithmetic (+, -, *, /, ^) in a + bi form
 - `labels_and_prev` — Label expressions with `=`, reference earlier results via labels or the `prev` keyword
 
 ## How to fetch chunks

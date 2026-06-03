@@ -383,7 +383,58 @@ const Functions: functionType = {
       "Expected value of value/probability pairs: expected value(v1, p1, v2, p2, …)",
     isRaw: true,
   },
+
+  // ---- Symbolic / algebra -----------------------------------------------
+  // Registered so the lexer tokenises `simplify(...)`, `derivative(...)`,
+  // `integrate(...)`, `limit(...)`. When an argument carries a free symbol the
+  // whole call is routed to the symbolic subsystem (see parser.ts / from_tree.ts)
+  // which builds the Expr AST node and renders it, so these `run`s fire only for
+  // purely numeric arguments. `simplify(5)` is the identity; the calculus
+  // keywords require a symbolic variable and otherwise error.
+  simplify: {
+    run: symbolicIdentity,
+    description: "Simplify an algebraic expression to canonical form",
+    isRaw: true,
+  },
+  derivative: {
+    run: requiresSymbol,
+    description: "Derivative w.r.t. a variable: derivative(2x^2, x)",
+    isRaw: true,
+  },
+  diff: {
+    run: requiresSymbol,
+    description: "Derivative (alias of derivative)",
+    isRaw: true,
+  },
+  integrate: {
+    run: requiresSymbol,
+    description: "Integral: integrate(2x^2, x) or integrate(2x^2, x, 0, 50)",
+    isRaw: true,
+  },
+  integral: {
+    run: requiresSymbol,
+    description: "Integral (alias of integrate)",
+    isRaw: true,
+  },
+  limit: {
+    run: requiresSymbol,
+    description: "Limit: limit(2x^2, x, 0)",
+    isRaw: true,
+  },
 };
+
+// `simplify(<numeric>)` is the identity (a symbolic argument is intercepted
+// before this runs). A bare symbol or symbolic expression never reaches here.
+function symbolicIdentity(args: TokenType[]): TokenType {
+  if (args.length !== 1) throw new UserError(8806);
+  return args[0];
+}
+
+// Calculus keywords are only meaningful with a symbolic variable; with purely
+// numeric arguments there is nothing to differentiate/integrate against.
+function requiresSymbol(): never {
+  throw new UserError(8805);
+}
 
 function average(...params: number[]): number {
   if (params) {

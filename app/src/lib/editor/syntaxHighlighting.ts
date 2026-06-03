@@ -30,6 +30,15 @@ export function HissabHighlightStyle(isDark: boolean): TagStyle[] {
     },
     { tag: hissabTags.undefinedToken, color: isDark ? "#f984e1" : "#999999" },
     { tag: hissabTags.stringToken, color: isDark ? "#D4F984" : "#999999" },
+    // Recently added token kinds — kept bright/light so they read clearly on the
+    // dark editor background (and dark enough on the light background).
+    { tag: hissabTags.symbolToken, color: isDark ? "#d2a8ff" : "#8250df" },
+    { tag: hissabTags.complexToken, color: isDark ? "#79c0ff" : "#0969da" },
+    { tag: hissabTags.ipToken, color: isDark ? "#56d4dd" : "#0a7d75" },
+    { tag: hissabTags.fractionToken, color: isDark ? "#ffa657" : "#9a5b00" },
+    { tag: hissabTags.booleanToken, color: isDark ? "#ff7b72" : "#cf222e" },
+    { tag: hissabTags.listToken, color: isDark ? "#ff9bce" : "#bf3989" },
+    { tag: hissabTags.exprToken, color: isDark ? "#a5d6ff" : "#0550ae" },
     {
       tag: hissabTags.comment,
       color: isDark ? "#93A1A1" : "#93A1A1",
@@ -50,6 +59,13 @@ export const hissabTags = {
   dateToken: Tag.define(),
   stringToken: Tag.define(),
   colorToken: Tag.define(),
+  symbolToken: Tag.define(),
+  complexToken: Tag.define(),
+  ipToken: Tag.define(),
+  fractionToken: Tag.define(),
+  booleanToken: Tag.define(),
+  listToken: Tag.define(),
+  exprToken: Tag.define(),
   comment: Tag.define(),
 };
 

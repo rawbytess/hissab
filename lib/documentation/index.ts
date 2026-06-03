@@ -2,6 +2,7 @@ import { baseDocumentation } from "./base";
 import { arithmetic } from "./chunks/arithmetic";
 import { bitwise } from "./chunks/bitwise";
 import { color } from "./chunks/color";
+import { complex_numbers } from "./chunks/complex_numbers";
 import { compound_units } from "./chunks/compound_units";
 import { date_time } from "./chunks/date_time";
 import { finance } from "./chunks/finance";
@@ -14,6 +15,7 @@ import { percentage } from "./chunks/percentage";
 import { probability } from "./chunks/probability";
 import { set_operations } from "./chunks/set_operations";
 import { statistics } from "./chunks/statistics";
+import { symbolic } from "./chunks/symbolic";
 import { trigonometry } from "./chunks/trigonometry";
 import { unit_conversion } from "./chunks/unit_conversion";
 import { OPERATION_TAGS, type OperationTag, tagDescriptions } from "./tags";
@@ -42,6 +44,8 @@ export const chunks: Record<OperationTag, string> = {
   bitwise,
   color,
   ip_address,
+  symbolic,
+  complex_numbers,
   labels_and_prev,
 };
 

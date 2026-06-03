@@ -2,6 +2,9 @@ import chroma from "chroma-js";
 import spacetime, { type Spacetime, type TimeUnit } from "spacetime";
 import { UnhandledError, UserError } from "../exceptions";
 import * as ip from "../ip";
+import { type Cx, cxAdd, cxString, cxSub } from "../symbolic/complex";
+import type { Expr } from "../symbolic/expr";
+import { exprToString } from "../symbolic/render";
 import UnitTypes from "../types/unit_enum";
 import {
   baseSiFactor,
@@ -182,6 +185,9 @@ class NumberToken extends Token {
   }
 
   add(token: TokenType, expUnit: expressionUnit) {
+    if (token instanceof ComplexToken) {
+      return new ComplexToken(this.toNumber() + token.re, token.im);
+    }
     if (token instanceof NumberToken) {
       let result;
       if (this.percent && !token.percent) {
@@ -232,6 +238,9 @@ class NumberToken extends Token {
   }
 
   subtract(token: TokenType, expUnit: expressionUnit) {
+    if (token instanceof ComplexToken) {
+      return new ComplexToken(this.toNumber() - token.re, -token.im);
+    }
     if (token instanceof NumberToken) {
       let result;
       if (this.percent && !token.percent) {
@@ -689,6 +698,105 @@ class ListToken extends Token {
   }
 }
 
+// A complex number (`a + bi`). Complex numbers are a *closed numeric domain*, so
+// unlike symbolic expressions they ride the engine's ordinary eager solve():
+// `+ - * / ^` (operator_types.ts) carry complex branches. `i` lexes to
+// ComplexToken(0, 1); arithmetic over real + complex promotes the real operand.
+class ComplexToken extends Token {
+  kind = "complexToken";
+  re: number;
+  im: number;
+
+  constructor(re: number, im: number, originalValue?: string) {
+    const value = cxString({ re, im });
+    super(value, originalValue ?? value);
+    this.re = re;
+    this.im = im;
+  }
+
+  get cx(): Cx {
+    return { re: this.re, im: this.im };
+  }
+
+  isOperand() {
+    return true;
+  }
+
+  getString(): string {
+    return cxString(this.cx);
+  }
+
+  add(token: TokenType, _expUnit: expressionUnit) {
+    if (token instanceof ComplexToken) {
+      const r = cxAdd(this.cx, token.cx);
+      return new ComplexToken(r.re, r.im);
+    }
+    if (token instanceof NumberToken) {
+      return new ComplexToken(this.re + token.toNumber(), this.im);
+    }
+    throw new UserError(8810);
+  }
+
+  subtract(token: TokenType, _expUnit: expressionUnit) {
+    if (token instanceof ComplexToken) {
+      const r = cxSub(this.cx, token.cx);
+      return new ComplexToken(r.re, r.im);
+    }
+    if (token instanceof NumberToken) {
+      return new ComplexToken(this.re - token.toNumber(), this.im);
+    }
+    throw new UserError(8811);
+  }
+}
+
+// A free algebraic variable (`x`, `y`, `z`). `isOperand()` so the parser state
+// machine treats it like a number; recognised in token_factory from a curated
+// symbol set. Its presence in a parse tree flips the expression into symbolic
+// mode (see isSymbolic in parser.ts).
+class SymbolToken extends Token {
+  kind = "symbolToken";
+
+  constructor(value: string, originalValue: string) {
+    super(value, originalValue);
+  }
+
+  isOperand() {
+    return true;
+  }
+
+  getString(): string {
+    return this.value;
+  }
+}
+
+// Terminal result token wrapping a symbolic Expr (the AST). Produced by the
+// symbolic route in parse(); rendered via the symbolic renderer. Like
+// BooleanToken/ListToken it is never lexed from input — it is a result carrier.
+class ExprToken extends Token {
+  kind = "exprToken";
+  expr: Expr;
+  // The pre-evaluation captured Expr (e.g. the `derivative` node before it was
+  // computed). `expr` is the computed answer; `source` preserves the input
+  // notation so the editor can keep rendering ∫ / d/dx inline. Undefined when
+  // nothing was computed.
+  source?: Expr;
+
+  constructor(expr: Expr, source?: Expr) {
+    const value = exprToString(expr);
+    super(value, value);
+    this.expr = expr;
+    this.source = source;
+  }
+
+  isOperand() {
+    return true;
+  }
+
+  getString(): string {
+    return exprToString(this.expr);
+  }
+}
+
 // One factor in a compound unit: a UnitToken raised to an integer exponent.
 // `unit` is the source UnitToken (carrying value, prefix, factor, siFactor).
 export type UnitAtom = {
@@ -1006,8 +1114,10 @@ export type { Variables };
 export {
   BooleanToken,
   ColorToken,
+  ComplexToken,
   ControllerToken,
   DateToken,
+  ExprToken,
   FractionToken,
   FunctionToken,
   IpToken,
@@ -1016,6 +1126,7 @@ export {
   NumberToken,
   OperatorToken,
   StringToken,
+  SymbolToken,
   Token,
   UndefinedToken,
   UnitToken,

@@ -4,7 +4,13 @@ import {
   type DecorationSet,
   type EditorView,
 } from "@codemirror/view";
-import { doLex, doParse, type Variables } from "@rawbytes/hissab";
+import {
+  doLex,
+  doParse,
+  type ExprToken,
+  exprToLatex,
+  type Variables,
+} from "@rawbytes/hissab";
 import { ResultWidget } from "@/lib/editor/resultWidget.ts";
 import {
   calculatePrev,
@@ -19,6 +25,9 @@ export interface Results {
   errorMessage: CustomError | null;
   stale: boolean;
   lineNumber: number;
+  // LaTeX for symbolic results (an ExprToken); rendered with KaTeX in the result
+  // widget. Undefined for numeric/unit/date/color results, which stay as text.
+  latex?: string;
 }
 
 export async function getResult(
@@ -48,6 +57,10 @@ export async function getResult(
         lineNumber: index,
         error: false,
         errorMessage: null,
+        latex:
+          resultToken?.kind === "exprToken"
+            ? exprToLatex((resultToken as ExprToken).expr)
+            : undefined,
       });
       if (meta.variableName) variables[meta.variableName] = resultToken;
       variables[`line${index + 1}`] = resultToken;
@@ -61,6 +74,7 @@ export async function getResult(
           errorMessage: e as CustomError,
           stale: true,
           lineNumber: index,
+          latex: oldResults[index]?.latex,
         });
       else
         results.push({

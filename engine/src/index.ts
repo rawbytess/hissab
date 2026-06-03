@@ -4,17 +4,21 @@ import Functions from "./function";
 import lexer from "./lexer/lexer";
 import parse from "./parser/parser";
 import { humanize } from "./pro";
+import { exprToLatex } from "./symbolic";
 import TokenBaseType, { type TokenType } from "./tokens/token_basetypes";
 import tokenFactory from "./tokens/token_factory";
 import {
   BooleanToken,
   ColorToken,
+  ComplexToken,
   DateToken,
+  ExprToken,
   FractionToken,
   IpToken,
   ListToken,
   NumberToken,
   StringToken,
+  SymbolToken,
   UndefinedToken,
   type Variables,
 } from "./tokens/tokens";
@@ -68,7 +72,9 @@ async function doParse(tokens: TokenType[]): Promise<ParseResult> {
     result instanceof IpToken ||
     result instanceof BooleanToken ||
     result instanceof FractionToken ||
-    result instanceof ListToken
+    result instanceof ListToken ||
+    result instanceof ComplexToken ||
+    result instanceof ExprToken
   ) {
     if (!isExplicit && result instanceof NumberToken) {
       const humanized: string = humanize(result, convertTo);
@@ -103,12 +109,16 @@ export type {
   Variables,
 };
 export {
+  ComplexToken,
   calculate,
   DateTimeOperands,
   doLex,
   doParse,
+  ExprToken,
+  exprToLatex,
   Functions,
   Operators,
+  SymbolToken,
   TokenBaseType,
   tokenFactory,
   Units,

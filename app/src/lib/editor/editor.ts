@@ -16,6 +16,7 @@ import {
 import { debounce } from "lodash-es";
 import { hissabTheme } from "@/lib/editor/cmTheme.ts";
 import type { Results } from "@/lib/editor/getResults.ts";
+import { mathDecorations } from "@/lib/editor/mathDecorations.ts";
 import {
   getResultExtension,
   resultStateField,
@@ -268,6 +269,7 @@ export default class HissabEditor {
       syntaxHighlighting(
         HighlightStyle.define(HissabHighlightStyle(this.isDark)),
       ),
+      mathDecorations,
       EditorView.theme(
         hissabTheme(
           this.isDark,

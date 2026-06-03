@@ -1,11 +1,13 @@
 import chroma from "chroma-js";
 import * as arith from "../arithmetic_functions";
 import { UnhandledError, UserError } from "../exceptions";
+import { type Cx, cxDiv, cxMul, cxPow } from "../symbolic/complex";
 import { composeUnits } from "../tokens/compound";
 import TokenBaseType, { type TokenType } from "../tokens/token_basetypes";
 import tokenFactory from "../tokens/token_factory";
 import {
   ColorToken,
+  ComplexToken,
   DateToken,
   type expressionUnit,
   IpToken,
@@ -100,15 +102,15 @@ const Operators: operatorType = {
   "^": {
     precedence: 4,
     operands: ["prenumber", "postnumber"],
-    func: (n1: number, n2: number): number => n1 ** n2,
-    isRaw: false,
+    func: makePowFunc(),
+    isRaw: true,
     description: "Power operator",
   },
   "**": {
     precedence: 4,
     operands: ["prenumber", "postnumber"],
-    func: (n1: number, n2: number): number => n1 ** n2,
-    isRaw: false,
+    func: makePowFunc(),
+    isRaw: true,
     description: "Power operator",
   },
   "/": {
@@ -478,10 +480,26 @@ function getRadFromDegrees(degrees: number) {
 // Composes operand units dimensionally; when the composition collapses to a
 // dimensionless scalar (e.g., `5 km / 2 m`), the residual factor is folded
 // into the numeric result and the result has no unit.
+// A NumberToken or ComplexToken seen as a complex value (real → im 0).
+function toCx(token: TokenType | undefined): Cx {
+  if (token instanceof ComplexToken) return token.cx;
+  if (token instanceof NumberToken) return { re: token.toNumber(), im: 0 };
+  throw new UserError(8651);
+}
+
+function isComplexOperand(token: TokenType | undefined): boolean {
+  return token instanceof ComplexToken;
+}
+
 function makeMulDivFunc(sign: 1 | -1) {
   return async (params: TokenType[]) => {
     const a = params[0];
     const b = params[1];
+    // Complex multiplication / division (dimensionless; no unit composition).
+    if (isComplexOperand(a) || isComplexOperand(b)) {
+      const r = sign === 1 ? cxMul(toCx(a), toCx(b)) : cxDiv(toCx(a), toCx(b));
+      return new ComplexToken(r.re, r.im);
+    }
     if (!(a instanceof NumberToken) || !(b instanceof NumberToken))
       throw new UserError(8651);
     const aVal = a.toNumber();
@@ -491,6 +509,27 @@ function makeMulDivFunc(sign: 1 | -1) {
     const value = numValue * residualFactor;
     const result = tokenFactory(value.toString(), a.numbertype) as NumberToken;
     if (unit) result.unit = unit;
+    return result;
+  };
+}
+
+// Raw power. Complex base/exponent goes through cxPow (exact for integer
+// exponents, principal branch otherwise). Otherwise reproduces the original
+// non-raw numeric behaviour: base ** exp, keeping the base's number base and
+// the ambient unit (so `(5 m)^2 → 25 m`, `2^6 → 64`).
+function makePowFunc() {
+  return async (params: TokenType[], exprUnit: expressionUnit) => {
+    const a = params[0];
+    const b = params[1];
+    if (isComplexOperand(a) || isComplexOperand(b)) {
+      const r = cxPow(toCx(a), toCx(b));
+      return new ComplexToken(r.re, r.im);
+    }
+    if (!(a instanceof NumberToken) || !(b instanceof NumberToken))
+      throw new UserError(8651);
+    const res = a.toNumber() ** b.toNumber();
+    const result = tokenFactory(res.toString(), a.numbertype) as NumberToken;
+    if (exprUnit) result.unit = exprUnit;
     return result;
   };
 }
@@ -550,6 +589,7 @@ type Subtractable = { subtract: (...args: any[]) => Promise<any> | any };
 function canAdd(t: TokenType | undefined): t is TokenType & Addable {
   return (
     t instanceof NumberToken ||
+    t instanceof ComplexToken ||
     t instanceof DateToken ||
     t instanceof ColorToken ||
     t instanceof IpToken
@@ -558,6 +598,7 @@ function canAdd(t: TokenType | undefined): t is TokenType & Addable {
 function canSubtract(t: TokenType | undefined): t is TokenType & Subtractable {
   return (
     t instanceof NumberToken ||
+    t instanceof ComplexToken ||
     t instanceof DateToken ||
     t instanceof ColorToken ||
     t instanceof IpToken ||

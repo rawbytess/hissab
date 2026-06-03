@@ -1,13 +1,16 @@
 import type {
   BooleanToken,
   ColorToken,
+  ComplexToken,
   ControllerToken,
   DateToken,
+  ExprToken,
   FunctionToken,
   IpToken,
   NumberToken,
   OperatorToken,
   StringToken,
+  SymbolToken,
   UndefinedToken,
   UnitToken,
   VariableNameToken,
@@ -42,6 +45,9 @@ export type TokenType =
   | ColorToken
   | IpToken
   | BooleanToken
+  | ComplexToken
+  | SymbolToken
+  | ExprToken
   | VariableNameToken
   | UndefinedToken;
 

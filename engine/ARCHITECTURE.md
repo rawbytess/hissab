@@ -64,8 +64,17 @@ Token (abstract base)
 ├── StringToken          unrecognised word (passed through, filtered before parse)
 ├── VariableToken        user-defined variable; .valueToken is the resolved token
 ├── VariableNameToken    LHS of `name = ...` assignment
+├── ComplexToken         a + bi; closed numeric domain, rides the eager solver
+├── SymbolToken          free variable (x, y, z); flips the expr to symbolic mode
+├── ExprToken            terminal carrier wrapping a symbolic `Expr` (AST) result
 └── UndefinedToken       lex garbage; filtered out before parse
 ```
+
+> **Symbolic vs numeric.** `SymbolToken` / `ExprToken` divert the whole expression
+> to the symbolic subsystem (see §11) — the eager `solve()` is skipped.
+> `ComplexToken` is different: it is a *closed numeric domain*, so it flows through
+> the ordinary solver like a number (the `+ - * / ^` operators carry complex
+> branches).
 
 ### `UnitToken` carries dimensional metadata
 
@@ -280,7 +289,7 @@ The raw `+` / `-` implementations live on the operand token classes themselves (
 
 `*` and `/` are also **raw** — `makeMulDivFunc` in `operator_types.ts` runs `composeUnits` (in `tokens/compound.ts`) over the two operand units and merges atoms by name. When the composed dimension is empty (every axis cancels — e.g., `5 km / 2 m`), the residual `siFactor` ratio is folded into the numeric value and the result is a plain number. When a single atom with exponent 1 remains, the result keeps that simple unit; otherwise the result is a freshly-built compound `UnitToken`.
 
-`^` stays **non-raw** — the unit-on-power case (`5 m^2`) is handled by the parser's compound absorption, not by the operator. `(5 m) ^ 2` therefore squares the *number* and keeps the unit unchanged.
+`^` / `**` are **raw** (`makePowFunc`). The numeric path reproduces the old behaviour exactly — `base ** exp`, keeping the base's number base and the ambient `exprUnit`, so `2^6 → 64` and `(5 m) ^ 2 → 25 m` (the unit-on-power case `5 m^2` is still handled by the parser's compound absorption, not the operator). The raw form exists so a complex base/exponent can route to `cxPow`. `^` was non-raw historically; it became raw only to thread complex numbers through.
 
 ---
 
@@ -393,7 +402,14 @@ engine/src/
 │   ├── unit_enum.ts                  # UnitTypes enum
 │   ├── synonyms.ts                   # alias map (kg → kilo gram, in → to, …); bare-string entries default to STRING
 │   └── plurals.ts                    # plural Set, built from Units[*].plural + SI prefix expansion + OVERRIDES
-├── function.ts                       # Functions table (avg, sum, min, max, lcm, gcd, ...)
+├── symbolic/                         # symbolic subsystem (see §11)
+│   ├── expr.ts                       # Expr AST node types + constructors
+│   ├── from_tree.ts                  # parseTreeToExpr: parse tree → Expr bridge
+│   ├── polynomial.ts                 # simplify(): canonical polynomial normal form
+│   ├── render.ts                     # exprToString(): Expr → display string
+│   ├── complex.ts                    # pure complex math over { re, im }
+│   └── index.ts                      # public surface of the subsystem
+├── function.ts                       # Functions table (avg, sum, min, max, lcm, gcd, simplify, derivative, ...)
 ├── arithmetic_functions.ts           # factorial / combination / permutation
 ├── datetime_operands.ts              # now, today, last week, next year, ... → Spacetime (last/next generated from RELATIVE_UNITS)
 ├── units_processor.ts                # ProcessConversions class (the .to(...).convert() builder)
@@ -414,6 +430,75 @@ lib/documentation/
 
 ---
 
+## 11. Symbolic expressions and complex numbers
+
+The engine is fundamentally an *eager numeric* evaluator: `solve()` collapses every
+node to a single value. Two features escape that model.
+
+### Complex numbers (closed numeric domain — stays on the eager path)
+
+`i` lexes to a `ComplexToken(0, 1)` in `tokenFactory.buildString`. Because complex
+numbers are closed under `+ - * / ^`, a `ComplexToken` flows through the *normal*
+`solve()` like a number:
+
+- `+`/`-` go through the operand classes (`NumberToken.add` promotes a real to
+  complex; `ComplexToken.add/subtract` cover the rest); `canAdd`/`canSubtract`
+  include `ComplexToken`.
+- `*`/`/` (`makeMulDivFunc`) and `^`/`**` (`makePowFunc`) branch to `cxMul`/`cxDiv`/
+  `cxPow` (in `symbolic/complex.ts`) when an operand is complex.
+- Juxtaposition like `6i` becomes an implicit `*` (see below).
+
+No symbolic AST is involved — the result is just a `ComplexToken`.
+
+### Symbolic algebra (deferred representation — skips the eager path)
+
+A `SymbolToken` (free variable `x`/`y`/`z`, recognised by an exact, post-units
+fallback in `buildString`) can't reduce to a number, so the tree is diverted:
+
+1. **`isSymbolic(head)`** (in `parser.ts`) scans the built tree for a `SymbolToken`
+   or `ExprToken`. (`ComplexToken` deliberately does *not* count.)
+2. If symbolic, `parse()` **skips `solve()`** and instead runs
+   `simplify(parseTreeToExpr(head))`, wrapping the canonical `Expr` in an
+   `ExprToken`. The numeric path is byte-for-byte unchanged for everything else.
+3. `parseTreeToExpr` (`symbolic/from_tree.ts`) translates the operator/function
+   tree into the `Expr` AST (`symbolic/expr.ts`). Subtraction/division normalise to
+   `+`/`*` with `-1` / `^-1`; unary prefix operators (`sin`, …) become `Func` nodes;
+   the keyword functions `simplify` / `derivative` / `integrate` / `limit` build
+   their dedicated AST nodes.
+4. `simplify` (`symbolic/polynomial.ts`) expands to a **canonical polynomial normal
+   form** — a sum of monomials (coefficient × atoms^integer-exp), like terms
+   collected, ordered by descending degree. `render` (`symbolic/render.ts`) prints
+   it back (`-2x^2 + 10`).
+
+**Implicit multiplication.** Two juxtaposed operands where either side is a
+`SymbolToken`/`ComplexToken`/`ExprToken` get an implicit `*` (handled in
+`CompleteState.handleOperand`, alongside the existing unit implicit-`+` for
+`10 meter 30 cm`). This is how `2x`, `6i`, and `(x+1)*(x+2)` parse. Note the lexer
+only splits at a digit→letter boundary, so `2x` works but glued `xy` lexes as one
+unknown word (use `x*y` or `x y`).
+
+**Calculus (computed in `symbolic/calculus.ts`).** After `parseTreeToExpr` captures
+the tree, `parse()` runs `simplify(evaluate(captured))`: `evaluate` walks the `Expr`
+and replaces each `Derivative`/`Integral`/`Limit` node with its computed result —
+exact differentiation (power/product/chain rules + a function-derivative table),
+power-rule integration + a small antiderivative table (definite via FTC, or
+composite-Simpson quadrature when there's no closed form), and limits by continuity
+with a two-sided numeric estimate for `0/0` forms. Anything outside that class
+degrades gracefully: `evaluate` leaves the original node in place (still rendered as
+operator notation) rather than throwing. The resulting `ExprToken` keeps the
+pre-evaluation node as `source` so the editor can render the input notation (∫, d/dx)
+while the value shows the answer. Non-integer coefficients reconstruct to fractions
+at render time (`symbolic/util.ts` `toFraction`; used by `render.ts`/`latex.ts`).
+
+**Scope / what's deferred.** `solve` (equation solving) is still *representation
+only* — the `Equation` node is built and rendered but not solved. Bare-equation input
+(`2x + 3y = 8`) is not yet parsed because the lexer flushes the token before `=`
+as a `VariableNameToken` (which is how assignment `x = 5` keeps working); use the
+function forms for now. Natural calculus syntax (`d/dx`, `∫`, `lim x->0`) is deferred —
+only the function forms (`derivative(2x^2, x)`) compute.
+
+---
+
 ## 12. Common edits — where they belong
 
 | Want to add… | Edit this |
@@ -426,6 +511,10 @@ lib/documentation/
 | A new family of units | `types/unit_enum.ts` (new enum value) + `types/unit_types.ts` (entries + `BASE_UNIT_BY_TYPE` if it has a canonical SI base unit + a case in `dimOfType` if simple units in the family share a dim) + likely `units_processor.ts` if conversion math differs |
 | A new operator (binary/unary) | `types/operator_types.ts` |
 | A new function (statistical etc.) | `function.ts` |
+| A new free-variable symbol | `tokens/token_factory.ts` (the `Symbols` set) — watch for unit collisions |
+| Symbolic simplification / a new `Expr` node | `symbolic/` (`expr.ts` node + `from_tree.ts` capture + `polynomial.ts` math + `render.ts` display) |
+| Differentiation / integration / limit behaviour | `symbolic/calculus.ts` (`differentiate` / `integrate` / `limitOf`, wired through `evaluate`); coefficient/fraction display in `symbolic/util.ts` |
+| Complex-number behaviour | `symbolic/complex.ts` (math) + the complex branches in `types/operator_types.ts` / `tokens.ts` |
 | A new "current time" keyword (like `last fortnight`) | `datetime_operands.ts` |
 | A new way to recognise something in input | Try synonyms/plurals first. Only touch `tokenFactory` if the recognition needs look-back at previous tokens. Only touch the lexer if it's a new *character* class. |
 | Compound-unit absorption rules | `parser/parser_states.ts` (`absorbCompoundUnit`, `parseUnitFactor`, `parseUnitGroupInterior`) |
@@ -447,6 +536,8 @@ lib/documentation/
 - **Parser brackets recurse.** `parse(tokens, index, func)` returns the `index` it stopped at; the parent then splices the result back as if it were a literal token. This means the same token array is consumed cooperatively — be careful if you ever clone or mutate tokens during parse.
 - **Raw operator funcs receive the *children* array.** Non-raw funcs receive *unwrapped numbers* via `getChildrenValues()`. If you write `isRaw: false` but your function expects tokens, it'll silently get numbers. If you write `isRaw: true` but your function expects numbers, you'll get `TokenType[]` and confused arithmetic.
 - **`getNumberType()` derives the result base.** When a non-raw op produces a result, `tokenFactory` is called with `currHead.getNumberType()`, which inspects the left/right child types. Mixed-base operations (e.g. `0b101 + 0x10`) will adopt whichever child the helper finds first — usually fine but worth checking when changing operand handling.
+- **`^` / `**` are raw now.** They were converted from non-raw to raw to support complex bases/exponents. The numeric branch in `makePowFunc` must keep mirroring the old non-raw behaviour (base's number base via `a.numbertype`, ambient `exprUnit` attached). If you touch power handling, re-run the full suite — `2^6`, `256 ^ (1/8)`, `(5 m)^2` all exercise it.
+- **Symbolic operands skip `solve()`.** `parse()` routes any tree containing a `SymbolToken`/`ExprToken` to `simplify(parseTreeToExpr(...))` instead of the numeric solver (see §11). If you add a new operand token, decide whether it is numeric (extend the eager path like `ComplexToken`) or symbolic (extend `isSymbolic` + `parseTreeToExpr`).
 - **POSTFIX-type units have two roles**: as standalone multipliers on numbers (`5 million` → `5000000`, unit dropped) and as prefixes on other units (`5 mega byte` → `MB`). The branch is in `CompleteState.handleUnit` (parser) and `tokenFactory` (lexer/factory) respectively.
 - **The `=` operator stores the variable name on the result token**, not in some symbol table. The consumer reads `result.variableName` from `parseResultIf.meta` after `doParse`. Persistence across lines is the consumer's job (see `calculateExpressions.ts`).
 - **Don't rely on `_children` on `Token`.** It's gone — `OperatorToken` has `left` / `right` / `more`, `FunctionToken` has `args`. The `children` getter on `OperatorToken` returns a *sparse* `[left, right, ...more]` view so legacy destructuring like `([_, n1]) => ...` (used by trig, `~`) still puts the right operand at index 1 when `left` is null. If you write a new raw func, prefer named-field access (`op.right`, `op.left`) over destructuring.

@@ -10,6 +10,7 @@ import { Constants, Units, UnitTypes } from "../types/unit_types";
 import TokenBaseType, { type TokenType } from "./token_basetypes";
 import {
   ColorToken,
+  ComplexToken,
   ControllerToken,
   DateToken,
   FunctionToken,
@@ -17,12 +18,21 @@ import {
   NumberToken,
   OperatorToken,
   StringToken,
+  SymbolToken,
   UndefinedToken,
   UnitToken,
   VariableNameToken,
   type Variables,
   VariableToken,
 } from "./tokens";
+
+// Curated free-variable symbols recognised in symbolic expressions. Matched only
+// as an exact, whole-token fallback (after units / functions / operators /
+// constants / timezones would have claimed the token), so real units and the
+// e/pi constants keep priority and the "unknown word = error" guarantee holds
+// for every identifier outside this set. `x, y, z` are guaranteed; extend
+// deliberately, watching for unit collisions.
+const Symbols = new Set(["x", "y", "z"]);
 
 const NUMBER_BASETYPES = new Set<TokenBaseType>([
   TokenBaseType.DECIMAL,
@@ -318,6 +328,11 @@ function buildString(
     );
   }
   if (value in Operators) return makeOperator(value, originalValue);
+  // Imaginary unit and free symbols. Placed after the unit/function/operator
+  // lookups (so collisions resolve in their favour) but before the fuzzy
+  // timezone match (which would otherwise grab short letters like `x`).
+  if (value === "i") return new ComplexToken(0, 1, originalValue);
+  if (Symbols.has(value)) return new SymbolToken(value, originalValue);
   if (value in DateTimeOperands) {
     return new DateToken(
       value,
