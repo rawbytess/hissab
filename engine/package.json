@@ -1,6 +1,6 @@
 {
   "name": "@rawbytes/hissab",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Hissab engine NPM module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "chroma-js": "3.2.0",
+    "ipaddr.js": "2.4.0",
     "spacetime": "7.7.0",
     "timezone-soft": "1.5.2"
   },

@@ -7,8 +7,12 @@ import { humanize } from "./pro";
 import TokenBaseType, { type TokenType } from "./tokens/token_basetypes";
 import tokenFactory from "./tokens/token_factory";
 import {
+  BooleanToken,
   ColorToken,
   DateToken,
+  FractionToken,
+  IpToken,
+  ListToken,
   NumberToken,
   StringToken,
   UndefinedToken,
@@ -60,7 +64,11 @@ async function doParse(tokens: TokenType[]): Promise<ParseResult> {
   if (
     result instanceof NumberToken ||
     result instanceof DateToken ||
-    result instanceof ColorToken
+    result instanceof ColorToken ||
+    result instanceof IpToken ||
+    result instanceof BooleanToken ||
+    result instanceof FractionToken ||
+    result instanceof ListToken
   ) {
     if (!isExplicit && result instanceof NumberToken) {
       const humanized: string = humanize(result, convertTo);

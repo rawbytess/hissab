@@ -141,11 +141,7 @@ export function AppSidebar({
       </div>
 
       <div className="sb-new-row">
-        <button
-          className="sb-new"
-          type="button"
-          onClick={handleNewNotebook}
-        >
+        <button className="sb-new" type="button" onClick={handleNewNotebook}>
           <Plus size={14} />
           New notebook
         </button>

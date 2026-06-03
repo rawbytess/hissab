@@ -107,7 +107,11 @@ class MCPManager {
 
 function stringifyToolResult(result: unknown): string {
   if (!result || typeof result !== "object") return String(result);
-  const r = result as { content?: unknown[]; toolResult?: unknown; isError?: boolean };
+  const r = result as {
+    content?: unknown[];
+    toolResult?: unknown;
+    isError?: boolean;
+  };
   if (Array.isArray(r.content)) {
     const parts: string[] = [];
     for (const block of r.content) {

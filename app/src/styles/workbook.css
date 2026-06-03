@@ -164,7 +164,9 @@
   align-items: center;
   justify-content: center;
   color: var(--text-3);
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
   cursor: pointer;
   background: none;
   border: none;
@@ -188,7 +190,9 @@
   border: 1px solid var(--line-1);
   color: var(--text-2);
   font-size: 12.5px;
-  transition: border-color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 }
 .sb-search:focus-within {
   border-color: var(--line-3);
@@ -234,7 +238,9 @@
   background: var(--accent);
   border: none;
   border-radius: var(--r-sm);
-  transition: background 0.15s, transform 0.1s;
+  transition:
+    background 0.15s,
+    transform 0.1s;
   cursor: pointer;
   font-family: var(--font-ui);
 }
@@ -341,7 +347,9 @@
   font-size: 13px;
   color: var(--text-1);
   cursor: pointer;
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
   user-select: none;
 }
 .sb-item .pin {
@@ -395,7 +403,10 @@
   place-items: center;
   border-radius: 4px;
   color: var(--text-3);
-  transition: opacity 0.12s, background 0.12s, color 0.12s;
+  transition:
+    opacity 0.12s,
+    background 0.12s,
+    color 0.12s;
   background: none;
   border: none;
   cursor: pointer;
@@ -440,7 +451,9 @@
 }
 .sidebar.edit .sb-item.dragging {
   background: var(--bg-3);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45), 0 0 0 1px var(--line-3);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.45),
+    0 0 0 1px var(--line-3);
   z-index: 10;
 }
 .sidebar.edit .sb-item.drop-above::before {
@@ -482,7 +495,9 @@
   place-items: center;
   border-radius: 4px;
   color: var(--text-3);
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
   background: none;
   border: none;
   cursor: pointer;
@@ -512,7 +527,9 @@
   border-radius: var(--r-sm);
   font-size: 12.5px;
   color: var(--text-1);
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
   background: none;
   border: none;
   cursor: pointer;
@@ -554,7 +571,9 @@
   align-items: center;
   justify-content: center;
   color: var(--text-2);
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
   background: none;
   border: none;
   cursor: pointer;
@@ -1057,7 +1076,9 @@
   place-items: center;
   border-radius: 4px;
   color: var(--text-3);
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
   background: none;
   border: none;
   cursor: pointer;
@@ -1138,7 +1159,9 @@
   background: var(--bg-2);
   border: 1px solid var(--line-1);
   cursor: pointer;
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
 }
 .t-prompt-tools .tool:hover {
   background: var(--bg-3);
@@ -1378,7 +1401,9 @@
   font-size: 11.5px;
   color: var(--text-1);
   margin: 4px 0 8px;
-  transition: background 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
   align-self: flex-start;
   white-space: nowrap;
   cursor: pointer;
@@ -1436,7 +1461,8 @@
   color: var(--accent);
 }
 @keyframes trace-ring {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 var(--accent-soft);
   }
   50% {
@@ -1654,7 +1680,9 @@
   background: var(--bg-1);
   border: 1px solid var(--line-2);
   border-radius: var(--r-sm);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.02);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.02);
   padding: 4px;
   z-index: 50;
   animation: pop-in 0.14s ease-out;
@@ -1726,7 +1754,9 @@
   border: 1px solid var(--line-2);
   border-radius: var(--r-sm);
   overflow: hidden;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 .nb2-expressions-cell:focus-within {
   border-color: var(--accent);
@@ -1734,11 +1764,15 @@
 }
 .nb2-expressions-cell.ai-sourced {
   border-color: var(--agent-soft);
-  box-shadow: inset 3px 0 0 var(--agent), 0 0 0 4px var(--agent-faint);
+  box-shadow:
+    inset 3px 0 0 var(--agent),
+    0 0 0 4px var(--agent-faint);
 }
 .nb2-expressions-cell.ai-sourced:focus-within {
   border-color: var(--agent);
-  box-shadow: inset 3px 0 0 var(--agent), 0 0 0 3px var(--agent-faint);
+  box-shadow:
+    inset 3px 0 0 var(--agent),
+    0 0 0 3px var(--agent-faint);
 }
 .nb2-editor-header {
   display: grid;
@@ -1747,8 +1781,8 @@
   gap: 10px;
   height: 30px;
   padding: 0 8px 0 12px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent),
-    var(--bg-1);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent), var(--bg-1);
   border-bottom: 1px solid var(--line-1);
   font-family: var(--font-ui);
   font-size: 11.5px;
@@ -1815,7 +1849,9 @@
   place-items: center;
   border-radius: 4px;
   color: var(--text-3);
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
   background: none;
   border: none;
   cursor: pointer;
@@ -1911,7 +1947,9 @@
   background: var(--bg-0);
   border: 1px solid var(--line-3);
   border-radius: var(--r-md);
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
   position: relative;
 }
 .composer-file-input {
@@ -2203,7 +2241,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4),
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.4),
     0 0 0 4px var(--accent-faint);
   font-size: 12.5px;
   color: var(--text-1);
@@ -2364,7 +2403,9 @@
   border-radius: var(--r-sm);
   font-size: 13px;
   color: var(--text-2);
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
   background: none;
   border: none;
   cursor: pointer;
@@ -2787,7 +2828,9 @@
   padding: 8px 10px;
   border: 1px solid transparent;
   border-radius: var(--r-sm);
-  transition: background 0.12s, border-color 0.12s;
+  transition:
+    background 0.12s,
+    border-color 0.12s;
 }
 .model-row:hover {
   background: var(--bg-1);
@@ -2805,7 +2848,9 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.12s, border-color 0.12s;
+  transition:
+    background 0.12s,
+    border-color 0.12s;
   background: none;
   flex-shrink: 0;
 }
@@ -2888,7 +2933,10 @@
   border-radius: var(--r-sm);
   font-size: 12.5px;
   font-weight: 500;
-  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    color 0.12s;
   font-family: var(--font-ui);
   border: none;
   cursor: pointer;
@@ -2946,7 +2994,11 @@
   width: 22px;
   height: 22px;
   display: inline-block;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--accent) 0%,
+    var(--accent-strong) 100%
+  );
   -webkit-mask: url(/logo_blk.svg) center / contain no-repeat;
   mask: url(/logo_blk.svg) center / contain no-repeat;
 }
@@ -3210,7 +3262,8 @@
   }
 }
 @keyframes blink-caret {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.65;
   }
   50% {

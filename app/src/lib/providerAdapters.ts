@@ -52,7 +52,8 @@ export function createProviderClient(
   provider: Provider,
   cfg: ProviderConfig,
 ): LLMClient {
-  const sdk = provider === "custom" ? cfg.sdk : providerSdkForProvider(provider);
+  const sdk =
+    provider === "custom" ? cfg.sdk : providerSdkForProvider(provider);
   if (sdk === "gemini") return createGeminiClient(provider, cfg);
   if (sdk === "anthropic") return createAnthropicClient(provider, cfg);
   return createOpenAICompatibleClient(provider, cfg);
@@ -106,7 +107,10 @@ function lazyOpenAIClient(provider: Provider, cfg: ProviderConfig) {
   };
 }
 
-function createGeminiClient(provider: Provider, cfg: ProviderConfig): LLMClient {
+function createGeminiClient(
+  provider: Provider,
+  cfg: ProviderConfig,
+): LLMClient {
   const ai = lazyGeminiClient(provider, cfg);
   return {
     provider,
@@ -276,7 +280,8 @@ function toGeminiContent(
       parts: [
         {
           functionResponse: {
-            name: toolCallNames.get(message.tool_call_id) ?? message.tool_call_id,
+            name:
+              toolCallNames.get(message.tool_call_id) ?? message.tool_call_id,
             response: { result: message.content },
           },
         },
@@ -315,7 +320,10 @@ function contentToGeminiParts(content: unknown): GeminiPart[] {
   return parts;
 }
 
-function fromGeminiResponse(model: string, response: JsonRecord): ChatCompletion {
+function fromGeminiResponse(
+  model: string,
+  response: JsonRecord,
+): ChatCompletion {
   const candidate = ((response.candidates as JsonRecord[] | undefined)?.[0] ??
     {}) as JsonRecord;
   const content = (candidate.content as JsonRecord | undefined) ?? {};
@@ -410,7 +418,8 @@ function toAnthropicMessage(message: ChatCompletionMessageParam): {
 }
 
 function contentToAnthropicBlocks(content: unknown): AnthropicBlock[] {
-  if (typeof content === "string") return content ? [{ type: "text", text: content }] : [];
+  if (typeof content === "string")
+    return content ? [{ type: "text", text: content }] : [];
   if (!Array.isArray(content)) return [];
   const blocks: AnthropicBlock[] = [];
   for (const item of content as JsonRecord[]) {
@@ -717,12 +726,10 @@ function contentToText(content: unknown): string {
     .join("\n");
 }
 
-function parseDataUrl(dataUrl: string):
-  | {
-      mimeType: string;
-      base64: string;
-    }
-  | null {
+function parseDataUrl(dataUrl: string): {
+  mimeType: string;
+  base64: string;
+} | null {
   const match = dataUrl.match(/^data:([^;,]+);base64,(.+)$/);
   if (!match) return null;
   return { mimeType: match[1], base64: match[2] };

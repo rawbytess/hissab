@@ -1,12 +1,5 @@
 import { useAtom, useSetAtom } from "jotai";
-import {
-  ArrowUp,
-  ChevronDown,
-  FileText,
-  Paperclip,
-  X,
-} from "lucide-react";
-import { ToolsMenu } from "@/components/notebook/ToolsMenu.tsx";
+import { ArrowUp, ChevronDown, FileText, Paperclip, X } from "lucide-react";
 import {
   type ChangeEvent,
   forwardRef,
@@ -16,6 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { ToolsMenu } from "@/components/notebook/ToolsMenu.tsx";
 import { type EnabledModel, useCurrentLLM } from "@/hooks/useCurrentLLM.tsx";
 import { aiProviders } from "@/lib/aiProviders.ts";
 import {
@@ -27,8 +21,8 @@ import {
   formatFileSize,
   getNotebookFileFromIDB,
   isSupportedNotebookFile,
-  saveBrowserFileToIDB,
   type StoredNotebookFile,
+  saveBrowserFileToIDB,
 } from "@/lib/idb-stores/file-store.ts";
 
 interface ComposerProps {
@@ -155,7 +149,9 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
 
     const handleRemoveFile = (fileId: string) => {
       const nextFileIds = fileIds.filter((id) => id !== fileId);
-      setAttachedFiles((current) => current.filter((file) => file.id !== fileId));
+      setAttachedFiles((current) =>
+        current.filter((file) => file.id !== fileId),
+      );
       updateNotebookFileIds(nextFileIds);
     };
 
@@ -166,12 +162,13 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
       currentEnabled?.label ??
       (enabledModels.length === 0 ? "No models" : "Select model");
 
-    const groupedModels = enabledModels.reduce<
-      Record<string, EnabledModel[]>
-    >((acc, m) => {
-      (acc[m.provider] ??= []).push(m);
-      return acc;
-    }, {});
+    const groupedModels = enabledModels.reduce<Record<string, EnabledModel[]>>(
+      (acc, m) => {
+        (acc[m.provider] ??= []).push(m);
+        return acc;
+      },
+      {},
+    );
 
     const handleSelectModel = (m: EnabledModel) => {
       setDefaultModel(m.composite);

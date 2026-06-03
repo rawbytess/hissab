@@ -1,0 +1,31 @@
+# Probability — P() literal, complement/AND/OR/xor via ~ & | xor, and helpers.
+# Values < 1 render to 3 significant figures (see NumberToken.formatResult).
+
+# P() defines a probability; accepts a fraction or a percent.
+["p(0.1)", "0.1"]
+["p(10%)", "0.1"]
+["probability(0.4)", "0.4"]
+
+# ~ is complement, & is intersection (AND), | is union (OR), xor is "exactly one".
+["~p(0.2)", "0.8"]
+["p(0.5) & p(0.3)", "0.15"]
+["p(0.5) | p(0.3)", "0.65"]
+["p(0.5) xor p(0.3)", "0.5"]
+
+# Tagged results chain; & binds tighter than | (AND before OR).
+["p(0.2) & p(0.3) & p(0.1)", "0.006"]
+["p(0.1) | p(0.2) & p(0.5)", "0.19"]
+
+# A bare number combined with a probability is treated as a probability.
+["p(0.2) & 0.3", "0.06"]
+
+# Plain arithmetic works on the underlying values.
+["p(0.3) - p(0.1)", "0.2"]
+
+# Higher-level helpers.
+["conditional(0.12, 0.3)", "0.4"]
+["bayes(0.01, 0.9, 0.05)", "0.154"]
+["odds(0.75)", "3"]
+["probability from odds(3)", "0.75"]
+["binomial(10, 3, 0.5)", "0.117"]
+["expected value(10, 0.5, 20, 0.5)", "15"]

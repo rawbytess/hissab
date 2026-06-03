@@ -4,14 +4,17 @@ export const OPERATION_TAGS = [
   "unit_conversion",
   "compound_units",
   "set_operations",
+  "number_theory",
   "logarithm",
   "statistics",
+  "probability",
   "finance",
   "trigonometry",
   "date_time",
   "number_systems",
   "bitwise",
   "color",
+  "ip_address",
   "labels_and_prev",
 ] as const;
 
@@ -25,9 +28,13 @@ export const tagDescriptions: Record<OperationTag, string> = {
   compound_units:
     "Compound units like m/s, N*m^2, mph; dimensional arithmetic and conversion",
   set_operations: "max, min, lcm, gcd, permutation (perm), combination (comb)",
+  number_theory:
+    "Reduce decimals to fractions / mixed numbers, test primality, list divisors",
   logarithm: "Natural log, log10, log2",
   statistics:
     "avg, median, range, variance, standard / harmonic / geometric mean",
+  probability:
+    "P() probabilities, complement/AND/OR via ~ & |, conditional, Bayes, odds, binomial, expected value",
   finance:
     "Simple & compound interest, future/present value, loan & mortgage EMI, annuities, CAGR, ROI, APY, profit margin, markup, break-even, runway",
   trigonometry:
@@ -39,6 +46,8 @@ export const tagDescriptions: Record<OperationTag, string> = {
   bitwise: "NOT (~), AND (&), OR (|), XOR (xor), left/right shifts",
   color:
     "Hex / rgb / rgba / hsl / named colors; format conversion, mixing, shading, complement, temperature",
+  ip_address:
+    "IPv4 & IPv6 addresses and CIDR: format conversion, address arithmetic, bitwise masking, subnet/network/broadcast/host math, classification",
   labels_and_prev:
     "Label expressions with `=`, reference earlier results via labels or the `prev` keyword",
 };

@@ -214,7 +214,9 @@ export async function getFileFromIDB(
   return base64ToArrayBuffer(file.content.data);
 }
 
-export async function listNotebookFilesFromIDB(): Promise<StoredNotebookFile[]> {
+export async function listNotebookFilesFromIDB(): Promise<
+  StoredNotebookFile[]
+> {
   const fileKeys = await keys(fileStore);
   const files = await Promise.all(
     fileKeys.map((key) => getNotebookFileFromIDB(String(key))),

@@ -231,7 +231,10 @@ export async function runNotebookAI(
           notebook,
           history,
         ).catch((error) => {
-          console.error("Failed to plan notebook expression operations:", error);
+          console.error(
+            "Failed to plan notebook expression operations:",
+            error,
+          );
           return [];
         });
 

@@ -7,6 +7,8 @@ import {
   ColorToken,
   type colorTypes,
   DateToken,
+  IpToken,
+  type ipFormat,
   NumberToken,
   type UnitToken,
 } from "../tokens/tokens";
@@ -1687,12 +1689,13 @@ const Units: UnitsIF = {
 
   hex: {
     type: UnitTypes.FUNCTION,
-    description: "Convert color or number to hexadecimal (base 16)",
+    description: "Convert color, number or IP to hexadecimal (base 16)",
     func: (token) => {
       if (token instanceof ColorToken) {
         token.unit = "HEX";
         return token;
       }
+      if (token instanceof IpToken) return toIpFormat(token, "HEX");
       if (token instanceof NumberToken) {
         return tokenFactory(
           token.formatString(token.toNumber(), TokenBaseType.HEX),
@@ -1705,8 +1708,9 @@ const Units: UnitsIF = {
 
   binary: {
     type: UnitTypes.FUNCTION,
-    description: "Convert number to binary (base 2)",
+    description: "Convert number or IP to binary (base 2)",
     func: (token) => {
+      if (token instanceof IpToken) return toIpFormat(token, "BINARY");
       if (token instanceof NumberToken) {
         return tokenFactory(
           token.formatString(token.toNumber(), TokenBaseType.BINARY),
@@ -1731,8 +1735,9 @@ const Units: UnitsIF = {
   },
   decimal: {
     type: UnitTypes.FUNCTION,
-    description: "Convert number to decimal (base 10)",
+    description: "Convert number to decimal (base 10), or IP to its integer",
     func: (token) => {
+      if (token instanceof IpToken) return toIpFormat(token, "INTEGER");
       if (token instanceof NumberToken) {
         return tokenFactory(
           token.formatString(token.toNumber(), TokenBaseType.DECIMAL),
@@ -1741,6 +1746,26 @@ const Units: UnitsIF = {
       }
       throw new UnhandledError(534);
     },
+  },
+  integer: {
+    type: UnitTypes.FUNCTION,
+    description: "Convert an IP address to its integer value (32/128-bit)",
+    func: (token) => toIpFormat(token, "INTEGER"),
+  },
+  expanded: {
+    type: UnitTypes.FUNCTION,
+    description: "Expand an IPv6 address to its full zero-padded form",
+    func: (token) => toIpFormat(token, "EXPANDED"),
+  },
+  compressed: {
+    type: UnitTypes.FUNCTION,
+    description: "Compress an IPv6 address to its canonical RFC 5952 form",
+    func: (token) => toIpFormat(token, "COMPRESSED"),
+  },
+  cidr: {
+    type: UnitTypes.FUNCTION,
+    description: "Render an IP address in CIDR notation (address/prefix)",
+    func: (token) => toIpFormat(token, "CIDR"),
   },
 
   "rgb color": {
@@ -2294,6 +2319,18 @@ function toColors(token: TokenType, unit: colorTypes) {
     ) as ColorToken;
     colorToken.unit = unit;
     return colorToken;
+  }
+  throw new UnhandledError(534);
+}
+
+// `to <form>` for IP addresses just retags the output format (mirrors
+// toColors), since the address value is unchanged. Number → IP (the inverse)
+// is the `ipv4()` / `ipv6()` functions instead, since a digit-suffixed unit
+// name can't survive the lexer's multi-word handling after `to`.
+function toIpFormat(token: TokenType, unit: ipFormat) {
+  if (token instanceof IpToken) {
+    token.unit = unit;
+    return token;
   }
   throw new UnhandledError(534);
 }

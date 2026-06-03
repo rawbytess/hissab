@@ -30,9 +30,7 @@ export function SkillsForm() {
       if (existingId) {
         setSkills(
           skills.map((s) =>
-            s.id === existingId
-              ? { ...s, ...parsed, raw, updatedAt: now }
-              : s,
+            s.id === existingId ? { ...s, ...parsed, raw, updatedAt: now } : s,
           ),
         );
       } else {
@@ -132,7 +130,9 @@ function SkillCard({
 }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className={`mcp-card${open ? " open" : ""}${skill.enabled ? " enabled" : ""}`}>
+    <div
+      className={`mcp-card${open ? " open" : ""}${skill.enabled ? " enabled" : ""}`}
+    >
       <button
         type="button"
         className="mcp-head"
@@ -221,11 +221,7 @@ function SkillEditor({
           >
             Save
           </button>
-          <button
-            type="button"
-            className="wb-btn ghost"
-            onClick={onCancel}
-          >
+          <button type="button" className="wb-btn ghost" onClick={onCancel}>
             Cancel
           </button>
         </div>

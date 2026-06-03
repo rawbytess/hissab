@@ -28,9 +28,7 @@ export function parseSkillMarkdown(raw: string): ParsedSkill {
   }
 
   const allowedToolsRaw = fields["allowed-tools"] ?? fields.allowed_tools;
-  const allowedTools = allowedToolsRaw
-    ? parseList(allowedToolsRaw)
-    : undefined;
+  const allowedTools = allowedToolsRaw ? parseList(allowedToolsRaw) : undefined;
 
   return {
     name,
@@ -55,7 +53,7 @@ function parseFrontmatter(src: string): Record<string, string> {
       throw new Error(`Cannot parse frontmatter line: \`${line}\``);
     }
     const key = m[1];
-    let value = m[2];
+    const value = m[2];
     if (value === "|" || value === ">") {
       const folded = value === ">";
       const chunk: string[] = [];
@@ -90,7 +88,7 @@ function indentOf(line: string): number {
 
 function stripQuotes(v: string): string {
   if (
-    (v.startsWith("\"") && v.endsWith("\"")) ||
+    (v.startsWith('"') && v.endsWith('"')) ||
     (v.startsWith("'") && v.endsWith("'"))
   ) {
     return v.slice(1, -1);

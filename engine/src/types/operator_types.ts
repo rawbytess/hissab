@@ -8,6 +8,7 @@ import {
   ColorToken,
   DateToken,
   type expressionUnit,
+  IpToken,
   NumberToken,
   UnitToken,
 } from "../tokens/tokens";
@@ -28,7 +29,18 @@ const Operators: operatorType = {
   "~": {
     precedence: 1,
     operands: ["postnumber"],
-    func: async ([_, n1]: NumberToken[] | ColorToken[]) => {
+    func: async ([_, n1]: TokenType[]) => {
+      // ~P(a) → complement 1 - a, kept tagged so it can feed further prob ops.
+      if (n1 instanceof NumberToken && n1.probability) {
+        const x = n1.toNumber();
+        if (x < 0 || x > 1) throw new UserError(7905);
+        const result = tokenFactory(
+          (1 - x).toString(),
+          n1.numbertype,
+        ) as NumberToken;
+        result.probability = true;
+        return result;
+      }
       if (n1 instanceof NumberToken)
         return tokenFactory((~n1.toNumber()).toString(), n1.numbertype);
 
@@ -42,6 +54,9 @@ const Operators: operatorType = {
         colorToken.unit = n1.unit;
         return colorToken;
       }
+      // ~mask → wildcard mask. withAddress folds the BigInt NOT back into the
+      // family width (32/128), so ~255.255.255.0 → 0.0.0.255.
+      if (n1 instanceof IpToken) return n1.withAddress(~n1.address);
       throw new UserError(5729);
     },
     isRaw: true,
@@ -156,23 +171,24 @@ const Operators: operatorType = {
   "&": {
     precedence: 19,
     operands: ["prenumber", "postnumber"],
-    func: (n1: number, n2: number): number => n1 & n2,
-    isRaw: false,
-    description: "Boolean And operator",
+    func: makeBitwiseFunc("&"),
+    isRaw: true,
+    description:
+      "Bitwise AND operator (ip & mask → network address, or numbers)",
   },
   "|": {
     precedence: 20,
     operands: ["prenumber", "postnumber"],
-    func: (n1: number, n2: number): number => n1 | n2,
-    isRaw: false,
-    description: "Boolean Not operator",
+    func: makeBitwiseFunc("|"),
+    isRaw: true,
+    description: "Bitwise OR operator (ip | wildcard → broadcast, or numbers)",
   },
   xor: {
     precedence: 21,
     operands: ["prenumber", "postnumber"],
-    func: (n1: number, n2: number): number => n1 ^ n2,
-    isRaw: false,
-    description: "Boolean XOR operator",
+    func: makeBitwiseFunc("xor"),
+    isRaw: true,
+    description: "Bitwise XOR operator (ip or numbers)",
   },
   ">>": {
     precedence: 21,
@@ -216,7 +232,8 @@ const Operators: operatorType = {
       if (
         (params[0] instanceof NumberToken ||
           params[0] instanceof DateToken ||
-          params[0] instanceof ColorToken) &&
+          params[0] instanceof ColorToken ||
+          params[0] instanceof IpToken) &&
         params[1] instanceof UnitToken
       ) {
         if (params[0] instanceof NumberToken && params.length > 2) {
@@ -478,16 +495,64 @@ function makeMulDivFunc(sign: 1 | -1) {
   };
 }
 
-// Operand interface check for + and -. NumberToken/DateToken/ColorToken all
-// implement add; UnitToken adds subtract (city/city diff) but not add. Tokens
-// that don't implement either fall through to the raise in the operator func.
+// Bitwise &/|/xor. When both operands are IPs (`ip & mask`), the op runs over
+// the BigInt addresses and yields an IpToken (network/broadcast/…). Otherwise
+// it reproduces the original 32-bit numeric behaviour, keeping the left
+// operand's base (so `0x.. xor 0o..` stays hex) and the ambient unit.
+function makeBitwiseFunc(op: "&" | "|" | "xor") {
+  return async (params: TokenType[], exprUnit: expressionUnit) => {
+    const [a, b] = params;
+    if (a instanceof IpToken && b instanceof IpToken) {
+      if (a.version !== b.version) throw new UserError(7304);
+      const res =
+        op === "&"
+          ? a.address & b.address
+          : op === "|"
+            ? a.address | b.address
+            : a.address ^ b.address;
+      return a.withAddress(res, a.prefix ?? b.prefix);
+    }
+    // Probability overload: if either side is a tagged probability, treat both
+    // as probabilities (independent events). `&` is intersection (a·b), `|` is
+    // union (a+b-a·b), `xor` is symmetric difference (a+b-2a·b). The result is
+    // kept tagged so `P(a) & P(b) & P(c)` chains. `5 & 3` (no P) stays bitwise.
+    if (
+      a instanceof NumberToken &&
+      b instanceof NumberToken &&
+      (a.probability || b.probability)
+    ) {
+      const x = a.toNumber();
+      const y = b.toNumber();
+      if (x < 0 || x > 1 || y < 0 || y > 1) throw new UserError(7905);
+      const res =
+        op === "&" ? x * y : op === "|" ? x + y - x * y : x + y - 2 * x * y;
+      const result = tokenFactory(res.toString(), a.numbertype) as NumberToken;
+      result.probability = true;
+      return result;
+    }
+    if (a instanceof NumberToken && b instanceof NumberToken) {
+      const x = a.toNumber();
+      const y = b.toNumber();
+      const res = op === "&" ? x & y : op === "|" ? x | y : x ^ y;
+      const result = tokenFactory(res.toString(), a.numbertype) as NumberToken;
+      if (exprUnit) result.unit = exprUnit;
+      return result;
+    }
+    throw new UserError(7305);
+  };
+}
+
+// Operand interface check for + and -. NumberToken/DateToken/ColorToken/IpToken
+// all implement add; UnitToken adds subtract (city/city diff) but not add.
+// Tokens that don't implement either fall through to the raise in the func.
 type Addable = { add: (...args: any[]) => Promise<any> | any };
 type Subtractable = { subtract: (...args: any[]) => Promise<any> | any };
 function canAdd(t: TokenType | undefined): t is TokenType & Addable {
   return (
     t instanceof NumberToken ||
     t instanceof DateToken ||
-    t instanceof ColorToken
+    t instanceof ColorToken ||
+    t instanceof IpToken
   );
 }
 function canSubtract(t: TokenType | undefined): t is TokenType & Subtractable {
@@ -495,6 +560,7 @@ function canSubtract(t: TokenType | undefined): t is TokenType & Subtractable {
     t instanceof NumberToken ||
     t instanceof DateToken ||
     t instanceof ColorToken ||
+    t instanceof IpToken ||
     t instanceof UnitToken
   );
 }

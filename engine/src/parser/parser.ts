@@ -6,6 +6,7 @@ import {
   DateToken,
   Direction,
   FunctionToken,
+  IpToken,
   NumberToken,
   OperatorToken,
   StringToken,
@@ -51,6 +52,8 @@ async function parse(
       parseState = parseState.handleDate(parseTree, token);
     else if (token instanceof ColorToken)
       parseState = parseState.handleColor(parseTree, token);
+    else if (token instanceof IpToken)
+      parseState = parseState.handleIp(parseTree, token);
     else if (token instanceof OperatorToken)
       parseState = parseState.handleOperator(parseTree, token);
     else if (token instanceof FunctionToken)
@@ -108,6 +111,8 @@ async function parse(
               parseState = await parseState.handleOperand(parseTree, result);
             else if (result instanceof DateToken)
               parseState = parseState.handleDate(parseTree, result);
+            else if (result instanceof IpToken)
+              parseState = parseState.handleIp(parseTree, result);
           }
           parseState = CompleteState;
         }

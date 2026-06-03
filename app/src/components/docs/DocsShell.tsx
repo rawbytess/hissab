@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { BookOpen } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { defaultDocSlug, docSections, findDoc } from "@/docs/registry.ts";
 import "@/styles/docs.css";
@@ -69,7 +69,9 @@ export default function DocsShell() {
                 {formatCrumbTitle(section.title)}
               </span>
             )}
-            <span className="docs-topbar-crumb">{page?.title ?? "Loading"}</span>
+            <span className="docs-topbar-crumb">
+              {page?.title ?? "Loading"}
+            </span>
           </div>
         </header>
         <div className="wb-body">

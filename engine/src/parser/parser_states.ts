@@ -8,6 +8,7 @@ import {
   type DateToken,
   type expressionUnit,
   FunctionToken,
+  type IpToken,
   NumberToken,
   OperatorToken,
   type StringToken,
@@ -297,6 +298,14 @@ class FreshParseState {
     return CompleteState;
   }
 
+  static handleIp(
+    parseTree: ParseTreeType,
+    ipToken: IpToken,
+  ): ParserStateTypes {
+    parseTree.head = ipToken;
+    return CompleteState;
+  }
+
   static handleString(
     parseTree: ParseTreeType,
     stringToken: StringToken | VariableNameToken,
@@ -385,6 +394,13 @@ class CompleteState {
   static handleColor(
     _parseTree: ParseTreeType,
     _colorToken: ColorToken,
+  ): ParserStateTypes {
+    throw new UnhandledError(0);
+  }
+
+  static handleIp(
+    _parseTree: ParseTreeType,
+    _ipToken: IpToken,
   ): ParserStateTypes {
     throw new UnhandledError(0);
   }
@@ -533,6 +549,14 @@ class NeedNumberState {
     return CompleteState;
   }
 
+  static handleIp(
+    parseTree: ParseTreeType,
+    ipToken: IpToken,
+  ): ParserStateTypes {
+    expectOperator(parseTree).right = ipToken;
+    return CompleteState;
+  }
+
   static handleDate(
     parseTree: ParseTreeType,
     dateToken: DateToken,
@@ -607,6 +631,13 @@ class NeedUnitState {
     throw new UserError(211);
   }
 
+  static handleIp(
+    _parseTree: ParseTreeType,
+    _ipToken: IpToken,
+  ): ParserStateTypes {
+    throw new UserError(211);
+  }
+
   static handleOperator(): ParserStateTypes {
     throw new UserError(212);
   }
@@ -677,6 +708,16 @@ class FunctionState {
     return FunctionState;
   }
 
+  static handleIp(
+    parseTree: ParseTreeType,
+    ipToken: IpToken,
+  ): ParserStateTypes {
+    if (!(parseTree.currentpt instanceof FunctionToken))
+      throw new UnhandledError(1234);
+    parseTree.currentpt?.insertChild(ipToken);
+    return FunctionState;
+  }
+
   static handleOperator(): ParserStateTypes {
     throw new UserError(215);
   }
@@ -721,6 +762,12 @@ class PreNumberState {
   static handleColor(
     _parseTree: ParseTreeType,
     _colorToken: ColorToken,
+  ): ParserStateTypes {
+    throw new UserError(207);
+  }
+  static handleIp(
+    _parseTree: ParseTreeType,
+    _ipToken: IpToken,
   ): ParserStateTypes {
     throw new UserError(207);
   }
@@ -775,6 +822,12 @@ class CombineNumberState {
   static handleColor(
     _parseTree: ParseTreeType,
     _colorToken: ColorToken,
+  ): ParserStateTypes {
+    throw new UserError(207);
+  }
+  static handleIp(
+    _parseTree: ParseTreeType,
+    _ipToken: IpToken,
   ): ParserStateTypes {
     throw new UserError(207);
   }

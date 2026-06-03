@@ -1,6 +1,7 @@
 import chroma from "chroma-js";
 import spacetime, { type Spacetime, type TimeUnit } from "spacetime";
 import { UnhandledError, UserError } from "../exceptions";
+import * as ip from "../ip";
 import UnitTypes from "../types/unit_enum";
 import {
   baseSiFactor,
@@ -73,6 +74,11 @@ class NumberToken extends Token {
   numbertype: TokenBaseType;
   private _unit: expressionUnit;
   percent: boolean;
+  // Tags a dimensionless value in [0,1] as a probability. Lets `&`/`|`/`~`/`xor`
+  // overload onto probability math (P(a) & P(b) → a·b) instead of integer
+  // bitwise ops, the same way they overload onto IpToken. Set by P(...) and the
+  // probability functions; propagated onto their results so chains keep working.
+  probability = false;
 
   constructor(
     value: string,
@@ -515,6 +521,174 @@ class ColorToken extends Token {
   }
 }
 
+// Output representation an IpToken renders as — the IP analogue of
+// ColorToken.unit. DEFAULT/COMPRESSED give the canonical textual form
+// (dotted-decimal v4, RFC 5952 v6); the rest are explicit `to <form>` targets.
+export type ipFormat =
+  | "DEFAULT"
+  | "COMPRESSED"
+  | "INTEGER"
+  | "BINARY"
+  | "HEX"
+  | "EXPANDED"
+  | "CIDR";
+
+// IPv4/IPv6 address. `address` is the numeric value as a BigInt (32-bit for v4,
+// 128-bit for v6); `prefix` is the CIDR length when written as `a.b.c.d/n`.
+// All arithmetic/subnet math lives in ../ip.ts so v4 and v6 stay uniform.
+class IpToken extends Token {
+  kind = "ipToken";
+  version: ip.IpVersion;
+  address: bigint;
+  prefix: number | null;
+  unit: ipFormat;
+
+  constructor(
+    value: string,
+    originalValue: string,
+    version: ip.IpVersion,
+    address: bigint,
+    prefix: number | null = null,
+    unit: ipFormat = "DEFAULT",
+  ) {
+    super(value, originalValue);
+    this.version = version;
+    this.address = address;
+    this.prefix = prefix;
+    this.unit = unit;
+  }
+
+  isOperand() {
+    return true;
+  }
+
+  // Build a same-version sibling for a computed address (network, offset, …),
+  // wrapping into range. Keeps operators/conversions/functions terse.
+  withAddress(address: bigint, prefix: number | null = null): IpToken {
+    const masked = address & ip.maxAddress(this.version);
+    const str = masked.toString();
+    return new IpToken(str, str, this.version, masked, prefix);
+  }
+
+  getString(): string {
+    if (this.unit === "INTEGER") return this.address.toString();
+    if (this.unit === "BINARY") return ip.toBinary(this.address, this.version);
+    if (this.unit === "HEX") return ip.toHex(this.address, this.version);
+    const base =
+      this.unit === "EXPANDED"
+        ? ip.toExpanded(this.address, this.version)
+        : ip.toCanonical(this.address, this.version);
+    // DEFAULT/COMPRESSED/CIDR/EXPANDED keep the CIDR suffix when present.
+    if (this.prefix !== null) return `${base}/${this.prefix}`;
+    return base;
+  }
+
+  add(token: TokenType, _expUnit: expressionUnit) {
+    if (token instanceof NumberToken) {
+      const next = this.address + BigInt(Math.trunc(token.toNumber()));
+      if (next < 0n || next > ip.maxAddress(this.version))
+        throw new UserError(7302);
+      return this.withAddress(next, this.prefix);
+    }
+    throw new UserError(7301);
+  }
+
+  subtract(token: TokenType, _expUnit: expressionUnit) {
+    // ip - ip → host-count distance (a plain number).
+    if (token instanceof IpToken) {
+      if (token.version !== this.version) throw new UserError(7304);
+      const diff = this.address - token.address;
+      return tokenFactory(
+        (diff < 0n ? -diff : diff).toString(),
+        TokenBaseType.DECIMAL,
+      );
+    }
+    if (token instanceof NumberToken) {
+      const next = this.address - BigInt(Math.trunc(token.toNumber()));
+      if (next < 0n || next > ip.maxAddress(this.version))
+        throw new UserError(7302);
+      return this.withAddress(next, this.prefix);
+    }
+    throw new UserError(7303);
+  }
+}
+
+// A boolean result (`true` / `false`). The engine had no boolean type; this is
+// produced by predicate functions (`contains`, `isprivate`, …) and is meant to
+// be reused by future predicates. It's a terminal result token — never lexed
+// from input in v1 — so it only needs to render and be accepted by doParse.
+class BooleanToken extends Token {
+  kind = "booleanToken";
+  bool: boolean;
+
+  constructor(bool: boolean, originalValue = bool.toString()) {
+    super(bool.toString(), originalValue);
+    this.bool = bool;
+  }
+
+  isOperand() {
+    return true;
+  }
+
+  getString(): string {
+    return this.bool ? "true" : "false";
+  }
+}
+
+// A reduced-fraction result (`3/4`, `5/2`, `2 1/2`). Like BooleanToken this is a
+// terminal result token — never lexed from input — produced by `fraction` /
+// `mixed fraction`. `numerator`/`denominator` are already reduced (gcd 1, so a
+// denominator of 1 means the value is a whole number). `mixed` renders an
+// improper fraction as a whole part plus a proper remainder.
+class FractionToken extends Token {
+  kind = "fractionToken";
+  numerator: number;
+  denominator: number;
+  mixed: boolean;
+
+  constructor(numerator: number, denominator: number, mixed = false) {
+    super(`${numerator}/${denominator}`, `${numerator}/${denominator}`);
+    this.numerator = numerator;
+    this.denominator = denominator;
+    this.mixed = mixed;
+  }
+
+  isOperand() {
+    return true;
+  }
+
+  getString(): string {
+    if (this.denominator === 1) return this.numerator.toString();
+    if (this.mixed && Math.abs(this.numerator) > this.denominator) {
+      const whole = Math.trunc(this.numerator / this.denominator);
+      const remainder = Math.abs(this.numerator) % this.denominator;
+      if (remainder === 0) return whole.toString();
+      return `${whole} ${remainder}/${this.denominator}`;
+    }
+    return `${this.numerator}/${this.denominator}`;
+  }
+}
+
+// An ordered list of numbers (`1, 2, 3, 4, 6, 12`). Terminal result token
+// produced by `factors`; renders as a comma-separated list.
+class ListToken extends Token {
+  kind = "listToken";
+  values: number[];
+
+  constructor(values: number[]) {
+    super(values.join(", "), values.join(", "));
+    this.values = values;
+  }
+
+  isOperand() {
+    return true;
+  }
+
+  getString(): string {
+    return this.values.join(", ");
+  }
+}
+
 // One factor in a compound unit: a UnitToken raised to an integer exponent.
 // `unit` is the source UnitToken (carrying value, prefix, factor, siFactor).
 export type UnitAtom = {
@@ -830,11 +1004,15 @@ function isMultiSymbol(symbol: string) {
 
 export type { Variables };
 export {
+  BooleanToken,
   ColorToken,
   ControllerToken,
   DateToken,
+  FractionToken,
   FunctionToken,
+  IpToken,
   isMultiSymbol,
+  ListToken,
   NumberToken,
   OperatorToken,
   StringToken,

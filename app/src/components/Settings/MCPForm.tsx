@@ -113,7 +113,9 @@ function ServerCard({
   const headerLabel = server.name || "Untitled server";
 
   return (
-    <div className={`mcp-card${open ? " open" : ""}${server.enabled ? " enabled" : ""}`}>
+    <div
+      className={`mcp-card${open ? " open" : ""}${server.enabled ? " enabled" : ""}`}
+    >
       <button
         type="button"
         className="mcp-head"
@@ -126,10 +128,7 @@ function ServerCard({
           <div className="mcp-name">{headerLabel}</div>
           <div className="mcp-url">{server.url || "no url"}</div>
         </div>
-        <label
-          className="mcp-switch"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <label className="mcp-switch" onClick={(e) => e.stopPropagation()}>
           <input
             type="checkbox"
             checked={server.enabled}
@@ -143,7 +142,9 @@ function ServerCard({
       </button>
       {open && (
         <div className="mcp-body">
-          <div className="prov-field-label"><span>Name</span></div>
+          <div className="prov-field-label">
+            <span>Name</span>
+          </div>
           <div className="prov-input-wrap">
             <input
               className="prov-input"
@@ -153,7 +154,9 @@ function ServerCard({
             />
           </div>
 
-          <div className="prov-field-label"><span>Server URL</span></div>
+          <div className="prov-field-label">
+            <span>Server URL</span>
+          </div>
           <div className="prov-input-wrap">
             <input
               className="prov-input"

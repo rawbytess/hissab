@@ -43,7 +43,9 @@ function migrateMCPServers(servers: MCPServer[]): MCPServer[] {
 }
 
 function sameServerList(a: MCPServer[], b: MCPServer[]): boolean {
-  return a.length === b.length && a.every((server, i) => serversEqual(server, b[i]));
+  return (
+    a.length === b.length && a.every((server, i) => serversEqual(server, b[i]))
+  );
 }
 
 function serversEqual(a: MCPServer, b: MCPServer): boolean {
@@ -65,7 +67,9 @@ function dispatchInvalidations(prev: MCPServer[], next: MCPServer[]) {
     if (!n || !serversEqual(p, n)) ids.add(p.id);
   }
   for (const id of ids) {
-    window.dispatchEvent(new CustomEvent("mcp-server-invalidate", { detail: id }));
+    window.dispatchEvent(
+      new CustomEvent("mcp-server-invalidate", { detail: id }),
+    );
   }
 }
 
@@ -84,7 +88,8 @@ export const asyncMCPServersAtom = atom<
   },
   async (get, set, updated: MCPServer[]) => {
     const prevMaybe = get(mcpServersDataAtom);
-    const prev = prevMaybe ?? (await (mcpServersLoadPromise ?? loadMCPServers()));
+    const prev =
+      prevMaybe ?? (await (mcpServersLoadPromise ?? loadMCPServers()));
     await saveMCPServersToIDB(updated);
     set(mcpServersDataAtom, updated);
     dispatchInvalidations(prev, updated);

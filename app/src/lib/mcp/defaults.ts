@@ -9,7 +9,11 @@ export const DEFAULT_SKILLS: DefaultSkill[] = [];
 
 export function seedMCPServers(): MCPServer[] {
   const now = Date.now();
-  return DEFAULT_MCP_SERVERS.map((s) => ({ ...s, createdAt: now, updatedAt: now }));
+  return DEFAULT_MCP_SERVERS.map((s) => ({
+    ...s,
+    createdAt: now,
+    updatedAt: now,
+  }));
 }
 
 export function seedSkills(): Skill[] {

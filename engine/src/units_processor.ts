@@ -5,18 +5,19 @@ import {
   ColorToken,
   DateToken,
   type expressionUnit,
+  IpToken,
   NumberToken,
 } from "./tokens/tokens";
 import UnitTypes from "./types/unit_enum";
 import { dimEquals, linearFactor } from "./types/unit_types";
 
 class ProcessConversions {
-  _token: NumberToken | DateToken | ColorToken;
+  _token: NumberToken | DateToken | ColorToken | IpToken;
   _type: TokenBaseType;
   _fromUnit: expressionUnit;
   _toUnit: expressionUnit;
 
-  constructor(token: NumberToken | DateToken | ColorToken) {
+  constructor(token: NumberToken | DateToken | ColorToken | IpToken) {
     this._token = token;
     if (token instanceof NumberToken) {
       this._type = token.numbertype;
@@ -25,6 +26,10 @@ class ProcessConversions {
       // @ts-expect-error
       this._fromUnit = token.unit;
       this._type = TokenBaseType.COLOR;
+    } else if (token instanceof IpToken) {
+      // IP conversions are always FUNCTION targets (to binary / ipv4 / …),
+      // which short-circuit in convert() before _fromUnit is consulted.
+      this._type = TokenBaseType.IP;
     } else this._type = TokenBaseType.DATE;
   }
 

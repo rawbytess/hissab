@@ -23,8 +23,7 @@ export interface ClassificationHissabDocs {
   include_catalog?: boolean;
 }
 
-export interface ClassificationNeedsClarification
-  extends ClarificationRequest {
+export interface ClassificationNeedsClarification extends ClarificationRequest {
   intent: "needs_clarification";
 }
 

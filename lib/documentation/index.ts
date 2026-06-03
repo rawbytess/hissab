@@ -5,10 +5,13 @@ import { color } from "./chunks/color";
 import { compound_units } from "./chunks/compound_units";
 import { date_time } from "./chunks/date_time";
 import { finance } from "./chunks/finance";
+import { ip_address } from "./chunks/ip_address";
 import { labels_and_prev } from "./chunks/labels_and_prev";
 import { logarithm } from "./chunks/logarithm";
 import { number_systems } from "./chunks/number_systems";
+import { number_theory } from "./chunks/number_theory";
 import { percentage } from "./chunks/percentage";
+import { probability } from "./chunks/probability";
 import { set_operations } from "./chunks/set_operations";
 import { statistics } from "./chunks/statistics";
 import { trigonometry } from "./chunks/trigonometry";
@@ -28,14 +31,17 @@ export const chunks: Record<OperationTag, string> = {
   unit_conversion,
   compound_units,
   set_operations,
+  number_theory,
   logarithm,
   statistics,
+  probability,
   finance,
   trigonometry,
   date_time,
   number_systems,
   bitwise,
   color,
+  ip_address,
   labels_and_prev,
 };
 

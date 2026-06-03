@@ -1,3 +1,4 @@
+import { useAtom, useSetAtom } from "jotai";
 import {
   ExternalLink,
   FileText,
@@ -10,7 +11,6 @@ import {
   Wand2,
   X,
 } from "lucide-react";
-import { useAtom, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { LLMForm } from "@/components/Settings/LLMForm.tsx";
 import { MCPForm } from "@/components/Settings/MCPForm.tsx";

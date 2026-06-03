@@ -2,6 +2,7 @@ import chroma from "chroma-js";
 import soft from "timezone-soft";
 import DateTimeOperands from "../datetime_operands";
 import Functions from "../function";
+import { parseIp } from "../ip";
 import { Controllers, Operators } from "../types/operator_types";
 import Plurals, { IrregularPlurals } from "../types/plurals";
 import Synonyms from "../types/synonyms";
@@ -12,6 +13,7 @@ import {
   ControllerToken,
   DateToken,
   FunctionToken,
+  IpToken,
   NumberToken,
   OperatorToken,
   StringToken,
@@ -75,12 +77,30 @@ export default function tokenFactory(
   if (basetype === TokenBaseType.COLOR) {
     return new ColorToken(value, originalValue, value, "HEX");
   }
+  if (basetype === TokenBaseType.IP) {
+    return buildIp(value, originalValue);
+  }
   if (basetype === TokenBaseType.VARIABLENAME)
     return new VariableNameToken(originalValue, originalValue);
   if (basetype === TokenBaseType.SYMBOL) {
     if (value in Operators) return makeOperator(value, originalValue);
   }
   return new UndefinedToken(value, originalValue);
+}
+
+// Validate an IPv4/IPv6 run the lexer flagged as IP. parseIp returns null for
+// anything ipaddr.js rejects (bad octet, too many groups, …) → UndefinedToken,
+// the engine's standard "unrecognised input" outcome.
+function buildIp(value: string, originalValue: string): TokenType {
+  const parsed = parseIp(value);
+  if (!parsed) return new UndefinedToken(value, originalValue);
+  return new IpToken(
+    value,
+    originalValue,
+    parsed.version,
+    parsed.address,
+    parsed.prefix,
+  );
 }
 
 function buildNumber(

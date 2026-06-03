@@ -1,0 +1,21 @@
+# Probability error cases — each must reject with a UserError.
+
+# P() enforces the [0,1] range.
+p(1.5)
+p(-0.2)
+
+# A bare number combined with a probability must also be a valid probability.
+p(0.2) & 5
+
+# Conditional needs a non-zero P(B).
+conditional(0.1, 0)
+
+# odds(1) is undefined (division by zero).
+odds(1)
+
+# binomial needs integer 0 <= k <= n.
+binomial(3, 5, 0.5)
+
+# Wrong arity.
+bayes(0.01, 0.9)
+expected value(10, 0.5, 20)

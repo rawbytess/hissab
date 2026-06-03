@@ -12,8 +12,8 @@ import {
 import { useEffect, useRef, useState } from "react";
 import {
   aiProviders,
-  PROVIDERS,
   type ModelOption,
+  PROVIDERS,
   type Provider,
   type ProviderConfig,
   type ProviderSdk,

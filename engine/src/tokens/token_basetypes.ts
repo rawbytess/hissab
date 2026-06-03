@@ -1,8 +1,10 @@
 import type {
+  BooleanToken,
   ColorToken,
   ControllerToken,
   DateToken,
   FunctionToken,
+  IpToken,
   NumberToken,
   OperatorToken,
   StringToken,
@@ -24,6 +26,8 @@ enum TokenBaseType {
   TIME,
   VARIABLENAME,
   COLOR,
+  IP,
+  BOOLEAN,
 }
 
 export type TokenType =
@@ -36,6 +40,8 @@ export type TokenType =
   | DateToken
   | VariableToken
   | ColorToken
+  | IpToken
+  | BooleanToken
   | VariableNameToken
   | UndefinedToken;
 

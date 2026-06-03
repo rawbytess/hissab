@@ -41,8 +41,7 @@ export const docSections: DocSection[] = [
       {
         slug: "getting-started/engine-library",
         title: "Hissab Engine Library",
-        load: () =>
-          import("./content/getting-started/engine-library.md?raw"),
+        load: () => import("./content/getting-started/engine-library.md?raw"),
       },
       {
         slug: "getting-started/cli",
@@ -75,9 +74,19 @@ export const docSections: DocSection[] = [
         load: () => import("./content/guide/arithmetic.md?raw"),
       },
       {
+        slug: "guide/number-theory",
+        title: "Number Theory",
+        load: () => import("./content/guide/number-theory.md?raw"),
+      },
+      {
         slug: "guide/percentages",
         title: "Percentages",
         load: () => import("./content/guide/percentages.md?raw"),
+      },
+      {
+        slug: "guide/finance",
+        title: "Finance",
+        load: () => import("./content/guide/finance.md?raw"),
       },
       {
         slug: "guide/unit-conversion",
@@ -110,6 +119,11 @@ export const docSections: DocSection[] = [
         load: () => import("./content/science-data/statistics.md?raw"),
       },
       {
+        slug: "science-data/probability",
+        title: "Probability",
+        load: () => import("./content/science-data/probability.md?raw"),
+      },
+      {
         slug: "science-data/trigonometry",
         title: "Trigonometry",
         load: () => import("./content/science-data/trigonometry.md?raw"),
@@ -128,6 +142,11 @@ export const docSections: DocSection[] = [
         slug: "science-data/bitwise",
         title: "Bitwise Operations",
         load: () => import("./content/science-data/bitwise.md?raw"),
+      },
+      {
+        slug: "science-data/ip-addresses",
+        title: "IP Addresses",
+        load: () => import("./content/science-data/ip-addresses.md?raw"),
       },
       {
         slug: "science-data/colors",
