@@ -1,0 +1,7 @@
+["draw(x^2)","📈 x^2"]
+["draw(sin(x), cos(x))","📈 sin(x), cos(x)"]
+["plot(2x + 1)","📈 2x + 1"]
+["draw(x^2 - 4)","📈 x^2 - 4"]
+["draw(3 + 4i)","📈 3 + 4i"]
+["draw(point(1, 2), point(3, 4))","📈 point(1, 2), point(3, 4)"]
+["draw(polar(5, 45))","📈 polar(5, 45°)"]

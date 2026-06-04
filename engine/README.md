@@ -24,8 +24,8 @@ console.log(result.resultToken); // parsed result token
 Supported expression families include arithmetic, percentages, unit conversion,
 compound units, sets/combinatorics, number theory, logarithms, statistics,
 probability, finance, trigonometry, dates/times, number systems, bitwise
-operations, colors, IP addresses, symbolic algebra, complex numbers, and
-coordinate systems.
+operations, colors, IP addresses, symbolic algebra, complex numbers,
+coordinate systems, and visualization (`draw`/`plot`).
 
 ## Advanced Usage
 
@@ -130,11 +130,14 @@ The public root export includes:
 - `ExprToken`
 - `SymbolToken`
 - `PointToken`
+- `PlotToken`
 - `exprToLatex`
+- `evalExpr`
+- `freeSymbols`
 - `TokenBaseType`
 - `tokenFactory`
 - `Functions`
 - `Operators`
 - `Units`
 - Types: `CalculateOptions`, `ParseResult`, `parseResultIf`, `TokenType`,
-  `Variables`
+  `Variables`, `Expr`, `PlotSeries`

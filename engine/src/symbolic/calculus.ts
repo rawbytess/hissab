@@ -19,6 +19,7 @@ import {
   cst,
   type Expr,
   func,
+  IMAGINARY,
   isConst,
   mul,
   neg,
@@ -143,6 +144,64 @@ function tryNum(e: Expr): number | null {
 
 // Round away float noise from a numeric estimate so 1.9999999998 reads as 2.
 const clean = (n: number): number => Math.round(n * 1e8) / 1e8;
+
+// ---------------------------------------------------------------------------
+// Public sampling surface (used by consumers to plot curves)
+// ---------------------------------------------------------------------------
+
+// Evaluate `expr` to a finite number under `env`, or `null` when it can't be:
+// an unbound symbol, an unknown function, or a non-finite result (∞ / NaN, e.g.
+// ln of a negative or a division by zero). Callers sampling a curve treat a
+// `null` as a gap in the plotted line rather than an error.
+export function evalExpr(
+  expr: Expr,
+  env: Record<string, number>,
+): number | null {
+  try {
+    const n = numericEval(expr, env);
+    return Number.isFinite(n) ? n : null;
+  } catch {
+    return null;
+  }
+}
+
+// Every free variable mentioned in `expr`, excluding the reserved imaginary
+// unit `i`. Used to decide which variable a curve is a function of (and to
+// reject multi-variable expressions from a 2-D plot).
+export function freeSymbols(expr: Expr): string[] {
+  const out = new Set<string>();
+  const walk = (e: Expr): void => {
+    switch (e.kind) {
+      case "const":
+        return;
+      case "sym":
+        if (e.name !== IMAGINARY) out.add(e.name);
+        return;
+      case "add":
+        e.terms.forEach(walk);
+        return;
+      case "mul":
+        e.factors.forEach(walk);
+        return;
+      case "pow":
+        walk(e.base);
+        walk(e.exp);
+        return;
+      case "func":
+        e.args.forEach(walk);
+        return;
+      case "equation":
+        walk(e.lhs);
+        walk(e.rhs);
+        return;
+      default:
+        // derivative / integral / limit — the bound variable still "appears".
+        walk(e.body);
+    }
+  };
+  walk(expr);
+  return [...out];
+}
 
 // ---------------------------------------------------------------------------
 // Differentiation (exact)

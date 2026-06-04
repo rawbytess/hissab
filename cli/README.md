@@ -34,6 +34,7 @@ hissab eval "15% of 200"
 hissab eval "derivative(2x^2, x)"
 hissab eval "(2 + 3i) * (1 - i)"
 hissab eval "point(3,4) to polar"
+hissab eval "draw(x^2)"
 hissab run examples/budget.hsb
 hissab docs --list
 hissab docs probability
@@ -53,7 +54,8 @@ The CLI evaluates the same expression language documented in
 conversion, compound units, sets/combinatorics, number theory, logarithms,
 statistics, probability, finance, trigonometry, date/time math, number systems,
 bitwise operations, color math, IP addresses, symbolic algebra, complex numbers,
-coordinate systems, and labelled multi-line workflows.
+coordinate systems, graphing with `draw`/`plot`, and labelled multi-line
+workflows.
 
 ## Output
 

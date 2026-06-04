@@ -19,6 +19,7 @@ import { statistics } from "./chunks/statistics";
 import { symbolic } from "./chunks/symbolic";
 import { trigonometry } from "./chunks/trigonometry";
 import { unit_conversion } from "./chunks/unit_conversion";
+import { visualization } from "./chunks/visualization";
 import { OPERATION_TAGS, type OperationTag, tagDescriptions } from "./tags";
 
 export {
@@ -48,6 +49,7 @@ export const chunks: Record<OperationTag, string> = {
   symbolic,
   complex_numbers,
   coordinate_systems,
+  visualization,
   labels_and_prev,
 };
 

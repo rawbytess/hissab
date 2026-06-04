@@ -5,12 +5,18 @@ import {
   type EditorView,
 } from "@codemirror/view";
 import {
+  ComplexToken,
   doLex,
   doParse,
-  type ExprToken,
+  ExprToken,
   exprToLatex,
+  freeSymbols,
+  PlotToken,
+  PointToken,
+  type TokenType,
   type Variables,
 } from "@rawbytes/hissab";
+import type { CellArtifact } from "@/lib/editor/cellArtifacts.ts";
 import { ResultWidget } from "@/lib/editor/resultWidget.ts";
 import {
   calculatePrev,
@@ -37,11 +43,12 @@ export async function getResult(
   view: EditorView,
   storePage: (content: string) => void,
   oldResults: Results[],
-) {
+): Promise<{ results: Results[]; artifacts: CellArtifact[] }> {
   const state = view.state;
   const data = state.doc.toString();
   const variables: Variables = {};
   const results: Results[] = [];
+  const artifacts: CellArtifact[] = [];
   const lines = data.split("\n");
   storePage(data);
   let ln = "";
@@ -66,6 +73,8 @@ export async function getResult(
             ? exprToLatex((resultToken as ExprToken).expr)
             : undefined,
       });
+      const artifact = toPlotArtifact(resultToken, result, index);
+      if (artifact) artifacts.push(artifact);
       if (meta.variableName) variables[meta.variableName] = resultToken;
       variables[`line${index + 1}`] = resultToken;
       variables[`l${index + 1}`] = resultToken;
@@ -91,7 +100,58 @@ export async function getResult(
         });
     }
   }
-  return results;
+  return { results, artifacts };
+}
+
+// Map a line's result token to a graph artifact, or null when it isn't
+// graphable. `draw(...)` yields a PlotToken → an *explicit* graph. Results that
+// are naturally graphable (a single-variable expression, a complex number, a
+// coordinate point) yield a *suggested* graph the user can expand via the 📈
+// affordance. The label uses the line's formatted result string.
+function toPlotArtifact(
+  token: TokenType | undefined,
+  result: string,
+  lineNumber: number,
+): CellArtifact | null {
+  const id = `plot:${lineNumber}`;
+  if (token instanceof PlotToken)
+    return {
+      kind: "plot",
+      id,
+      lineNumber,
+      source: "explicit",
+      series: token.series,
+    };
+  if (token instanceof ExprToken) {
+    const vars = freeSymbols(token.expr);
+    if (vars.length !== 1) return null; // 0 vars = constant, >1 = surface (not v1)
+    return {
+      kind: "plot",
+      id,
+      lineNumber,
+      source: "suggested",
+      series: [
+        { type: "curve", expr: token.expr, variable: vars[0], label: result },
+      ],
+    };
+  }
+  if (token instanceof ComplexToken)
+    return {
+      kind: "plot",
+      id,
+      lineNumber,
+      source: "suggested",
+      series: [{ type: "complex", re: token.re, im: token.im, label: result }],
+    };
+  if (token instanceof PointToken)
+    return {
+      kind: "plot",
+      id,
+      lineNumber,
+      source: "suggested",
+      series: [{ type: "point", coords: token.cartesian(), label: result }],
+    };
+  return null;
 }
 
 export async function refreshResults(

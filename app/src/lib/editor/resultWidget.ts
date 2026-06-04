@@ -7,6 +7,12 @@ import {
   WidgetType,
 } from "@codemirror/view";
 import katex from "katex";
+import { debounce } from "lodash-es";
+import {
+  type ArtifactsDetail,
+  CELL_ARTIFACTS_EVENT,
+  type CellArtifact,
+} from "@/lib/editor/cellArtifacts.ts";
 import {
   getResult,
   type Results,
@@ -40,14 +46,39 @@ export async function getResultExtension(
   oldResults: Results[],
 ) {
   return ViewPlugin.define(() => {
+    // Graphs are heavier than inline results (they sample expressions), so the
+    // editor→notebook dispatch is debounced while the user types. Inline text
+    // results keep their per-keystroke cadence. One debounced fn per editor.
+    const dispatchArtifacts = debounce(
+      (view: EditorView, artifacts: CellArtifact[]) => {
+        view.dom.dispatchEvent(
+          new CustomEvent<ArtifactsDetail>(CELL_ARTIFACTS_EVENT, {
+            bubbles: true,
+            detail: { artifacts },
+          }),
+        );
+      },
+      200,
+    );
     return {
       update(update) {
         if (update.docChanged || update.selectionSet) {
-          getResult(update.view, storePage, oldResults).then((result) => {
-            oldResults = result;
-            refreshResults(result, oldResults, update.view, resultStateEffect);
-          });
+          getResult(update.view, storePage, oldResults).then(
+            ({ results, artifacts }) => {
+              oldResults = results;
+              refreshResults(
+                results,
+                oldResults,
+                update.view,
+                resultStateEffect,
+              );
+              dispatchArtifacts(update.view, artifacts);
+            },
+          );
         }
+      },
+      destroy() {
+        dispatchArtifacts.cancel();
       },
     };
   });

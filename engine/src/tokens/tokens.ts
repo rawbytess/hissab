@@ -913,6 +913,44 @@ class ExprToken extends Token {
   }
 }
 
+// One series to render in a graph. A `curve` is a single-variable symbolic
+// expression the consumer samples (the app, via evalExpr) over a domain; a
+// `complex` is a point/vector on the Argand plane; a `point` is a cartesian
+// coordinate point/vector. `label` is a human-readable caption (the source
+// expression, the a+bi string, the coords) computed by the producer.
+export type PlotSeries =
+  | { type: "curve"; expr: Expr; variable: string; label: string }
+  | { type: "complex"; re: number; im: number; label: string }
+  | { type: "point"; coords: number[]; label: string };
+
+// Terminal result token produced by draw() / plot(). It carries the structured
+// series to visualise; the engine itself does no rendering. Like ExprToken /
+// ListToken it is never lexed — it is a result carrier read by the app, which
+// owns the actual plotting (curves sampled with evalExpr).
+class PlotToken extends Token {
+  kind = "plotToken";
+  series: PlotSeries[];
+
+  constructor(series: PlotSeries[]) {
+    const value = plotLabel(series);
+    super(value, value);
+    this.series = series;
+  }
+
+  isOperand() {
+    return true;
+  }
+
+  getString(): string {
+    return plotLabel(this.series);
+  }
+}
+
+function plotLabel(series: PlotSeries[]): string {
+  if (series.length === 0) return "📈 graph";
+  return `📈 ${series.map((s) => s.label).join(", ")}`;
+}
+
 // One factor in a compound unit: a UnitToken raised to an integer exponent.
 // `unit` is the source UnitToken (carrying value, prefix, factor, siFactor).
 export type UnitAtom = {
@@ -1243,6 +1281,7 @@ export {
   ListToken,
   NumberToken,
   OperatorToken,
+  PlotToken,
   PointToken,
   StringToken,
   SymbolToken,

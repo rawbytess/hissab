@@ -26,12 +26,15 @@ import tokenFactory from "./tokens/token_factory";
 import {
   BooleanToken,
   type ColorToken,
+  ComplexToken,
   convertPointToken,
   type expressionUnit,
   FractionToken,
   IpToken,
   ListToken,
   NumberToken,
+  type PlotSeries,
+  PlotToken,
   PointToken,
   type UnitToken,
 } from "./tokens/tokens";
@@ -533,7 +536,44 @@ const Functions: functionType = {
     description: "Euclidean norm: hypot(x, y, …) = √(x²+y²+…)",
     isRaw: false,
   },
+
+  // ---- Visualization ----------------------------------------------------
+  // draw()/plot() produce a PlotToken describing what to graph; the engine does
+  // no rendering (the app reads the series and plots it). When an argument
+  // carries a free symbol the whole call is symbolic, so it is intercepted in
+  // parser.ts (which builds curve series). This `run` fires only for the purely
+  // numeric path: complex numbers (Argand plane) and coordinate points.
+  draw: {
+    run: drawFn,
+    description:
+      "Graph one or more curves/points: draw(x^2), draw(sin(x), cos(x)), draw(3+4i), draw(point(1,2))",
+    isRaw: true,
+  },
+  plot: {
+    run: drawFn,
+    description: "Graph expressions/points (alias of draw)",
+    isRaw: true,
+  },
 };
+
+// ---- Visualization ------------------------------------------------------
+
+// Numeric draw(): build a PlotToken from already-solved operand tokens. Symbolic
+// curves never reach here (parser.ts handles them); this covers complex numbers
+// and coordinate points. A bare real number plots as a point on the real axis.
+function drawFn(args: TokenType[]): PlotToken {
+  if (args.length === 0) throw new UserError(8250);
+  const series: PlotSeries[] = args.map((a) => {
+    if (a instanceof ComplexToken)
+      return { type: "complex", re: a.re, im: a.im, label: a.getString() };
+    if (a instanceof PointToken)
+      return { type: "point", coords: a.cartesian(), label: a.getString() };
+    if (a instanceof NumberToken)
+      return { type: "complex", re: a.toNumber(), im: 0, label: a.getString() };
+    throw new UserError(8251);
+  });
+  return new PlotToken(series);
+}
 
 // `simplify(<numeric>)` is the identity (a symbolic argument is intercepted
 // before this runs). A bare symbol or symbolic expression never reaches here.

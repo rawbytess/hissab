@@ -150,6 +150,15 @@ Constructors build points; a single point argument converts it. See
 | `atan2(y, x)` | Two-argument arctangent (degrees) | `atan2(1, 1)` |
 | `hypot(...)` | Euclidean norm √(x²+y²+…) | `hypot(3, 4)` |
 
+## Visualization
+
+Produce a graph rendered below the editor. See **Graphing**.
+
+| Function | Description | Example |
+| --- | --- | --- |
+| `draw(...)` | Graph curves `y=f(x)`, complex numbers, or points (alias `plot`) | `draw(x^2)` |
+| `plot(...)` | Alias for `draw` | `plot(sin(x), cos(x))` |
+
 ## Color constructors
 
 `rgb(...)`, `rgba(...)`, and `hsl(...)` build colors. See **Colors**.

@@ -1,17 +1,30 @@
 import { useAtom, useSetAtom } from "jotai";
 import { Copy } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { TokenInteractionPopover } from "@/components/editor/TokenPopovers.tsx";
 import type {
   ExpressionsCell as ExpressionsCellType,
   Notebook,
 } from "@/lib/atoms/notebooks.ts";
 import { asyncNotebooksAtom, notebooksAtom } from "@/lib/atoms/notebooks.ts";
+import {
+  type ArtifactsDetail,
+  CELL_ARTIFACTS_EVENT,
+  type CellArtifact,
+} from "@/lib/editor/cellArtifacts.ts";
 import HissabEditor, { type HissabEditorType } from "@/lib/editor/editor.ts";
 import {
   TOKEN_INTERACT_EVENT,
   type TokenInteractionDetail,
 } from "@/lib/editor/tokenDecorations.ts";
+
+// Lazy so function-plot + d3 (a heavy dependency) are code-split out of the main
+// bundle and only fetched when a notebook actually renders a graph.
+const GraphArtifact = lazy(() =>
+  import("@/components/notebook/GraphArtifact.tsx").then((m) => ({
+    default: m.GraphArtifact,
+  })),
+);
 
 interface ExpressionsCellProps {
   cell: ExpressionsCellType;
@@ -32,6 +45,9 @@ export function ExpressionsCell({
   const [interaction, setInteraction] = useState<TokenInteractionDetail | null>(
     null,
   );
+  // Graphs extracted from this editor's content (draw() calls + graphable
+  // results), rendered as sibling components below the editor.
+  const [artifacts, setArtifacts] = useState<CellArtifact[]>([]);
 
   const notebooksRef = useRef<Notebook[]>([]);
   useEffect(() => {
@@ -104,6 +120,19 @@ export function ExpressionsCell({
       el.removeEventListener(TOKEN_INTERACT_EVENT, handler as EventListener);
   }, []);
 
+  // The editor recomputes its graphs on each change and bubbles them here (the
+  // same one-way channel as the token widgets); render them below the editor.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const handler = (e: Event) => {
+      setArtifacts((e as CustomEvent<ArtifactsDetail>).detail.artifacts);
+    };
+    el.addEventListener(CELL_ARTIFACTS_EVENT, handler as EventListener);
+    return () =>
+      el.removeEventListener(CELL_ARTIFACTS_EVENT, handler as EventListener);
+  }, []);
+
   const headerTitle =
     variant === "playground"
       ? "Playground"
@@ -136,6 +165,15 @@ export function ExpressionsCell({
         </div>
       )}
       <div ref={containerRef} className="nb2-editor-mount" />
+      {artifacts.length > 0 && (
+        <Suspense fallback={null}>
+          <div className="nb2-graphs">
+            {artifacts.map((artifact) => (
+              <GraphArtifact key={artifact.id} artifact={artifact} />
+            ))}
+          </div>
+        </Suspense>
+      )}
       <TokenInteractionPopover
         interaction={interaction}
         onClose={() => setInteraction(null)}

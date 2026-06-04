@@ -2,7 +2,14 @@
 // (the Expr AST + bridge + renderer, all shipped) and *computation* (simplify +
 // complex arithmetic shipped; solve/calculus to come) lives here.
 
-export { differentiate, evaluate, integrate, subst } from "./calculus";
+export {
+  differentiate,
+  evalExpr,
+  evaluate,
+  freeSymbols,
+  integrate,
+  subst,
+} from "./calculus";
 export {
   type Cx,
   cx,

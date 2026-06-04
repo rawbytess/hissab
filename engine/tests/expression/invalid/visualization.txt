@@ -1,0 +1,3 @@
+# draw() / plot() need at least one thing to graph.
+draw()
+plot()

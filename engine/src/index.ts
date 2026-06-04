@@ -4,7 +4,7 @@ import Functions from "./function";
 import lexer from "./lexer/lexer";
 import parse from "./parser/parser";
 import { humanize } from "./pro";
-import { exprToLatex } from "./symbolic";
+import { type Expr, evalExpr, exprToLatex, freeSymbols } from "./symbolic";
 import TokenBaseType, { type TokenType } from "./tokens/token_basetypes";
 import tokenFactory from "./tokens/token_factory";
 import {
@@ -17,6 +17,8 @@ import {
   IpToken,
   ListToken,
   NumberToken,
+  type PlotSeries,
+  PlotToken,
   PointToken,
   StringToken,
   SymbolToken,
@@ -76,7 +78,8 @@ async function doParse(tokens: TokenType[]): Promise<ParseResult> {
     result instanceof ListToken ||
     result instanceof ComplexToken ||
     result instanceof PointToken ||
-    result instanceof ExprToken
+    result instanceof ExprToken ||
+    result instanceof PlotToken
   ) {
     if (!isExplicit && result instanceof NumberToken) {
       const humanized: string = humanize(result, convertTo);
@@ -105,7 +108,9 @@ async function calculate(
 
 export type {
   CalculateOptions,
+  Expr,
   ParseResult,
+  PlotSeries,
   parseResultIf,
   TokenType,
   Variables,
@@ -117,9 +122,12 @@ export {
   doLex,
   doParse,
   ExprToken,
+  evalExpr,
   exprToLatex,
   Functions,
+  freeSymbols,
   Operators,
+  PlotToken,
   PointToken,
   SymbolToken,
   TokenBaseType,

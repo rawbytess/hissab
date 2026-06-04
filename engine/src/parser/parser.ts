@@ -1,5 +1,11 @@
 import { UserError } from "../exceptions";
-import { evaluate, parseTreeToExpr, simplify } from "../symbolic";
+import {
+  evaluate,
+  exprToString,
+  freeSymbols,
+  parseTreeToExpr,
+  simplify,
+} from "../symbolic";
 import type { TokenType } from "../tokens/token_basetypes";
 import {
   BooleanToken,
@@ -13,6 +19,8 @@ import {
   IpToken,
   NumberToken,
   OperatorToken,
+  type PlotSeries,
+  PlotToken,
   PointToken,
   StringToken,
   SymbolToken,
@@ -37,6 +45,23 @@ function isSymbolic(token: TokenType | null): boolean {
     return token.args.some((t) => isSymbolic(t));
   if (token instanceof VariableToken) return isSymbolic(token.valueToken);
   return false;
+}
+
+// Build a PlotToken of curve series from a symbolic draw()/plot() call. Each
+// argument becomes its own simplified Expr; its single free variable (default
+// `x`) is the axis the consumer samples over. A constant arg (no free variable)
+// plots as a flat line.
+function buildPlotFromCurves(args: TokenType[]): PlotToken {
+  const series: PlotSeries[] = args.map((arg) => {
+    const expr = simplify(evaluate(parseTreeToExpr(arg)));
+    return {
+      type: "curve",
+      expr,
+      variable: freeSymbols(expr)[0] ?? "x",
+      label: exprToString(expr),
+    };
+  });
+  return new PlotToken(series);
 }
 
 import {
@@ -173,16 +198,28 @@ async function parse(
   if (parseTree.head === null) throw new UserError(231);
 
   if (isSymbolic(parseTree.head)) {
-    // Symbolic route: skip the numeric solver entirely (it would try to reduce a
-    // free variable to a number). Convert the parse tree to the Expr AST,
-    // compute any calculus nodes (derivative/integral/limit), then simplify to
-    // canonical form and carry it out as an ExprToken. We keep the *captured*
-    // (pre-evaluation) Expr as `source` so consumers can still render the input
-    // notation (∫, d/dx) while the value shows the computed answer. The numeric
-    // path below is byte-for-byte unchanged for non-symbolic input.
-    const captured = parseTreeToExpr(parseTree.head);
-    const expr = simplify(evaluate(captured));
-    parseTree.head = new ExprToken(expr, captured);
+    const head = parseTree.head;
+    if (
+      head instanceof FunctionToken &&
+      (head.value === "draw" || head.value === "plot")
+    ) {
+      // draw()/plot() over symbolic args is a *command*, not an algebraic term:
+      // build one curve series per argument (its own simplified Expr + free
+      // variable) and carry it out as a PlotToken. The numeric draw() path
+      // (complex/points) is handled by drawFn in the solver below.
+      parseTree.head = buildPlotFromCurves(head.args);
+    } else {
+      // Symbolic route: skip the numeric solver entirely (it would try to reduce
+      // a free variable to a number). Convert the parse tree to the Expr AST,
+      // compute any calculus nodes (derivative/integral/limit), then simplify to
+      // canonical form and carry it out as an ExprToken. We keep the *captured*
+      // (pre-evaluation) Expr as `source` so consumers can still render the input
+      // notation (∫, d/dx) while the value shows the computed answer. The numeric
+      // path below is byte-for-byte unchanged for non-symbolic input.
+      const captured = parseTreeToExpr(parseTree.head);
+      const expr = simplify(evaluate(captured));
+      parseTree.head = new ExprToken(expr, captured);
+    }
   } else {
     await parseTree.solve(parseTree.head, null, Direction.RIGHT);
   }
