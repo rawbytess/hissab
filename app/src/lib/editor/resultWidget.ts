@@ -82,6 +82,19 @@ export class ResultWidget extends WidgetType {
       } catch {
         wrap.innerText = this.result.result;
       }
+    } else if (this.result.kind === "booleanToken") {
+      // Boolean results render as a small badge, true/false colour-coded.
+      const badge = document.createElement("span");
+      const isTrue = this.result.result.trim().toLowerCase() === "true";
+      badge.className = `cm-result-bool ${isTrue ? "is-true" : "is-false"}`;
+      badge.innerText = this.result.result;
+      wrap.appendChild(badge);
+    } else if (this.result.kind === "pointToken") {
+      // Coordinate points render as a chip.
+      const chip = document.createElement("span");
+      chip.className = "cm-result-point";
+      chip.innerText = this.result.result;
+      wrap.appendChild(chip);
     } else {
       wrap.innerText = this.result.result;
     }

@@ -2,6 +2,7 @@ import { UserError } from "../exceptions";
 import { evaluate, parseTreeToExpr, simplify } from "../symbolic";
 import type { TokenType } from "../tokens/token_basetypes";
 import {
+  BooleanToken,
   ColorToken,
   ComplexToken,
   ControllerToken,
@@ -85,6 +86,8 @@ async function parse(
       parseState = parseState.handleIp(parseTree, token);
     else if (token instanceof PointToken)
       parseState = parseState.handlePoint(parseTree, token);
+    else if (token instanceof BooleanToken)
+      parseState = parseState.handleBoolean(parseTree, token);
     else if (token instanceof OperatorToken)
       parseState = parseState.handleOperator(parseTree, token);
     else if (token instanceof FunctionToken)
@@ -156,6 +159,8 @@ async function parse(
               parseState = parseState.handleIp(parseTree, result);
             else if (result instanceof PointToken)
               parseState = parseState.handlePoint(parseTree, result);
+            else if (result instanceof BooleanToken)
+              parseState = parseState.handleBoolean(parseTree, result);
           }
           parseState = CompleteState;
         }

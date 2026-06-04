@@ -1,0 +1,10 @@
+# Boolean literals (lexed from input) and boolean-returning predicate functions.
+["true", "true"]
+["false", "false"]
+["True", "true"]
+["FALSE", "false"]
+["(true)", "true"]
+["isprime(7)", "true"]
+["isprime(8)", "false"]
+["isprivate(192.168.1.1)", "true"]
+["contains(10.0.0.0/8, 10.1.2.3)", "true"]

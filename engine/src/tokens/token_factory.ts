@@ -9,6 +9,7 @@ import Synonyms from "../types/synonyms";
 import { Constants, Units, UnitTypes } from "../types/unit_types";
 import TokenBaseType, { type TokenType } from "./token_basetypes";
 import {
+  BooleanToken,
   ColorToken,
   ComplexToken,
   ControllerToken,
@@ -333,6 +334,11 @@ function buildString(
   // timezone match (which would otherwise grab short letters like `x`).
   if (value === "i") return new ComplexToken(0, 1, originalValue);
   if (Symbols.has(value)) return new SymbolToken(value, originalValue);
+  // Boolean literals. Placed with the other literals (after unit/function/
+  // operator lookups so collisions resolve in their favour) and *before* the
+  // fuzzy `soft()` timezone match, which would otherwise mis-claim them.
+  if (value === "true" || value === "false")
+    return new BooleanToken(value === "true", originalValue);
   if (value in DateTimeOperands) {
     return new DateToken(
       value,

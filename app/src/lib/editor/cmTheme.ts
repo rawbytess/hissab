@@ -75,8 +75,100 @@ export function hissabTheme(
     ".cm-math-katex .katex": {
       fontSize: "1.05em",
     },
+    // A number and its trailing unit(s) read as one entity (`50 million miles`).
+    ".cm-quantity": {
+      backgroundColor: isDark
+        ? "rgba(231,216,26,0.12)"
+        : "rgba(126,111,2,0.10)",
+      padding: "0.08em 0.4em",
+      borderRadius: "7px",
+    },
+    // IP addresses get a contiguous tinted background.
+    ".cm-ip": {
+      backgroundColor: isDark
+        ? "rgba(86,212,221,0.14)"
+        : "rgba(10,125,117,0.12)",
+      padding: "0.08em 0.4em",
+      borderRadius: "7px",
+    },
+    // Defined variables (definition + usages) — bold, with an explicit colour so
+    // it overrides the dim "unrecognised word" hue an undefined identifier gets.
+    // `!important` because this decoration mark overlaps the syntax-highlight
+    // span and CM's nesting order between the two sources isn't guaranteed.
+    ".cm-variable": {
+      color: `${isDark ? "#f984e1" : "#754103"} !important`,
+      fontWeight: "bold",
+    },
+    // Clickable colour swatch rendered before a colour literal.
+    ".cm-color-swatch": {
+      display: "inline-block",
+      width: "0.72em",
+      height: "0.72em",
+      borderRadius: "50%",
+      marginRight: "0.28em",
+      verticalAlign: "baseline",
+      border: "1px solid rgba(128,128,128,0.55)",
+      boxSizing: "border-box",
+      cursor: "pointer",
+    },
+    // Clickable calendar glyph rendered after a concrete date.
+    ".cm-date-trigger": {
+      cursor: "pointer",
+      marginLeft: "0.28em",
+      fontSize: "0.82em",
+      opacity: "0.75",
+      verticalAlign: "baseline",
+    },
+    // Depth-cycled bracket colours. `!important` for the same reason as
+    // `.cm-variable` — these marks overlap the controllerToken highlight span.
+    ".cm-bracket-d0": { color: `${isDark ? "#ffd700" : "#b58900"} !important` },
+    ".cm-bracket-d1": { color: `${isDark ? "#da70d6" : "#a626a4"} !important` },
+    ".cm-bracket-d2": { color: `${isDark ? "#56d4dd" : "#0a7d75"} !important` },
+    ".cm-bracket-d3": { color: `${isDark ? "#ff9bce" : "#bf3989"} !important` },
+    ".cm-bracket-d4": { color: `${isDark ? "#7ee787" : "#1a7f37"} !important` },
+    // Hover tooltip naming the token under the cursor.
+    ".cm-tooltip.cm-tooltip-hover": {
+      border: "none",
+      backgroundColor: "transparent",
+    },
+    ".cm-hover-type": {
+      backgroundColor: isDark ? "#404040" : "#1c1c1c",
+      color: "#ffffff",
+      fontFamily: "Inter",
+      fontSize: "0.72em",
+      padding: "3px 7px",
+      borderRadius: "6px",
+      whiteSpace: "nowrap",
+    },
     ".cm-result-fresh": {
       color: themeColors.resultText,
+    },
+    // Boolean result badge (true / false), colour-coded.
+    ".cm-result-bool": {
+      display: "inline-block",
+      padding: "0 0.5em",
+      borderRadius: "10px",
+      fontSize: "0.82em",
+      fontWeight: "600",
+      lineHeight: "1.6",
+      textTransform: "lowercase",
+    },
+    ".cm-result-bool.is-true": {
+      color: isDark ? "#0b3d1e" : "#0a5c2a",
+      backgroundColor: isDark ? "#56d364" : "#aceebb",
+    },
+    ".cm-result-bool.is-false": {
+      color: isDark ? "#4d0f0b" : "#8a1c14",
+      backgroundColor: isDark ? "#ff7b72" : "#ffc9c4",
+    },
+    // Coordinate-point result chip.
+    ".cm-result-point": {
+      display: "inline-block",
+      padding: "0 0.5em",
+      borderRadius: "6px",
+      fontSize: "0.9em",
+      border: isDark ? "1px solid #5fd7a7" : "1px solid #1f7a52",
+      color: isDark ? "#5fd7a7" : "#1f7a52",
     },
     ".cm-result-stale": {
       color: themeColors.resultStaleText,

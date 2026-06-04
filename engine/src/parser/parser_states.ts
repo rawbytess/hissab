@@ -4,6 +4,7 @@ import { makeCompoundUnit, mergeAtoms } from "../tokens/compound";
 import TokenBaseType, { type TokenType } from "../tokens/token_basetypes";
 import tokenFactory from "../tokens/token_factory";
 import {
+  type BooleanToken,
   type ColorToken,
   ComplexToken,
   ControllerToken,
@@ -320,6 +321,14 @@ class FreshParseState {
     return CompleteState;
   }
 
+  static handleBoolean(
+    parseTree: ParseTreeType,
+    booleanToken: BooleanToken,
+  ): ParserStateTypes {
+    parseTree.head = booleanToken;
+    return CompleteState;
+  }
+
   static handleIp(
     parseTree: ParseTreeType,
     ipToken: IpToken,
@@ -440,6 +449,13 @@ class CompleteState {
   static handleColor(
     _parseTree: ParseTreeType,
     _colorToken: ColorToken,
+  ): ParserStateTypes {
+    throw new UnhandledError(0);
+  }
+
+  static handleBoolean(
+    _parseTree: ParseTreeType,
+    _booleanToken: BooleanToken,
   ): ParserStateTypes {
     throw new UnhandledError(0);
   }
@@ -604,6 +620,14 @@ class NeedNumberState {
     return CompleteState;
   }
 
+  static handleBoolean(
+    parseTree: ParseTreeType,
+    booleanToken: BooleanToken,
+  ): ParserStateTypes {
+    expectOperator(parseTree).right = booleanToken;
+    return CompleteState;
+  }
+
   static handleIp(
     parseTree: ParseTreeType,
     ipToken: IpToken,
@@ -690,6 +714,13 @@ class NeedUnitState {
   static handleColor(
     _parseTree: ParseTreeType,
     _colorToken: ColorToken,
+  ): ParserStateTypes {
+    throw new UserError(211);
+  }
+
+  static handleBoolean(
+    _parseTree: ParseTreeType,
+    _booleanToken: BooleanToken,
   ): ParserStateTypes {
     throw new UserError(211);
   }
@@ -788,6 +819,16 @@ class FunctionState {
     return FunctionState;
   }
 
+  static handleBoolean(
+    parseTree: ParseTreeType,
+    booleanToken: BooleanToken,
+  ): ParserStateTypes {
+    if (!(parseTree.currentpt instanceof FunctionToken))
+      throw new UnhandledError(1234);
+    parseTree.currentpt?.insertChild(booleanToken);
+    return FunctionState;
+  }
+
   static handleIp(
     parseTree: ParseTreeType,
     ipToken: IpToken,
@@ -866,6 +907,12 @@ class PreNumberState {
   ): ParserStateTypes {
     throw new UserError(207);
   }
+  static handleBoolean(
+    _parseTree: ParseTreeType,
+    _booleanToken: BooleanToken,
+  ): ParserStateTypes {
+    throw new UserError(207);
+  }
   static handleIp(
     _parseTree: ParseTreeType,
     _ipToken: IpToken,
@@ -931,6 +978,12 @@ class CombineNumberState {
   static handleColor(
     _parseTree: ParseTreeType,
     _colorToken: ColorToken,
+  ): ParserStateTypes {
+    throw new UserError(207);
+  }
+  static handleBoolean(
+    _parseTree: ParseTreeType,
+    _booleanToken: BooleanToken,
   ): ParserStateTypes {
     throw new UserError(207);
   }

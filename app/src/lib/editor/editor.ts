@@ -16,11 +16,13 @@ import {
 import { debounce } from "lodash-es";
 import { hissabTheme } from "@/lib/editor/cmTheme.ts";
 import type { Results } from "@/lib/editor/getResults.ts";
+import { hissabHoverTooltip } from "@/lib/editor/hoverTooltip.ts";
 import { mathDecorations } from "@/lib/editor/mathDecorations.ts";
 import {
   getResultExtension,
   resultStateField,
 } from "@/lib/editor/resultWidget.ts";
+import { tokenDecorations } from "@/lib/editor/tokenDecorations.ts";
 import {
   getStreamLanguage,
   HissabHighlightStyle,
@@ -95,6 +97,7 @@ export default class HissabEditor {
     this.appendText = this.appendText.bind(this);
     this.insertTextinLine = this.insertTextinLine.bind(this);
     this.getPositionofLastLine = this.getPositionofLastLine.bind(this);
+    this.replaceRange = this.replaceRange.bind(this);
   }
 
   focusEditor() {
@@ -205,6 +208,24 @@ export default class HissabEditor {
     this.focusEditor();
   }
 
+  // Replace an absolute character range with new text. Used by the editor's
+  // interactive popovers (colour / date pickers) to write a picked value back
+  // into the document. Offsets are clamped to the current doc length so a stale
+  // range (doc edited while the popover was open) can't throw.
+  replaceRange(from: number, to: number, text: string) {
+    if (!this.view) return;
+    const docLen = this.view.state.doc.length;
+    const f = Math.max(0, Math.min(from, docLen));
+    const t = Math.max(f, Math.min(to, docLen));
+    const transaction = this.view.state.update({
+      changes: { from: f, to: t, insert: text },
+      selection: { anchor: f + text.length },
+      scrollIntoView: true,
+    });
+    this.view.dispatch(transaction);
+    this.focusEditor();
+  }
+
   deleteLineRange(fromLine: number, toLine: number) {
     if (!this.view) return;
     const doc = this.view.state.doc;
@@ -270,6 +291,8 @@ export default class HissabEditor {
         HighlightStyle.define(HissabHighlightStyle(this.isDark)),
       ),
       mathDecorations,
+      tokenDecorations,
+      hissabHoverTooltip,
       EditorView.theme(
         hissabTheme(
           this.isDark,

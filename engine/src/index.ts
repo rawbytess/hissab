@@ -24,7 +24,7 @@ import {
   type Variables,
 } from "./tokens/tokens";
 import { Operators } from "./types/operator_types";
-import { Units } from "./types/unit_types";
+import { Units, UnitTypes } from "./types/unit_types";
 
 interface ParseResult {
   result: string;
@@ -125,5 +125,6 @@ export {
   TokenBaseType,
   tokenFactory,
   Units,
+  UnitTypes,
   UserError,
 };

@@ -28,6 +28,9 @@ export interface Results {
   // LaTeX for symbolic results (an ExprToken); rendered with KaTeX in the result
   // widget. Undefined for numeric/unit/date/color results, which stay as text.
   latex?: string;
+  // The result token's `kind` (e.g. "booleanToken", "pointToken"), so the result
+  // widget can give structured results badge/chip styling.
+  kind?: string;
 }
 
 export async function getResult(
@@ -57,6 +60,7 @@ export async function getResult(
         lineNumber: index,
         error: false,
         errorMessage: null,
+        kind: resultToken?.kind,
         latex:
           resultToken?.kind === "exprToken"
             ? exprToLatex((resultToken as ExprToken).expr)

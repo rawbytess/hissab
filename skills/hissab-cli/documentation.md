@@ -16,6 +16,9 @@ you need (see "How to fetch chunks" below).
   `(5 + 6) * 3`, `256 ^ (1/8)`.
 - Functions take comma-separated arguments: `avg(1, 2, 3)`, `max(10m, 7.7m)`,
   `min(99, 34, 65)`.
+- `true` and `false` are boolean literals (case-insensitive). They are mostly
+  produced by predicate functions (`isprime(7)`, `isprivate(192.168.1.1)`,
+  `contains(10.0.0.0/8, 10.1.2.3)`) but can also be written directly.
 - One expression per call line. Pass several related expressions together so
   they can share labels and the `prev` keyword (see below).
 

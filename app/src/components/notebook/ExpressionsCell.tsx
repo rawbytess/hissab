@@ -1,12 +1,17 @@
 import { useAtom, useSetAtom } from "jotai";
 import { Copy } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { TokenInteractionPopover } from "@/components/editor/TokenPopovers.tsx";
 import type {
   ExpressionsCell as ExpressionsCellType,
   Notebook,
 } from "@/lib/atoms/notebooks.ts";
 import { asyncNotebooksAtom, notebooksAtom } from "@/lib/atoms/notebooks.ts";
 import HissabEditor, { type HissabEditorType } from "@/lib/editor/editor.ts";
+import {
+  TOKEN_INTERACT_EVENT,
+  type TokenInteractionDetail,
+} from "@/lib/editor/tokenDecorations.ts";
 
 interface ExpressionsCellProps {
   cell: ExpressionsCellType;
@@ -23,6 +28,10 @@ export function ExpressionsCell({
   const editorRef = useRef<HissabEditorType | null>(null);
   const [notebooksValue] = useAtom(notebooksAtom);
   const setNotebooks = useSetAtom(asyncNotebooksAtom);
+  // Active colour/date popover, opened from a clickable editor widget.
+  const [interaction, setInteraction] = useState<TokenInteractionDetail | null>(
+    null,
+  );
 
   const notebooksRef = useRef<Notebook[]>([]);
   useEffect(() => {
@@ -82,6 +91,19 @@ export function ExpressionsCell({
     }
   }, [cell.content]);
 
+  // The editor's clickable token widgets (colour swatch, date glyph) bubble a
+  // CustomEvent up to this container; open the matching picker popover.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const handler = (e: Event) => {
+      setInteraction((e as CustomEvent<TokenInteractionDetail>).detail);
+    };
+    el.addEventListener(TOKEN_INTERACT_EVENT, handler as EventListener);
+    return () =>
+      el.removeEventListener(TOKEN_INTERACT_EVENT, handler as EventListener);
+  }, []);
+
   const headerTitle =
     variant === "playground"
       ? "Playground"
@@ -114,6 +136,13 @@ export function ExpressionsCell({
         </div>
       )}
       <div ref={containerRef} className="nb2-editor-mount" />
+      <TokenInteractionPopover
+        interaction={interaction}
+        onClose={() => setInteraction(null)}
+        onCommit={(from, to, text) =>
+          editorRef.current?.replaceRange(from, to, text)
+        }
+      />
     </div>
   );
 }

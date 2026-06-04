@@ -3,10 +3,10 @@
 // Two tiers of CodeMirror decorations turn Hissab's textual math into something
 // closer to how it reads on paper, without giving up editability:
 //
-//   Tier 1 (always on, edit in place): `^` / `**` powers become superscripts and
-//   `*` / `pi` get prettier glyphs. These are *mark* decorations (or 1-char
-//   widgets) — the real characters stay in the document, so the caret walks them
-//   and editing is unaffected.
+//   Tier 1 (always on, edit in place): `^` / `**` powers become superscripts.
+//   These are *mark* decorations — the real characters stay in the document, so
+//   the caret walks them and editing is unaffected. (Single-token glyph swaps
+//   like `*`→× and `pi`→π are kind-aware and live in `tokenDecorations.ts`.)
 //
 //   Tier 2 (reveal-on-cursor): `derivative()`/`diff()`, `integrate()`/`integral()`,
 //   `limit()` render as full 2-D KaTeX widgets. The moment the caret enters that
@@ -36,13 +36,6 @@ import "katex/dist/katex.min.css";
 // single KaTeX block (when symbolic).
 const TIER2_NAMES = "derivative|diff|integrate|integral|limit";
 const TIER2_RE = new RegExp(`\\b(${TIER2_NAMES})\\s*\\(`, "g");
-
-// Tier-1 single-token glyph swaps. `*` (multiplication) and `pi` (constant) are
-// the only Hissab tokens with an unambiguous prettier glyph. `**` is left to the
-// superscript scanner (it is a power, not multiplication), so the `*` match
-// explicitly avoids doubled stars.
-const GLYPH_RE = /\bpi\b|(?<!\*)\*(?!\*)/g;
-const glyphFor = (raw: string): string => (raw === "*" ? "·" : "π");
 
 // Powers: `^` or `**` followed by an exponent.
 const POWER_RE = /\*\*|\^/g;
@@ -195,27 +188,6 @@ class KatexWidget extends WidgetType {
   }
 }
 
-class GlyphWidget extends WidgetType {
-  constructor(
-    readonly glyph: string,
-    readonly raw: string,
-  ) {
-    super();
-  }
-  eq(other: GlyphWidget) {
-    return other.glyph === this.glyph && other.raw === this.raw;
-  }
-  toDOM() {
-    const span = document.createElement("span");
-    span.className = "cm-math-glyph";
-    span.textContent = this.glyph;
-    return span;
-  }
-  ignoreEvent() {
-    return false;
-  }
-}
-
 class MathDecorations {
   decorations: DecorationSet;
   atomic: DecorationSet;
@@ -325,7 +297,6 @@ class MathDecorations {
     }
 
     // Tier 1: superscripts (always on; they stay editable in place).
-    const supSpans: Span[] = [];
     for (const { op, exp } of findPowers(code)) {
       if (within(op.from, covered)) continue;
       all.push(
@@ -340,25 +311,6 @@ class MathDecorations {
           base + exp.to,
         ),
       );
-      supSpans.push(op, exp);
-    }
-
-    // Tier 1: glyph swaps (reveal-on-cursor, like Tier 2).
-    if (!cursorOnLine) {
-      GLYPH_RE.lastIndex = 0;
-      let g: RegExpExecArray | null;
-      // biome-ignore lint/suspicious/noAssignInExpressions: standard regex exec loop
-      while ((g = GLYPH_RE.exec(code))) {
-        const from = g.index;
-        if (within(from, covered) || within(from, supSpans)) continue;
-        const raw = g[0];
-        const deco = Decoration.replace({
-          widget: new GlyphWidget(glyphFor(raw), raw),
-        });
-        const r = deco.range(base + from, base + from + raw.length);
-        all.push(r);
-        atomic.push(r);
-      }
     }
   }
 }
