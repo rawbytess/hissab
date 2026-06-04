@@ -1,0 +1,23 @@
+# Invalid coordinate expressions — each must throw a UserError.
+
+# Wrong arity for a fixed-shape system
+polar(1,2,3)
+spherical(1,2)
+minkowski(1)
+
+# Cross product needs two 3-D vectors
+cross(point(1,0), point(0,1))
+
+# Converting a 3-D point to 2-D polar is undefined
+polar(point(1,2,3))
+
+# Euclidean ops reject Minkowski points
+dot(minkowski(1,2,3,4), minkowski(0,0,0,0))
+
+# Point ± non-point
+point(1,2) - 5
+
+# distance/normalize/angle domain errors
+distance(point(1,2))
+normalize(point(0,0))
+angle(point(0,0), point(1,1))

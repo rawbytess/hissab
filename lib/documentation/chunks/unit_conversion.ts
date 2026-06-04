@@ -17,7 +17,7 @@ prefixes. For compound units (m/s, N*m, mph), see the \`compound_units\` chunk.
 
 ### Supported unit families
 
-- **Length** — meter, mile, yard, feet, inch, micron, parsec, astronomical unit, nautical mile, light year, angstrom, fathom, furlong, league, chain, rod, hand, pica, point
+- **Length** — meter, mile, yard, feet, inch, micron, parsec, astronomical unit, nautical mile, light year, angstrom, fathom, furlong, league, chain, rod, hand, pica
 - **Area** — hectare, acre, square mile, square feet, square inch, square yard, square meter, are, barn
 - **Volume** — litre, gallon, quart, pint, cup, tablespoon, teaspoon, barrel, fluid ounce, cubic mile/foot/inch/yard/meter, imperial gallon/quart/pint/fluid ounce, peck, bushel, jigger, hogshead, fluid dram, minim
 - **Temperature** — Celsius, kelvin, Fahrenheit, rankine

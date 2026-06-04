@@ -127,6 +127,29 @@ numeric arguments. See **Trigonometry** and **Logarithms** for details.
 | Inverse hyperbolic | `asinh`, `acosh`, `atanh`, `asech`, `acsch`, `acoth` |
 | Logarithms | `log` / `loge` (natural), `log10`, `log2` |
 
+## Coordinate systems
+
+Constructors build points; a single point argument converts it. See
+**Coordinate Systems** for `to`-conversions and arithmetic.
+
+| Function | Description | Example |
+| ------------------------ | --------------------------------------------- | -------------------------------------- |
+| `point(...)` | Cartesian point/vector (also `cartesian`, `vector`) | `point(1, 2, 3)` |
+| `polar(r, θ)` | 2-D polar point (θ in degrees) | `polar(5, 90)` |
+| `cylindrical(r, θ, z)` | 3-D cylindrical point | `cylindrical(2, 90, 5)` |
+| `spherical(ρ, θ, φ)` | 3-D spherical point | `spherical(1, 90, 0)` |
+| `minkowski(t, x, y, z)` | Spacetime point (−,+,+,+) | `minkowski(1, 2, 3, 4)` |
+| `distance(a, b)` | Distance between two points | `distance(point(0,0), point(3,4))` |
+| `magnitude(v)` / `norm(v)` | Length from the origin | `magnitude(point(3,4))` |
+| `midpoint(a, b)` | Midpoint of two points | `midpoint(point(0,0), point(4,6))` |
+| `dot(a, b)` | Dot product (scalar) | `dot(point(1,2,3), point(4,5,6))` |
+| `cross(a, b)` | Cross product of two 3-D vectors | `cross(point(1,0,0), point(0,1,0))` |
+| `angle(a, b)` | Angle between two vectors (degrees) | `angle(point(1,0), point(0,1))` |
+| `normalize(v)` | Unit vector | `normalize(point(3,4))` |
+| `interval(p, q)` | Signed Minkowski interval s² | `interval(minkowski(5,0,0,0), minkowski(0,3,0,0))` |
+| `atan2(y, x)` | Two-argument arctangent (degrees) | `atan2(1, 1)` |
+| `hypot(...)` | Euclidean norm √(x²+y²+…) | `hypot(3, 4)` |
+
 ## Color constructors
 
 `rgb(...)`, `rgba(...)`, and `hsl(...)` build colors. See **Colors**.

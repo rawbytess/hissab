@@ -1,0 +1,57 @@
+# Coordinate systems — points/vectors, polar/cylindrical/spherical/minkowski,
+# arithmetic, conversions (to …), and vector operations.
+
+# Constructors
+["point(1, 2, 3)", "point(1, 2, 3)"]
+["cartesian(3, 4)", "point(3, 4)"]
+["vector(1, 2)", "point(1, 2)"]
+["polar(5, 90)", "polar(5, 90°)"]
+["cylindrical(2, 90, 5)", "cylindrical(2, 90°, 5)"]
+["spherical(1, 90, 0)", "spherical(1, 90°, 0°)"]
+["minkowski(1, 2, 3, 4)", "minkowski(1, 2, 3, 4)"]
+
+# Point arithmetic: subtraction/addition are component-wise; scaling by a scalar
+["point(1,2,3) - point(4,5,6)", "point(-3, -3, -3)"]
+["point(1,1) + point(2,3)", "point(3, 4)"]
+["3 * point(1,2)", "point(3, 6)"]
+["point(2,4) / 2", "point(1, 2)"]
+
+# Conversions via `to`
+["point(3,4) to polar", "polar(5, 53.1301°)"]
+["polar(5, 90) to cartesian", "point(0, 5)"]
+["point(1,2,2) to spherical", "spherical(3, 48.1897°, 63.4349°)"]
+["spherical(3, 90, 0) to cartesian", "point(3, 0, 0)"]
+["point(3,4) to polar to cartesian", "point(3, 4)"]
+["point(1,2,3) - point(4,5,6) to distance", "5.1962"]
+["5 to vector", "point(5)"]
+
+# Function-call conversion (single point argument)
+["cartesian(polar(5, 90))", "point(0, 5)"]
+["polar(point(3,4))", "polar(5, 53.1301°)"]
+
+# Explicit angle units are honoured (default is degrees)
+["polar(5, 1.5708 radian) to cartesian", "point(0, 5)"]
+["polar(5, 100 grad) to cartesian", "point(0, 5)"]
+
+# Vector operations
+["distance(point(0,0,0), point(3,4,0))", "5"]
+["distance(point(1,2,3), point(4,5,6))", "5.1962"]
+["dot(point(1,2,3), point(4,5,6))", "32"]
+["cross(point(1,0,0), point(0,1,0))", "point(0, 0, 1)"]
+["angle(point(1,0), point(0,1))", "90 degree"]
+["magnitude(point(3,4))", "5"]
+["norm(point(0,3,4))", "5"]
+["midpoint(point(0,0), point(4,6))", "point(2, 3)"]
+["normalize(point(3,4))", "point(0.6, 0.8)"]
+
+# Trig helpers
+["atan2(1,1)", "45 degree"]
+["hypot(3,4)", "5"]
+
+# Minkowski spacetime: signed interval, and √|s²| via `to distance`
+["interval(minkowski(5,0,0,0), minkowski(0,3,0,0))", "-16"]
+["minkowski(5,3,0,0) to distance", "4"]
+
+# Nested function arguments (regression: inner call must not eat the outer comma)
+["min(max(1,2), 3)", "2"]
+["avg(max(1,2), 10)", "6"]

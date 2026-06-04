@@ -17,6 +17,7 @@ export const OPERATION_TAGS = [
   "ip_address",
   "symbolic",
   "complex_numbers",
+  "coordinate_systems",
   "labels_and_prev",
 ] as const;
 
@@ -54,6 +55,8 @@ export const tagDescriptions: Record<OperationTag, string> = {
     "Free variables (x, y, z), implicit multiplication, simplify / collect like terms; derivative/integral/limit structure captured",
   complex_numbers:
     "Imaginary unit i and complex arithmetic (+, -, *, /, ^) in a + bi form",
+  coordinate_systems:
+    "Points/vectors in cartesian, polar, cylindrical, spherical & minkowski systems; arithmetic, `to`-conversions, distance/dot/cross/angle/magnitude",
   labels_and_prev:
     "Label expressions with `=`, reference earlier results via labels or the `prev` keyword",
 };

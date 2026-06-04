@@ -18,8 +18,9 @@ The project includes:
 
 Hissab is built around a small expression language that reads like everyday
 math. You can write plain arithmetic, unit conversions, dates, statistics,
-probability, finance, IP subnet math, symbolic algebra, complex numbers, colors,
-bitwise operations, and multi-line calculations with named labels.
+probability, finance, IP subnet math, symbolic algebra, complex numbers,
+coordinate-system geometry, colors, bitwise operations, and multi-line
+calculations with named labels.
 
 ```text
 15 kilometers to miles
@@ -60,6 +61,7 @@ Hissab currently supports these operation categories:
 | IP address math | IPv4/IPv6 literals, CIDR blocks, masks, address arithmetic, subnet functions, classification |
 | Symbolic algebra | Free variables `x`, `y`, `z`, simplify/expand, derivatives, integrals, limits |
 | Complex numbers | Imaginary unit `i` and complex arithmetic in `a + bi` form |
+| Coordinate systems | `point`/`vector`, polar/cylindrical/spherical/Minkowski, `to`-conversions, `distance`, `dot`, `cross`, `angle` |
 | Multi-line scope | Labels, `prev`, `line<N>`, `total<N>` |
 
 The canonical operation docs live in [`lib/documentation`](./lib/documentation).
@@ -271,9 +273,10 @@ try {
 }
 ```
 
-The root export also includes `Functions`, `Operators`, `Units`, symbolic token
-classes (`ExprToken`, `SymbolToken`, `ComplexToken`), and `exprToLatex` for
-consumers that need autocomplete catalogs or structured symbolic rendering.
+The root export also includes `Functions`, `Operators`, `Units`, the symbolic and
+geometric token classes (`ExprToken`, `SymbolToken`, `ComplexToken`,
+`PointToken`), and `exprToLatex` for consumers that need autocomplete catalogs or
+structured symbolic rendering.
 
 ## Repository Layout
 

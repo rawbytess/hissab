@@ -24,7 +24,8 @@ console.log(result.resultToken); // parsed result token
 Supported expression families include arithmetic, percentages, unit conversion,
 compound units, sets/combinatorics, number theory, logarithms, statistics,
 probability, finance, trigonometry, dates/times, number systems, bitwise
-operations, colors, IP addresses, symbolic algebra, and complex numbers.
+operations, colors, IP addresses, symbolic algebra, complex numbers, and
+coordinate systems.
 
 ## Advanced Usage
 
@@ -128,6 +129,7 @@ The public root export includes:
 - `ComplexToken`
 - `ExprToken`
 - `SymbolToken`
+- `PointToken`
 - `exprToLatex`
 - `TokenBaseType`
 - `tokenFactory`

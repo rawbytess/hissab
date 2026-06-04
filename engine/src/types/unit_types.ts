@@ -319,13 +319,9 @@ const Units: UnitsIF = {
     factor: 0.0042333,
     factors: { meter: 0.0042333, inch: 0.16666667 },
   },
-  point: {
-    plural: "points",
-    type: UnitTypes.LENGTH,
-    description: "Unit of Length",
-    factor: 0.0003528,
-    factors: { meter: 0.0003528, inch: 0.01388889 },
-  },
+  // NOTE: the typography "point" length unit was removed when `point(x, y, …)`
+  // became the coordinate-system constructor (functions shadow units at lookup,
+  // so the unit was unreachable). Use `pica` or `inch` for typography lengths.
 
   hectare: {
     plural: "hectares",

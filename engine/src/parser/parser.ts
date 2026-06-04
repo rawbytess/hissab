@@ -12,6 +12,7 @@ import {
   IpToken,
   NumberToken,
   OperatorToken,
+  PointToken,
   StringToken,
   SymbolToken,
   UnitToken,
@@ -82,6 +83,8 @@ async function parse(
       parseState = parseState.handleColor(parseTree, token);
     else if (token instanceof IpToken)
       parseState = parseState.handleIp(parseTree, token);
+    else if (token instanceof PointToken)
+      parseState = parseState.handlePoint(parseTree, token);
     else if (token instanceof OperatorToken)
       parseState = parseState.handleOperator(parseTree, token);
     else if (token instanceof FunctionToken)
@@ -124,16 +127,21 @@ async function parse(
         }
       } else if (parseState === FunctionState) {
         if (token.basetype === "BRAC_START") {
-          func = true;
-          while (func) {
+          // Collect this function's args with a *local* flag. Using the `func`
+          // parameter here would clobber it — when an arg is itself a function
+          // call (`distance(point(1,2), point(3,4))`, `min(max(1,2), 3)`), the
+          // inner arg-loop would flip `func` to false and the parent's
+          // comma/paren separator would then be misread.
+          let argFunc = true;
+          while (argFunc) {
             parseIndex += 1;
             const { result, index, isFunc, isExplicit } = await parse(
               tokens,
               parseIndex,
-              func,
+              argFunc,
             );
             parseIndex = index;
-            func = isFunc;
+            argFunc = isFunc;
             parseTree.setIsExplicit(isExplicit);
             if (
               result instanceof NumberToken ||
@@ -146,6 +154,8 @@ async function parse(
               parseState = parseState.handleDate(parseTree, result);
             else if (result instanceof IpToken)
               parseState = parseState.handleIp(parseTree, result);
+            else if (result instanceof PointToken)
+              parseState = parseState.handlePoint(parseTree, result);
           }
           parseState = CompleteState;
         }

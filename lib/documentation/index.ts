@@ -4,6 +4,7 @@ import { bitwise } from "./chunks/bitwise";
 import { color } from "./chunks/color";
 import { complex_numbers } from "./chunks/complex_numbers";
 import { compound_units } from "./chunks/compound_units";
+import { coordinate_systems } from "./chunks/coordinate_systems";
 import { date_time } from "./chunks/date_time";
 import { finance } from "./chunks/finance";
 import { ip_address } from "./chunks/ip_address";
@@ -46,6 +47,7 @@ export const chunks: Record<OperationTag, string> = {
   ip_address,
   symbolic,
   complex_numbers,
+  coordinate_systems,
   labels_and_prev,
 };
 

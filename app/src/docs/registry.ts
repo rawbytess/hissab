@@ -149,6 +149,11 @@ export const docSections: DocSection[] = [
         load: () => import("./content/science-data/complex-numbers.md?raw"),
       },
       {
+        slug: "science-data/coordinate-systems",
+        title: "Coordinate Systems",
+        load: () => import("./content/science-data/coordinate-systems.md?raw"),
+      },
+      {
         slug: "science-data/bitwise",
         title: "Bitwise Operations",
         load: () => import("./content/science-data/bitwise.md?raw"),

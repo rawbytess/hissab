@@ -1,5 +1,15 @@
 import chroma from "chroma-js";
 import spacetime, { type Spacetime, type TimeUnit } from "spacetime";
+import {
+  type CoordSystem,
+  combine,
+  convertCoords,
+  formatCoords,
+  fromCartesian,
+  magnitude,
+  resolveTarget,
+  toCartesian,
+} from "../coordinates";
 import { UnhandledError, UserError } from "../exceptions";
 import * as ip from "../ip";
 import { type Cx, cxAdd, cxString, cxSub } from "../symbolic/complex";
@@ -749,6 +759,112 @@ class ComplexToken extends Token {
   }
 }
 
+// A geometric point / vector in a coordinate system. Like ComplexToken it is a
+// closed value domain that rides the eager solver — `+ - * /` carry point
+// branches and it never enters the symbolic path. Produced only by the
+// coordinate functions / `to`-conversions, never lexed from raw input.
+class PointToken extends Token {
+  kind = "pointToken";
+  coords: number[];
+  system: CoordSystem;
+
+  constructor(coords: number[], system: CoordSystem) {
+    const value = formatCoords(coords, system);
+    super(value, value);
+    this.coords = coords;
+    this.system = system;
+  }
+
+  isOperand() {
+    return true;
+  }
+
+  getString(): string {
+    return formatCoords(this.coords, this.system);
+  }
+
+  // Cartesian coords used for arithmetic. Minkowski keeps its full (t, …) tuple.
+  cartesian(): number[] {
+    if (this.system === "minkowski") return this.coords.slice();
+    return toCartesian(this.coords, this.system);
+  }
+
+  // Scale about the origin, preserving the source system.
+  scale(k: number): PointToken {
+    if (this.system === "minkowski")
+      return new PointToken(
+        this.coords.map((v) => v * k),
+        "minkowski",
+      );
+    const cart = toCartesian(this.coords, this.system).map((v) => v * k);
+    return new PointToken(fromCartesian(cart, this.system), this.system);
+  }
+
+  // point ± point → component-wise point. Minkowski combines in place (and only
+  // with another Minkowski point); spatial systems combine in cartesian.
+  private combineWith(
+    token: TokenType,
+    f: (x: number, y: number) => number,
+    code: number,
+  ): PointToken {
+    if (!(token instanceof PointToken)) throw new UserError(code);
+    if (this.system === "minkowski" || token.system === "minkowski") {
+      if (this.system !== token.system) throw new UserError(8220);
+      return new PointToken(combine(this.coords, token.coords, f), "minkowski");
+    }
+    return new PointToken(
+      combine(this.cartesian(), token.cartesian(), f),
+      "cartesian",
+    );
+  }
+
+  add(token: TokenType, _expUnit: expressionUnit) {
+    return this.combineWith(token, (x, y) => x + y, 8221);
+  }
+
+  subtract(token: TokenType, _expUnit: expressionUnit) {
+    return this.combineWith(token, (x, y) => x - y, 8222);
+  }
+}
+
+// A leaf marker for a `to`-conversion target (`to polar`, `to distance`, …),
+// created in NeedUnitState when a coordinate keyword follows `to`. It is neither
+// an OperatorToken nor a FunctionToken, so solve() treats it as a leaf and never
+// executes it; the `to` raw func reads it as params[1].
+class CoordTargetToken extends Token {
+  kind = "coordTargetToken";
+  target: string;
+
+  constructor(target: string) {
+    super(target, target);
+    this.target = target;
+  }
+
+  getString(): string {
+    return this.target;
+  }
+}
+
+// Apply a `to`-conversion to a source token. PointToken → another system, or a
+// scalar magnitude for "distance". NumberToken → a 1-D point from the origin
+// (`5 to vector` → point(5)).
+function convertPointToken(source: TokenType, targetName: string): TokenType {
+  const target = resolveTarget(targetName);
+  if (source instanceof PointToken) {
+    if (target === "distance") {
+      const m = magnitude(source.coords, source.system).toString();
+      return new NumberToken(m, m, TokenBaseType.DECIMAL);
+    }
+    return new PointToken(
+      convertCoords(source.coords, source.system, target),
+      target,
+    );
+  }
+  if (source instanceof NumberToken && target === "cartesian")
+    return new PointToken([source.toNumber()], "cartesian");
+  throw new UserError(8218);
+}
+
 // A free algebraic variable (`x`, `y`, `z`). `isOperand()` so the parser state
 // machine treats it like a number; recognised in token_factory from a curated
 // symbol set. Its presence in a parse tree flips the expression into symbolic
@@ -1116,6 +1232,8 @@ export {
   ColorToken,
   ComplexToken,
   ControllerToken,
+  CoordTargetToken,
+  convertPointToken,
   DateToken,
   ExprToken,
   FractionToken,
@@ -1125,6 +1243,7 @@ export {
   ListToken,
   NumberToken,
   OperatorToken,
+  PointToken,
   StringToken,
   SymbolToken,
   Token,

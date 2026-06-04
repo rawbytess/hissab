@@ -3,12 +3,14 @@ import type {
   ColorToken,
   ComplexToken,
   ControllerToken,
+  CoordTargetToken,
   DateToken,
   ExprToken,
   FunctionToken,
   IpToken,
   NumberToken,
   OperatorToken,
+  PointToken,
   StringToken,
   SymbolToken,
   UndefinedToken,
@@ -48,6 +50,8 @@ export type TokenType =
   | ComplexToken
   | SymbolToken
   | ExprToken
+  | PointToken
+  | CoordTargetToken
   | VariableNameToken
   | UndefinedToken;
 

@@ -66,7 +66,6 @@ const OVERRIDES = [
   "rods",
   "hands",
   "picas",
-  "points",
   "angstroms",
   "ares",
   "barns",

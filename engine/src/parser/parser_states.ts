@@ -1,3 +1,4 @@
+import { isCoordConverter } from "../coordinates";
 import { UnhandledError, UserError } from "../exceptions";
 import { makeCompoundUnit, mergeAtoms } from "../tokens/compound";
 import TokenBaseType, { type TokenType } from "../tokens/token_basetypes";
@@ -6,6 +7,7 @@ import {
   type ColorToken,
   ComplexToken,
   ControllerToken,
+  CoordTargetToken,
   type DateToken,
   ExprToken,
   type expressionUnit,
@@ -13,6 +15,7 @@ import {
   type IpToken,
   NumberToken,
   OperatorToken,
+  type PointToken,
   type StringToken,
   SymbolToken,
   type UnitAtom,
@@ -325,6 +328,14 @@ class FreshParseState {
     return CompleteState;
   }
 
+  static handlePoint(
+    parseTree: ParseTreeType,
+    pointToken: PointToken,
+  ): ParserStateTypes {
+    parseTree.head = pointToken;
+    return CompleteState;
+  }
+
   static handleString(
     parseTree: ParseTreeType,
     stringToken: StringToken | VariableNameToken,
@@ -436,6 +447,13 @@ class CompleteState {
   static handleIp(
     _parseTree: ParseTreeType,
     _ipToken: IpToken,
+  ): ParserStateTypes {
+    throw new UnhandledError(0);
+  }
+
+  static handlePoint(
+    _parseTree: ParseTreeType,
+    _pointToken: PointToken,
   ): ParserStateTypes {
     throw new UnhandledError(0);
   }
@@ -594,6 +612,14 @@ class NeedNumberState {
     return CompleteState;
   }
 
+  static handlePoint(
+    parseTree: ParseTreeType,
+    pointToken: PointToken,
+  ): ParserStateTypes {
+    expectOperator(parseTree).right = pointToken;
+    return CompleteState;
+  }
+
   static handleDate(
     parseTree: ParseTreeType,
     dateToken: DateToken,
@@ -675,6 +701,13 @@ class NeedUnitState {
     throw new UserError(211);
   }
 
+  static handlePoint(
+    _parseTree: ParseTreeType,
+    _pointToken: PointToken,
+  ): ParserStateTypes {
+    throw new UserError(211);
+  }
+
   static handleOperator(): ParserStateTypes {
     throw new UserError(212);
   }
@@ -695,8 +728,18 @@ class NeedUnitState {
     return { state: CompleteState, advance };
   }
 
-  static handleFunction(): ParserStateTypes {
-    throw new UserError(214);
+  // A coordinate keyword after `to` (`to polar`, `to distance`, …) is a
+  // conversion target, not a function call. Stash it as a leaf marker on the
+  // `to` operator (lands in its `right` slot since `left` is already filled);
+  // the `to` raw func reads it and runs the conversion. Any other function here
+  // is a syntax error.
+  static handleFunction(
+    parseTree: ParseTreeType,
+    functionToken: FunctionToken,
+  ): ParserStateTypes {
+    if (!isCoordConverter(functionToken.value)) throw new UserError(214);
+    parseTree.currentpt?.insertChild(new CoordTargetToken(functionToken.value));
+    return CompleteState;
   }
 
   static handleString(): ParserStateTypes {
@@ -752,6 +795,16 @@ class FunctionState {
     if (!(parseTree.currentpt instanceof FunctionToken))
       throw new UnhandledError(1234);
     parseTree.currentpt?.insertChild(ipToken);
+    return FunctionState;
+  }
+
+  static handlePoint(
+    parseTree: ParseTreeType,
+    pointToken: PointToken,
+  ): ParserStateTypes {
+    if (!(parseTree.currentpt instanceof FunctionToken))
+      throw new UnhandledError(1234);
+    parseTree.currentpt?.insertChild(pointToken);
     return FunctionState;
   }
 
@@ -819,6 +872,12 @@ class PreNumberState {
   ): ParserStateTypes {
     throw new UserError(207);
   }
+  static handlePoint(
+    _parseTree: ParseTreeType,
+    _pointToken: PointToken,
+  ): ParserStateTypes {
+    throw new UserError(207);
+  }
   static handleOperator(): ParserStateTypes {
     throw new UserError(219);
   }
@@ -878,6 +937,12 @@ class CombineNumberState {
   static handleIp(
     _parseTree: ParseTreeType,
     _ipToken: IpToken,
+  ): ParserStateTypes {
+    throw new UserError(207);
+  }
+  static handlePoint(
+    _parseTree: ParseTreeType,
+    _pointToken: PointToken,
   ): ParserStateTypes {
     throw new UserError(207);
   }

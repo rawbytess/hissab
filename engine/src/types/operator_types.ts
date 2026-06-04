@@ -8,10 +8,13 @@ import tokenFactory from "../tokens/token_factory";
 import {
   ColorToken,
   ComplexToken,
+  CoordTargetToken,
+  convertPointToken,
   DateToken,
   type expressionUnit,
   IpToken,
   NumberToken,
+  PointToken,
   UnitToken,
 } from "../tokens/tokens";
 import ProcessConversions from "../units_processor";
@@ -231,6 +234,12 @@ const Operators: operatorType = {
       setIsExplicit: (isExplicit: boolean) => void,
       setConvertTo: (convertTo: string[]) => void,
     ) => {
+      // Coordinate-system conversion: `point(3,4) to polar`, `… to distance`,
+      // `5 to vector`. The target is a CoordTargetToken stashed by NeedUnitState.
+      if (params[1] instanceof CoordTargetToken) {
+        setIsExplicit(true);
+        return convertPointToken(params[0], params[1].target);
+      }
       if (
         (params[0] instanceof NumberToken ||
           params[0] instanceof DateToken ||
@@ -495,6 +504,16 @@ function makeMulDivFunc(sign: 1 | -1) {
   return async (params: TokenType[]) => {
     const a = params[0];
     const b = params[1];
+    // Point scaling: `point * scalar`, `scalar * point`, `point / scalar`.
+    // `point * point` is undefined here (use dot()/cross()); `scalar / point`
+    // has no meaning.
+    if (a instanceof PointToken || b instanceof PointToken) {
+      if (a instanceof PointToken && b instanceof NumberToken)
+        return a.scale(sign === 1 ? b.toNumber() : 1 / b.toNumber());
+      if (a instanceof NumberToken && b instanceof PointToken && sign === 1)
+        return b.scale(a.toNumber());
+      throw new UserError(8225);
+    }
     // Complex multiplication / division (dimensionless; no unit composition).
     if (isComplexOperand(a) || isComplexOperand(b)) {
       const r = sign === 1 ? cxMul(toCx(a), toCx(b)) : cxDiv(toCx(a), toCx(b));
@@ -592,7 +611,8 @@ function canAdd(t: TokenType | undefined): t is TokenType & Addable {
     t instanceof ComplexToken ||
     t instanceof DateToken ||
     t instanceof ColorToken ||
-    t instanceof IpToken
+    t instanceof IpToken ||
+    t instanceof PointToken
   );
 }
 function canSubtract(t: TokenType | undefined): t is TokenType & Subtractable {
@@ -602,7 +622,8 @@ function canSubtract(t: TokenType | undefined): t is TokenType & Subtractable {
     t instanceof DateToken ||
     t instanceof ColorToken ||
     t instanceof IpToken ||
-    t instanceof UnitToken
+    t instanceof UnitToken ||
+    t instanceof PointToken
   );
 }
 

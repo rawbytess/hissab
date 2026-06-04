@@ -17,6 +17,7 @@ import {
   IpToken,
   ListToken,
   NumberToken,
+  PointToken,
   StringToken,
   SymbolToken,
   UndefinedToken,
@@ -74,6 +75,7 @@ async function doParse(tokens: TokenType[]): Promise<ParseResult> {
     result instanceof FractionToken ||
     result instanceof ListToken ||
     result instanceof ComplexToken ||
+    result instanceof PointToken ||
     result instanceof ExprToken
   ) {
     if (!isExplicit && result instanceof NumberToken) {
@@ -118,6 +120,7 @@ export {
   exprToLatex,
   Functions,
   Operators,
+  PointToken,
   SymbolToken,
   TokenBaseType,
   tokenFactory,
