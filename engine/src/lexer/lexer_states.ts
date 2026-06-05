@@ -14,6 +14,7 @@ export type LexerStateTypes =
   | typeof StringState
   | typeof SymbolState
   | typeof ColorState
+  | typeof MatrixState
   | typeof Ip4State
   | typeof Ip6State
   | typeof ColonState
@@ -62,6 +63,14 @@ class LexerStates {
       tokens.thetoken += char;
       tokens.tokentype = TokenBaseType.COLOR;
       return ColorState;
+    }
+    // `[` opens a matrix literal. Spaces are the column separator, so the whole
+    // `[...]` is accumulated as one raw token (the lexer otherwise flushes on
+    // whitespace); buildMatrix parses it. Mirrors the `#`→ColorState entry.
+    if (char === "[") {
+      tokens.thetoken += char;
+      tokens.tokentype = TokenBaseType.MATRIX;
+      return MatrixState;
     }
     tokens.thetoken += char;
     tokens.flushToken(TokenBaseType.SYMBOL);
@@ -121,6 +130,46 @@ class ColorState extends LexerStates {
     }
     tokens.tokentype = TokenBaseType.UNDEFINED;
     return UndefinedState;
+  }
+}
+
+// Accumulates a whole matrix literal `[...]`. Every character (digits, spaces,
+// commas/semicolons, signs, even letters) is swallowed into the buffer until the
+// closing `]` that balances the opening `[`. `buildMatrix` (token_factory) then
+// turns the raw string into a MatrixToken. Nested `[` are depth-tracked so a
+// future matrix-of-matrices wouldn't terminate early.
+class MatrixState extends LexerStates {
+  static handleNumber(tokens: TokensType, char: string): LexerStateTypes {
+    return MatrixState.consume(tokens, char);
+  }
+  static handleString(tokens: TokensType, char: string): LexerStateTypes {
+    return MatrixState.consume(tokens, char);
+  }
+  static handleWhiteSpace(tokens: TokensType, char: string): LexerStateTypes {
+    return MatrixState.consume(tokens, char);
+  }
+  static handleUndefined(tokens: TokensType, char: string): LexerStateTypes {
+    return MatrixState.consume(tokens, char);
+  }
+  static handleSymbol(tokens: TokensType, char: string): LexerStateTypes {
+    return MatrixState.consume(tokens, char);
+  }
+
+  static consume(tokens: TokensType, char: string): LexerStateTypes {
+    tokens.thetoken += char;
+    tokens.tokentype = TokenBaseType.MATRIX;
+    if (char === "]") {
+      let depth = 0;
+      for (const c of tokens.thetoken) {
+        if (c === "[") depth++;
+        else if (c === "]") depth--;
+      }
+      if (depth === 0) {
+        tokens.flushToken(TokenBaseType.MATRIX);
+        return FreshState;
+      }
+    }
+    return MatrixState;
   }
 }
 

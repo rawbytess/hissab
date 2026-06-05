@@ -16,6 +16,7 @@ import {
   DateToken,
   FunctionToken,
   IpToken,
+  MatrixToken,
   NumberToken,
   OperatorToken,
   StringToken,
@@ -91,12 +92,45 @@ export default function tokenFactory(
   if (basetype === TokenBaseType.IP) {
     return buildIp(value, originalValue);
   }
+  if (basetype === TokenBaseType.MATRIX) {
+    return buildMatrix(value, originalValue);
+  }
   if (basetype === TokenBaseType.VARIABLENAME)
     return new VariableNameToken(originalValue, originalValue);
   if (basetype === TokenBaseType.SYMBOL) {
     if (value in Operators) return makeOperator(value, originalValue);
   }
   return new UndefinedToken(value, originalValue);
+}
+
+// Parse a raw matrix literal (`[1 2 3, 4 5 6]`) the lexer accumulated whole.
+// Rows split on `,` or `;`; columns split on whitespace; each cell must be a
+// plain number (Number() rejects `1/2`, `2x`, etc.). Anything malformed (empty,
+// ragged, non-numeric) returns an UndefinedToken — the engine's standard
+// "unrecognised input" path (doParse → UserError 103) — mirroring buildIp.
+function buildMatrix(value: string, originalValue: string): TokenType {
+  const inner = value.replace(/^\[/, "").replace(/\]$/, "").trim();
+  if (inner === "") return new UndefinedToken(value, originalValue);
+  const data: number[][] = [];
+  let cols = -1;
+  for (const rowStr of inner.split(/[,;]/)) {
+    const cells = rowStr
+      .trim()
+      .split(/\s+/)
+      .filter((c) => c.length > 0);
+    if (cells.length === 0) return new UndefinedToken(value, originalValue);
+    const row: number[] = [];
+    for (const cell of cells) {
+      const n = Number(cell);
+      if (!Number.isFinite(n)) return new UndefinedToken(value, originalValue);
+      row.push(n);
+    }
+    if (cols === -1) cols = row.length;
+    else if (row.length !== cols)
+      return new UndefinedToken(value, originalValue);
+    data.push(row);
+  }
+  return new MatrixToken(data, originalValue);
 }
 
 // Validate an IPv4/IPv6 run the lexer flagged as IP. parseIp returns null for

@@ -1916,6 +1916,67 @@
   color: var(--text-3);
 }
 
+/* "＋ overlay" control on explicit graphs: add another series to this draw(). */
+.nb2-graph-overlay {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.nb2-graph-overlay-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+.nb2-graph-overlay-btn:hover {
+  color: var(--text-0);
+  border-color: var(--line-3);
+  background: var(--bg-3);
+}
+.nb2-graph-overlay-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.nb2-graph-chip {
+  padding: 3px 8px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-pill, 999px);
+  background: var(--bg-1);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+.nb2-graph-chip:hover {
+  color: var(--text-0);
+  border-color: var(--line-3);
+  background: var(--bg-3);
+}
+.nb2-graph-overlay-input {
+  padding: 3px 8px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  background: var(--bg-1);
+  color: var(--text-0);
+  font: inherit;
+  font-size: 11px;
+  min-width: 150px;
+}
+.nb2-graph-overlay-input:focus {
+  outline: none;
+  border-color: var(--line-3);
+}
+
 /* function-plot ships light-theme SVG colours; recolour for the dark UI. */
 .nb2-graph-host .function-plot {
   font-family: var(--font-ui);

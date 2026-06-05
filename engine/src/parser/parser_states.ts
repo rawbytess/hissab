@@ -14,6 +14,7 @@ import {
   type expressionUnit,
   FunctionToken,
   type IpToken,
+  type MatrixToken,
   NumberToken,
   OperatorToken,
   type PointToken,
@@ -32,7 +33,12 @@ import type { ParseTreeType } from "./parsetree";
 // the numeric case; the rest are the symbolic/complex extensions. SymbolToken
 // and ExprToken additionally flip the expression into symbolic mode (see
 // isSymbolic in parser.ts); ComplexToken stays on the numeric solve path.
-type OperandToken = NumberToken | ComplexToken | SymbolToken | ExprToken;
+type OperandToken =
+  | NumberToken
+  | ComplexToken
+  | MatrixToken
+  | SymbolToken
+  | ExprToken;
 
 // True when juxtaposing this operand against another implies multiplication
 // (`2x`, `6i`, `(x+1)(x+2)`) rather than the unit implicit-addition case.

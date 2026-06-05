@@ -1,6 +1,12 @@
 import chroma from "chroma-js";
 import * as arith from "../arithmetic_functions";
 import { UnhandledError, UserError } from "../exceptions";
+import {
+  inverse as matInverse,
+  mul as matMul,
+  pow as matPow,
+  scale as matScale,
+} from "../matrix";
 import { type Cx, cxDiv, cxMul, cxPow } from "../symbolic/complex";
 import { composeUnits } from "../tokens/compound";
 import TokenBaseType, { type TokenType } from "../tokens/token_basetypes";
@@ -13,6 +19,7 @@ import {
   DateToken,
   type expressionUnit,
   IpToken,
+  MatrixToken,
   NumberToken,
   PointToken,
   UnitToken,
@@ -514,6 +521,24 @@ function makeMulDivFunc(sign: 1 | -1) {
         return b.scale(a.toNumber());
       throw new UserError(8225);
     }
+    // Matrix arithmetic. M*M → matrix multiply; M*scalar / scalar*M → scale;
+    // M/scalar → scale by reciprocal; A/B → A·inverse(B); `scalar / M` is
+    // undefined.
+    if (a instanceof MatrixToken || b instanceof MatrixToken) {
+      if (a instanceof MatrixToken && b instanceof MatrixToken)
+        return new MatrixToken(
+          sign === 1
+            ? matMul(a.data, b.data)
+            : matMul(a.data, matInverse(b.data)),
+        );
+      if (a instanceof MatrixToken && b instanceof NumberToken) {
+        const k = b.toNumber();
+        return new MatrixToken(matScale(a.data, sign === 1 ? k : 1 / k));
+      }
+      if (a instanceof NumberToken && b instanceof MatrixToken && sign === 1)
+        return new MatrixToken(matScale(b.data, a.toNumber()));
+      throw new UserError(9132);
+    }
     // Complex multiplication / division (dimensionless; no unit composition).
     if (isComplexOperand(a) || isComplexOperand(b)) {
       const r = sign === 1 ? cxMul(toCx(a), toCx(b)) : cxDiv(toCx(a), toCx(b));
@@ -540,6 +565,13 @@ function makePowFunc() {
   return async (params: TokenType[], exprUnit: expressionUnit) => {
     const a = params[0];
     const b = params[1];
+    // Matrix power: M^n for integer n (n>0 repeated multiply, 0 → identity,
+    // n<0 → inverse). Exponent must be a plain integer; a matrix exponent is
+    // undefined.
+    if (a instanceof MatrixToken && b instanceof NumberToken)
+      return new MatrixToken(matPow(a.data, b.toNumber()));
+    if (a instanceof MatrixToken || b instanceof MatrixToken)
+      throw new UserError(9133);
     if (isComplexOperand(a) || isComplexOperand(b)) {
       const r = cxPow(toCx(a), toCx(b));
       return new ComplexToken(r.re, r.im);
@@ -612,6 +644,7 @@ function canAdd(t: TokenType | undefined): t is TokenType & Addable {
     t instanceof DateToken ||
     t instanceof ColorToken ||
     t instanceof IpToken ||
+    t instanceof MatrixToken ||
     t instanceof PointToken
   );
 }
@@ -622,6 +655,7 @@ function canSubtract(t: TokenType | undefined): t is TokenType & Subtractable {
     t instanceof DateToken ||
     t instanceof ColorToken ||
     t instanceof IpToken ||
+    t instanceof MatrixToken ||
     t instanceof UnitToken ||
     t instanceof PointToken
   );

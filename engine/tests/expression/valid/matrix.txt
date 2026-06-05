@@ -1,0 +1,78 @@
+# Matrices — literals (space = column, comma/semicolon = row), arithmetic,
+# scalar broadcast, power, and the matrix functions.
+
+# Literals and separators
+["[1 2 3, 4 5 6]", "[1 2 3, 4 5 6]"]
+["[1 2; 3 4]", "[1 2, 3 4]"]
+["[5]", "[5]"]
+["[1 2 3]", "[1 2 3]"]
+["[1.5 -2, 3 4]", "[1.5 -2, 3 4]"]
+
+# Element-wise addition / subtraction
+["[1 2, 3 4] + [10 20, 30 40]", "[11 22, 33 44]"]
+["[1 2, 3 4] - [10 20, 30 40]", "[-9 -18, -27 -36]"]
+
+# Multiplication: matrix·matrix, scalar both sides, row·column
+["[1 2, 3 4] * [5 6, 7 8]", "[19 22, 43 50]"]
+["3 * [1 2, 3 4]", "[3 6, 9 12]"]
+["[1 2, 3 4] * 3", "[3 6, 9 12]"]
+["[1 2 3] * [1, 2, 3]", "[14]"]
+
+# Division by a scalar; A / B = A·inverse(B)
+["[2 4, 6 8] / 2", "[1 2, 3 4]"]
+["[1 2, 3 4] / [1 2, 3 4]", "[1 0, 0 1]"]
+
+# Scalar broadcast for + and - (both sides)
+["[1 2, 3 4] + 10", "[11 12, 13 14]"]
+["10 + [1 2, 3 4]", "[11 12, 13 14]"]
+["10 - [1 2, 3 4]", "[9 8, 7 6]"]
+
+# Unary minus
+["-[1 2, 3 4]", "[-1 -2, -3 -4]"]
+
+# Power: repeated multiply, identity at ^0, inverse at ^-1
+["[1 2, 3 4] ^ 2", "[7 10, 15 22]"]
+["[1 2, 3 4] ^ 0", "[1 0, 0 1]"]
+["[4 7, 2 6] ^ -1", "[0.6 -0.7, -0.2 0.4]"]
+
+# Core functions
+["transpose([1 2 3, 4 5 6])", "[1 4, 2 5, 3 6]"]
+["determinant([1 2, 3 4])", "-2"]
+["det([1 2 3, 4 5 6, 7 8 10])", "-3"]
+["inverse([4 7, 2 6])", "[0.6 -0.7, -0.2 0.4]"]
+["[4 7, 2 6] * inverse([4 7, 2 6])", "[1 0, 0 1]"]
+["adjugate([1 2, 3 4])", "[4 -2, -3 1]"]
+["trace([1 2, 3 4])", "5"]
+["rank([1 2, 2 4])", "1"]
+["rank([1 2, 3 4])", "2"]
+["rref([1 2 3, 4 5 6, 7 8 9])", "[1 0 -1, 0 1 2, 0 0 0]"]
+["minor([1 2 3, 4 5 6, 7 8 10], 1, 1)", "2"]
+["cofactor([1 2 3, 4 5 6, 7 8 10], 1, 2)", "2"]
+
+# Constructors and shape
+["identity(3)", "[1 0 0, 0 1 0, 0 0 1]"]
+["eye(2)", "[1 0, 0 1]"]
+["zeros(2)", "[0 0, 0 0]"]
+["zeros(2, 3)", "[0 0 0, 0 0 0]"]
+["ones(2, 2)", "[1 1, 1 1]"]
+["diag(1, 2, 3)", "[1 0 0, 0 2 0, 0 0 3]"]
+["diag([1 2 3, 4 5 6, 7 8 9])", "[1, 5, 9]"]
+["size([1 2 3, 4 5 6])", "[2 3]"]
+["rows([1 2 3, 4 5 6])", "2"]
+["cols([1 2 3, 4 5 6])", "3"]
+
+# Element-wise product, linear solve, norm
+["hadamard([1 2, 3 4], [10 20, 30 40])", "[10 40, 90 160]"]
+["linsolve([2 1, 1 3], [5, 10])", "[1, 3]"]
+["norm([3 4])", "5"]
+
+# Eigenvalues (sorted by descending real part); column vector for real spectra,
+# [real imag] rows when complex pairs appear.
+["eigenvalues([2 0, 0 3])", "[3, 2]"]
+["eigenvalues([2 1, 1 2])", "[3, 1]"]
+["eigenvalues([4 1, 2 3])", "[5, 2]"]
+["eigenvalues([2 0 0, 0 3 4, 0 4 9])", "[11, 2, 1]"]
+["eigenvalues([0 -1, 1 0])", "[0 1, 0 -1]"]
+
+# Eigenvectors as columns (real spectra only)
+["eigenvectors([2 0, 0 3])", "[0 1, 1 0]"]

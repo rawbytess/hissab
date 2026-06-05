@@ -16,6 +16,7 @@ import {
   FractionToken,
   IpToken,
   ListToken,
+  MatrixToken,
   NumberToken,
   type PlotSeries,
   PlotToken,
@@ -78,6 +79,7 @@ async function doParse(tokens: TokenType[]): Promise<ParseResult> {
     result instanceof ListToken ||
     result instanceof ComplexToken ||
     result instanceof PointToken ||
+    result instanceof MatrixToken ||
     result instanceof ExprToken ||
     result instanceof PlotToken
   ) {
@@ -126,6 +128,7 @@ export {
   exprToLatex,
   Functions,
   freeSymbols,
+  MatrixToken,
   Operators,
   PlotToken,
   PointToken,

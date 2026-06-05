@@ -30,6 +30,24 @@ export interface PlotArtifact {
 
 export type CellArtifact = PlotArtifact;
 
+// Curve graphs route through the engine's symbolic draw() path; complex/point
+// graphs route through the numeric path, and the two can't be mixed in one
+// draw() call (v1). So a graph's "domain" decides which other lines may be
+// overlaid onto it.
+export type PlotDomain = "curve" | "numeric";
+
+export function plotDomain(series: PlotSeries[]): PlotDomain {
+  return series.every((s) => s.type === "curve") ? "curve" : "numeric";
+}
+
+// A line whose result can be overlaid onto an explicit graph, offered as a
+// quick-pick in the graph's "＋ overlay" panel. `ref` is the line reference
+// spliced into the draw() call (e.g. "l3"); `label` is the readable series.
+export interface OverlayCandidate {
+  ref: string;
+  label: string;
+}
+
 export const CELL_ARTIFACTS_EVENT = "hissab-cell-artifacts";
 
 export interface ArtifactsDetail {

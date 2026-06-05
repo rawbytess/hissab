@@ -30,6 +30,7 @@ import {
 import { doLex, doParse, type ExprToken, exprToLatex } from "@rawbytes/hissab";
 import katex from "katex";
 import { LRUCache } from "lru-cache";
+import { findMatrixLiterals, matrixToLatex } from "./matrixLatex";
 import "katex/dist/katex.min.css";
 
 // Tier-2 constructs: a function name whose whole `name(...)` call we render as a
@@ -293,6 +294,21 @@ class MathDecorations {
         all.push(r);
         atomic.push(r);
         covered.push(call);
+      }
+      // Matrix literals → real 2-D matrices. Synchronous (no parse needed): the
+      // LaTeX comes straight from the `[...]` text.
+      for (const span of findMatrixLiterals(code)) {
+        if (within(span.from, covered)) continue;
+        const sub = code.slice(span.from, span.to);
+        const latex = matrixToLatex(sub);
+        if (latex == null) continue; // not a rectangular numeric matrix
+        const deco = Decoration.replace({
+          widget: new KatexWidget(latex, sub),
+        });
+        const r = deco.range(base + span.from, base + span.to);
+        all.push(r);
+        atomic.push(r);
+        covered.push(span);
       }
     }
 

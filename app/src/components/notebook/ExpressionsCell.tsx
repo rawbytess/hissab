@@ -11,6 +11,8 @@ import {
   type ArtifactsDetail,
   CELL_ARTIFACTS_EVENT,
   type CellArtifact,
+  type OverlayCandidate,
+  plotDomain,
 } from "@/lib/editor/cellArtifacts.ts";
 import HissabEditor, { type HissabEditorType } from "@/lib/editor/editor.ts";
 import {
@@ -144,6 +146,20 @@ export function ExpressionsCell({
     void navigator.clipboard?.writeText(cell.content ?? "");
   };
 
+  // Overlay `exprText` onto the explicit graph backed by line `lineNumber`
+  // (0-indexed): splice it as a new argument into that line's draw()/plot()
+  // call. The edit goes through the editor, so the normal change pipeline
+  // recomputes the (now combined) graph and persists the document.
+  const handleOverlay = (lineNumber: number, exprText: string) => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    const original = editor.getText().split("\n")[lineNumber];
+    if (original === undefined) return;
+    const next = appendDrawArg(original, exprText);
+    if (next === original) return;
+    editor.replaceLineRange(lineNumber + 1, lineNumber + 1, next);
+  };
+
   return (
     <div
       className={`nb2-expressions-cell ${variant}${cell.source === "ai" ? " ai-sourced" : ""}`}
@@ -169,7 +185,20 @@ export function ExpressionsCell({
         <Suspense fallback={null}>
           <div className="nb2-graphs">
             {artifacts.map((artifact) => (
-              <GraphArtifact key={artifact.id} artifact={artifact} />
+              <GraphArtifact
+                key={artifact.id}
+                artifact={artifact}
+                candidates={
+                  artifact.source === "explicit"
+                    ? overlayCandidatesFor(artifact, artifacts)
+                    : []
+                }
+                onOverlay={
+                  artifact.source === "explicit"
+                    ? (expr) => handleOverlay(artifact.lineNumber, expr)
+                    : undefined
+                }
+              />
             ))}
           </div>
         </Suspense>
@@ -183,6 +212,41 @@ export function ExpressionsCell({
       />
     </div>
   );
+}
+
+// Lines whose result can be overlaid onto `target`: graphable *value* lines
+// (suggested artifacts) above the target — references only resolve to earlier
+// lines — and of the same domain, since a draw() can't mix curves with
+// complex/point series (v1).
+function overlayCandidatesFor(
+  target: CellArtifact,
+  all: CellArtifact[],
+): OverlayCandidate[] {
+  const domain = plotDomain(target.series);
+  return all
+    .filter(
+      (a) =>
+        a.source === "suggested" &&
+        a.lineNumber < target.lineNumber &&
+        plotDomain(a.series) === domain,
+    )
+    .map((a) => ({
+      ref: `l${a.lineNumber + 1}`,
+      label: a.series.map((s) => s.label).join(", "),
+    }));
+}
+
+// Splice `exprText` in as the final argument of the draw()/plot() call on
+// `lineText`, preserving any trailing `// comment`. Insertion happens before
+// the expression's last `)` — the call's closing paren even when an argument is
+// itself a call, e.g. `draw(point(1,2))`.
+function appendDrawArg(lineText: string, exprText: string): string {
+  const commentIdx = lineText.indexOf("//");
+  const exprPart = commentIdx === -1 ? lineText : lineText.slice(0, commentIdx);
+  const comment = commentIdx === -1 ? "" : lineText.slice(commentIdx);
+  const close = exprPart.lastIndexOf(")");
+  if (close === -1) return lineText;
+  return `${exprPart.slice(0, close)}, ${exprText}${exprPart.slice(close)}${comment}`;
 }
 
 function deriveExpressionTitle(content: string): string {

@@ -25,7 +25,7 @@ Supported expression families include arithmetic, percentages, unit conversion,
 compound units, sets/combinatorics, number theory, logarithms, statistics,
 probability, finance, trigonometry, dates/times, number systems, bitwise
 operations, colors, IP addresses, symbolic algebra, complex numbers,
-coordinate systems, and visualization (`draw`/`plot`).
+coordinate systems, matrices, and visualization (`draw`/`plot`).
 
 ## Advanced Usage
 
@@ -130,6 +130,7 @@ The public root export includes:
 - `ExprToken`
 - `SymbolToken`
 - `PointToken`
+- `MatrixToken`
 - `PlotToken`
 - `exprToLatex`
 - `evalExpr`

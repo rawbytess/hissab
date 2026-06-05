@@ -85,6 +85,7 @@ about.
 - `symbolic` — Free variables (x, y, z), implicit multiplication, simplify / collect like terms; derivative/integral/limit structure captured
 - `complex_numbers` — Imaginary unit i and complex arithmetic (+, -, *, /, ^) in a + bi form
 - `coordinate_systems` — Points/vectors in cartesian, polar, cylindrical, spherical & minkowski systems; arithmetic, `to`-conversions, distance/dot/cross/angle/magnitude
+- `matrix` — Matrix literals [1 2, 3 4] (space=column, comma/semicolon=row); add/subtract/multiply, scalar ops, power/inverse, transpose, determinant, rank, rref, eigenvalues
 - `visualization` — Graph expressions and values with draw()/plot(): single-variable curves y=f(x), complex numbers on the Argand plane, and coordinate points/vectors
 - `labels_and_prev` — Label expressions with `=`, reference earlier results via labels or the `prev` keyword
 

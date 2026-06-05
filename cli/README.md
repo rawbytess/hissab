@@ -54,8 +54,8 @@ The CLI evaluates the same expression language documented in
 conversion, compound units, sets/combinatorics, number theory, logarithms,
 statistics, probability, finance, trigonometry, date/time math, number systems,
 bitwise operations, color math, IP addresses, symbolic algebra, complex numbers,
-coordinate systems, graphing with `draw`/`plot`, and labelled multi-line
-workflows.
+coordinate systems, matrices, graphing with `draw`/`plot`, and labelled
+multi-line workflows.
 
 ## Output
 

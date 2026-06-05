@@ -12,6 +12,13 @@ import {
 } from "../coordinates";
 import { UnhandledError, UserError } from "../exceptions";
 import * as ip from "../ip";
+import {
+  formatMatrix,
+  type Mat,
+  add as matAdd,
+  sub as matSub,
+  scalarOp,
+} from "../matrix";
 import { type Cx, cxAdd, cxString, cxSub } from "../symbolic/complex";
 import type { Expr } from "../symbolic/expr";
 import { exprToString } from "../symbolic/render";
@@ -198,6 +205,12 @@ class NumberToken extends Token {
     if (token instanceof ComplexToken) {
       return new ComplexToken(this.toNumber() + token.re, token.im);
     }
+    if (token instanceof MatrixToken) {
+      // scalar + M → broadcast (add the scalar to every entry).
+      return new MatrixToken(
+        scalarOp(token.data, this.toNumber(), (x, k) => k + x),
+      );
+    }
     if (token instanceof NumberToken) {
       let result;
       if (this.percent && !token.percent) {
@@ -250,6 +263,12 @@ class NumberToken extends Token {
   subtract(token: TokenType, expUnit: expressionUnit) {
     if (token instanceof ComplexToken) {
       return new ComplexToken(this.toNumber() - token.re, -token.im);
+    }
+    if (token instanceof MatrixToken) {
+      // scalar − M → broadcast (subtract every entry from the scalar).
+      return new MatrixToken(
+        scalarOp(token.data, this.toNumber(), (x, k) => k - x),
+      );
     }
     if (token instanceof NumberToken) {
       let result;
@@ -705,6 +724,55 @@ class ListToken extends Token {
 
   getString(): string {
     return this.values.join(", ");
+  }
+}
+
+// A matrix of real numbers, lexed from `[1 2 3, 4 5 6]` (space = column,
+// comma/semicolon = row). Like ComplexToken / PointToken it is a closed value
+// domain that rides the eager solver — `+ - * / ^` carry matrix branches
+// (operator_types.ts) and the matrix functions (function.ts) consume it. The
+// numeric math lives in the pure `matrix/` module.
+class MatrixToken extends Token {
+  kind = "matrixToken";
+  data: Mat;
+  rows: number;
+  cols: number;
+
+  constructor(data: Mat, originalValue?: string) {
+    const value = formatMatrix(data);
+    super(value, originalValue ?? value);
+    this.data = data;
+    this.rows = data.length;
+    this.cols = data.length === 0 ? 0 : data[0].length;
+  }
+
+  isOperand() {
+    return true;
+  }
+
+  getString(): string {
+    return formatMatrix(this.data);
+  }
+
+  // M + M → element-wise (shape-checked); M + scalar → broadcast over entries.
+  add(token: TokenType, _expUnit: expressionUnit) {
+    if (token instanceof MatrixToken)
+      return new MatrixToken(matAdd(this.data, token.data));
+    if (token instanceof NumberToken)
+      return new MatrixToken(
+        scalarOp(this.data, token.toNumber(), (x, k) => x + k),
+      );
+    throw new UserError(9130);
+  }
+
+  subtract(token: TokenType, _expUnit: expressionUnit) {
+    if (token instanceof MatrixToken)
+      return new MatrixToken(matSub(this.data, token.data));
+    if (token instanceof NumberToken)
+      return new MatrixToken(
+        scalarOp(this.data, token.toNumber(), (x, k) => x - k),
+      );
+    throw new UserError(9131);
   }
 }
 
@@ -1279,6 +1347,7 @@ export {
   IpToken,
   isMultiSymbol,
   ListToken,
+  MatrixToken,
   NumberToken,
   OperatorToken,
   PlotToken,

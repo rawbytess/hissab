@@ -8,6 +8,7 @@ import type {
   ExprToken,
   FunctionToken,
   IpToken,
+  MatrixToken,
   NumberToken,
   OperatorToken,
   PointToken,
@@ -33,6 +34,7 @@ enum TokenBaseType {
   COLOR,
   IP,
   BOOLEAN,
+  MATRIX,
 }
 
 export type TokenType =
@@ -50,6 +52,7 @@ export type TokenType =
   | ComplexToken
   | SymbolToken
   | ExprToken
+  | MatrixToken
   | PointToken
   | CoordTargetToken
   | VariableNameToken

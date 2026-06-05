@@ -150,6 +150,33 @@ Constructors build points; a single point argument converts it. See
 | `atan2(y, x)` | Two-argument arctangent (degrees) | `atan2(1, 1)` |
 | `hypot(...)` | Euclidean norm √(x²+y²+…) | `hypot(3, 4)` |
 
+## Matrices
+
+Take a matrix literal `[1 2, 3 4]` (space = column, comma/semicolon = row). See
+**Matrices** for arithmetic and the full set.
+
+| Function | Description | Example |
+| --- | --- | --- |
+| `transpose(A)` | Transpose | `transpose([1 2 3, 4 5 6])` |
+| `determinant(A)` / `det(A)` | Determinant of a square matrix | `determinant([1 2, 3 4])` |
+| `inverse(A)` / `inv(A)` | Inverse of an invertible matrix | `inverse([4 7, 2 6])` |
+| `adjugate(A)` / `adj(A)` | Classical adjoint | `adjugate([1 2, 3 4])` |
+| `trace(A)` | Sum of the diagonal | `trace([1 2, 3 4])` |
+| `rank(A)` | Rank | `rank([1 2, 2 4])` |
+| `rref(A)` | Reduced row-echelon form | `rref([1 2 3, 4 5 6, 7 8 9])` |
+| `minor(A, i, j)` | (i, j) minor (1-indexed) | `minor([1 2 3, 4 5 6, 7 8 10], 1, 1)` |
+| `cofactor(A, i, j)` | (i, j) cofactor (1-indexed) | `cofactor([1 2 3, 4 5 6, 7 8 10], 1, 2)` |
+| `identity(n)` / `eye(n)` | n×n identity | `identity(3)` |
+| `zeros(n)` / `zeros(r, c)` | Zero matrix | `zeros(2, 3)` |
+| `ones(n)` / `ones(r, c)` | All-ones matrix | `ones(2, 2)` |
+| `diag(...)` / `diag(A)` | Build / extract a diagonal | `diag(1, 2, 3)` |
+| `size(A)` / `shape(A)` | Dimensions `[rows cols]` | `size([1 2 3, 4 5 6])` |
+| `rows(A)` / `cols(A)` | Row / column count | `rows([1 2 3, 4 5 6])` |
+| `hadamard(A, B)` | Element-wise product | `hadamard([1 2, 3 4], [10 20, 30 40])` |
+| `linsolve(A, b)` | Solve A·x = b | `linsolve([2 1, 1 3], [5, 10])` |
+| `eigenvalues(A)` / `eigvals(A)` | Eigenvalues (approximate) | `eigenvalues([2 1, 1 2])` |
+| `eigenvectors(A)` / `eigvecs(A)` | Eigenvectors as columns | `eigenvectors([2 0, 0 3])` |
+
 ## Visualization
 
 Produce a graph rendered below the editor. See **Graphing**.

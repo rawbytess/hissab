@@ -2,9 +2,13 @@ import { type Expr, evalExpr } from "@rawbytes/hissab";
 import type { FunctionPlotDatum, FunctionPlotOptions } from "function-plot";
 import functionPlotImport from "function-plot";
 import { debounce } from "lodash-es";
-import { LineChart } from "lucide-react";
+import { LineChart, Plus } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { CellArtifact } from "@/lib/editor/cellArtifacts.ts";
+import {
+  type CellArtifact,
+  type OverlayCandidate,
+  plotDomain,
+} from "@/lib/editor/cellArtifacts.ts";
 
 // function-plot ships CommonJS (no ESM build); depending on the bundler's
 // interop the callable is either the default import itself or nested under
@@ -159,9 +163,20 @@ function buildOptions(
 
 // A single graph rendered below the editor. Explicit `draw(...)` graphs open
 // expanded; suggested graphs (inferred from a graphable result) start as a 📈
-// toggle the user can expand.
-export function GraphArtifact({ artifact }: { artifact: CellArtifact }) {
+// toggle the user can expand. Explicit graphs also offer a "＋ overlay" control
+// that splices another series into the backing `draw(...)` call.
+export function GraphArtifact({
+  artifact,
+  candidates = [],
+  onOverlay,
+}: {
+  artifact: CellArtifact;
+  candidates?: OverlayCandidate[];
+  onOverlay?: (exprText: string) => void;
+}) {
   const [expanded, setExpanded] = useState(artifact.source === "explicit");
+  const [overlayOpen, setOverlayOpen] = useState(false);
+  const [draft, setDraft] = useState("");
   const hostRef = useRef<HTMLDivElement>(null);
   // Read the latest artifact through a ref so the render effect can depend on a
   // content key (specKey) instead of the artifact's identity — the artifact gets
@@ -173,6 +188,22 @@ export function GraphArtifact({ artifact }: { artifact: CellArtifact }) {
     [artifact.series],
   );
   const caption = artifact.series.map((s) => s.label).join(", ");
+
+  // Overlay is offered on explicit graphs: pick an existing graphable line to
+  // splice in, or (for curve graphs) type a fresh curve. A numeric graph with
+  // no compatible lines above it has nothing to add, so the control is hidden.
+  const isCurve = plotDomain(artifact.series) === "curve";
+  const canOverlay =
+    artifact.source === "explicit" &&
+    !!onOverlay &&
+    (candidates.length > 0 || isCurve);
+  const commitOverlay = (exprText: string) => {
+    const text = exprText.trim();
+    if (!text) return;
+    onOverlay?.(text);
+    setDraft("");
+    setOverlayOpen(false);
+  };
 
   useEffect(() => {
     if (!expanded) return;
@@ -215,6 +246,48 @@ export function GraphArtifact({ artifact }: { artifact: CellArtifact }) {
           <LineChart size={12} />
           <span>{expanded ? "Hide graph" : `Plot ${caption}`}</span>
         </button>
+      )}
+      {expanded && canOverlay && (
+        <div className="nb2-graph-overlay">
+          <button
+            type="button"
+            className="nb2-graph-overlay-btn"
+            onClick={() => setOverlayOpen((v) => !v)}
+            title="Overlay another series on this graph"
+          >
+            <Plus size={12} />
+            <span>overlay</span>
+          </button>
+          {overlayOpen && (
+            <div className="nb2-graph-overlay-panel">
+              {candidates.map((c) => (
+                <button
+                  key={c.ref}
+                  type="button"
+                  className="nb2-graph-chip"
+                  onClick={() => commitOverlay(c.ref)}
+                  title={`Add ${c.label} (${c.ref})`}
+                >
+                  {c.label}
+                </button>
+              ))}
+              {isCurve && (
+                <input
+                  className="nb2-graph-overlay-input"
+                  placeholder="add curve, e.g. sin(x)"
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") commitOverlay(draft);
+                    else if (e.key === "Escape") setOverlayOpen(false);
+                  }}
+                  // biome-ignore lint/a11y/noAutofocus: focus the field the user just opened
+                  autoFocus
+                />
+              )}
+            </div>
+          )}
+        </div>
       )}
       {expanded && <div ref={hostRef} className="nb2-graph-host" />}
     </div>

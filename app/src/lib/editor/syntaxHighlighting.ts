@@ -49,6 +49,9 @@ export function HissabHighlightStyle(isDark: boolean): TagStyle[] {
     { tag: hissabTags.exprToken, color: isDark ? "#a5d6ff" : "#0550ae" },
     { tag: hissabTags.pointToken, color: isDark ? "#5fd7a7" : "#1f7a52" },
     { tag: hissabTags.coordTargetToken, color: isDark ? "#5fd7a7" : "#1f7a52" },
+    // Matrix literals render as 2-D KaTeX when the caret is off the line; this
+    // colour is the readable raw-text fallback shown while editing.
+    { tag: hissabTags.matrixToken, color: isDark ? "#4ec9b0" : "#117a65" },
     {
       tag: hissabTags.lineRefToken,
       color: isDark ? "#8b9bb4" : "#5a6b86",
@@ -88,6 +91,7 @@ export const hissabTags = {
   exprToken: Tag.define(),
   pointToken: Tag.define(),
   coordTargetToken: Tag.define(),
+  matrixToken: Tag.define(),
   // prev / total / line<N> / l<N> back-references — styled italic to read as
   // pointers to other results rather than literals.
   lineRefToken: Tag.define(),

@@ -17,6 +17,7 @@ import {
   ExprToken,
   FunctionToken,
   IpToken,
+  MatrixToken,
   NumberToken,
   OperatorToken,
   type PlotSeries,
@@ -97,6 +98,7 @@ async function parse(
     if (
       token instanceof NumberToken ||
       token instanceof ComplexToken ||
+      token instanceof MatrixToken ||
       token instanceof SymbolToken ||
       token instanceof ExprToken
     )
@@ -174,6 +176,7 @@ async function parse(
             if (
               result instanceof NumberToken ||
               result instanceof ComplexToken ||
+              result instanceof MatrixToken ||
               result instanceof SymbolToken ||
               result instanceof ExprToken
             )

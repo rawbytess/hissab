@@ -17,6 +17,7 @@ import {
   type Variables,
 } from "@rawbytes/hissab";
 import type { CellArtifact } from "@/lib/editor/cellArtifacts.ts";
+import { matrixToLatex } from "@/lib/editor/matrixLatex.ts";
 import { ResultWidget } from "@/lib/editor/resultWidget.ts";
 import {
   calculatePrev,
@@ -71,7 +72,9 @@ export async function getResult(
         latex:
           resultToken?.kind === "exprToken"
             ? exprToLatex((resultToken as ExprToken).expr)
-            : undefined,
+            : resultToken?.kind === "matrixToken"
+              ? (matrixToLatex(result) ?? undefined)
+              : undefined,
       });
       const artifact = toPlotArtifact(resultToken, result, index);
       if (artifact) artifacts.push(artifact);

@@ -47,6 +47,14 @@ derivative(x^3, x)
 point(2, 3)
 ```
 
+## Add a series with **＋ overlay**
+
+Every `draw(...)` chart has a **＋ overlay** control. Open it to type another
+curve (e.g. `sin(x)`) or to pick a graphable line **above** it — the chosen line
+is referenced (`l2`, `l3`, …) and spliced into the `draw(...)` call, so the two
+plot together on one chart and stay linked as you edit. Because it only edits
+the `draw` line, the combination is just text and persists with the notebook.
+
 ## Common mistakes
 
 :::caution

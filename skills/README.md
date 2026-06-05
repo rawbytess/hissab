@@ -1,6 +1,6 @@
 # Hissab Skills
 
-[Anthropic Agent Skills](https://docs.claude.com/en/docs/agents-and-tools/agent-skills) that teach AI agents to offload math to the [Hissab](https://hissab.io) engine instead of computing it themselves. Use them to get hallucination-free arithmetic, unit conversions, date/time math, percentages, statistics, probability, finance, IP address math, symbolic algebra, complex numbers, coordinate systems, graphing with `draw`/`plot`, bitwise ops, number-system conversions, and color math from natural-language prompts.
+[Anthropic Agent Skills](https://docs.claude.com/en/docs/agents-and-tools/agent-skills) that teach AI agents to offload math to the [Hissab](https://hissab.io) engine instead of computing it themselves. Use them to get hallucination-free arithmetic, unit conversions, date/time math, percentages, statistics, probability, finance, IP address math, symbolic algebra, complex numbers, coordinate systems, matrices, graphing with `draw`/`plot`, bitwise ops, number-system conversions, and color math from natural-language prompts.
 
 ## Pick a skill
 
@@ -15,7 +15,7 @@ Current documentation tags are generated from `lib/documentation`: `arithmetic`,
 `percentage`, `unit_conversion`, `compound_units`, `set_operations`,
 `number_theory`, `logarithm`, `statistics`, `probability`, `finance`,
 `trigonometry`, `date_time`, `number_systems`, `bitwise`, `color`,
-`ip_address`, `symbolic`, `complex_numbers`, `coordinate_systems`,
+`ip_address`, `symbolic`, `complex_numbers`, `coordinate_systems`, `matrix`,
 `visualization`, and `labels_and_prev`.
 
 ## Install (Claude Code / Claude Desktop)

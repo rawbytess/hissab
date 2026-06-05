@@ -154,6 +154,11 @@ export const docSections: DocSection[] = [
         load: () => import("./content/science-data/coordinate-systems.md?raw"),
       },
       {
+        slug: "science-data/matrices",
+        title: "Matrices",
+        load: () => import("./content/science-data/matrices.md?raw"),
+      },
+      {
         slug: "science-data/graphing",
         title: "Graphing",
         load: () => import("./content/science-data/graphing.md?raw"),

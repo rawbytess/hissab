@@ -10,6 +10,7 @@ import { finance } from "./chunks/finance";
 import { ip_address } from "./chunks/ip_address";
 import { labels_and_prev } from "./chunks/labels_and_prev";
 import { logarithm } from "./chunks/logarithm";
+import { matrix } from "./chunks/matrix";
 import { number_systems } from "./chunks/number_systems";
 import { number_theory } from "./chunks/number_theory";
 import { percentage } from "./chunks/percentage";
@@ -49,6 +50,7 @@ export const chunks: Record<OperationTag, string> = {
   symbolic,
   complex_numbers,
   coordinate_systems,
+  matrix,
   visualization,
   labels_and_prev,
 };
