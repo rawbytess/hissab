@@ -88,6 +88,15 @@ export const userErrorMessages: Record<number, string> = {
   7722: "`runway` needs a non-zero monthly burn.",
   7723: "`doubling time` takes a single rate, e.g. `doubling time(8%)`.",
   7724: "`doubling time` needs a non-zero rate.",
+
+  // Random / entropy & hashing (function.ts)
+  7960: "`random` takes at most two numeric bounds: `random()`, `random(max)`, or `random(min, max)`.",
+  7961: "`uuid` takes an optional version: `uuid()` (v7), `uuid(4)`, or `uuid(7)`.",
+  7962: "`nanoid` takes an optional length (1–512), e.g. `nanoid()` or `nanoid(16)`.",
+  7963: "`uuid` supports versions 4 and 7 only, e.g. `uuid(4)` or `uuid(7)`.",
+  7964: 'Hash functions take a single text argument, e.g. `sha256("hello")`. Quote the text.',
+  7965: '`pick` needs at least one option, e.g. `pick("a", "b", "c")`.',
+  7966: "This function takes no arguments — call it with empty parentheses.",
 };
 
 export default userErrorMessages;

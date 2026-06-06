@@ -71,6 +71,27 @@ Equal payments made every period.
 - Years to double (Rule of 72): \`doubling time(rate)\`
   → \`doubling time(8%)\` → 9
 
+### Consumer
+
+- Tip amount: \`tip(bill, rate)\` → \`tip(80, 18%)\` → 14.4
+- Bill including tip: \`tip total(bill, rate)\` → \`tip total(80, 18%)\` → 94.4
+- Sale price after a discount: \`discount(price, rate)\` (alias \`sale price\`)
+  → \`discount(200, 25%)\` → 150
+- Tax on a price: \`sales tax(price, rate)\` → \`sales tax(100, 8%)\` → 8
+- Price including tax: \`price with tax(price, rate)\`
+  → \`price with tax(100, 8%)\` → 108
+
+### Investment appraisal
+
+- Net present value of a cashflow series at a discount rate:
+  \`npv(rate, cf0, cf1, …)\` — the first cashflow is at t = 0
+  → \`npv(10%, -1000, 500, 500, 500)\` → 243.426
+- Internal rate of return (the rate where NPV = 0), as a percentage:
+  \`irr(cf0, cf1, …)\` → \`irr(-1000, 500, 500, 500)\` → 23.3752. Needs a sign
+  change (at least one negative and one positive cashflow).
+- Straight-line depreciation per year: \`depreciation(cost, salvage, life)\`
+  → \`depreciation(10000, 1000, 5)\` → 1,800
+
 ### Examples
 
 User: I deposit 10,000 at 5% for 2 years simple interest — how much interest?

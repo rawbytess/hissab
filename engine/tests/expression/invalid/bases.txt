@@ -1,0 +1,6 @@
+# Invalid base conversion targets and malformed literals in expressions.
+255 to hexadecimal
+0b102 to decimal
+0o128 to decimal
+0x1g to decimal
+0b to decimal

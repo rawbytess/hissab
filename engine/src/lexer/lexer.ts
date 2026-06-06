@@ -5,7 +5,7 @@ import { Tokens } from "./lexer_tokens";
 function lexer(line: string, variables: Variables, lineNumber: number) {
   const NUMBERS = "0123456789";
   const STRING_BEGIN = "abcdefghijklmnopqrstuvwxyz_ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const SYMBOLS = "!%^&*()-+=~{}[]|/<>,:.#'\"";
+  const SYMBOLS = "!%^&*()-+=~{}[]|/<>,:.#'\"@";
   const CURRENCY = "лв₺₴₪₦č£₾ł₽元₹¥$₱৳₩₫฿₿ɱŁΞ€";
   const tokens = new Tokens(variables, lineNumber);
 

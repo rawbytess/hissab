@@ -1,6 +1,6 @@
 # Hissab Skills
 
-[Anthropic Agent Skills](https://docs.claude.com/en/docs/agents-and-tools/agent-skills) that teach AI agents to offload math to the [Hissab](https://hissab.io) engine instead of computing it themselves. Use them to get hallucination-free arithmetic, unit conversions, date/time math, percentages, statistics, probability, finance, IP address math, symbolic algebra, complex numbers, coordinate systems, matrices, graphing with `draw`/`plot`, bitwise ops, number-system conversions, and color math from natural-language prompts.
+[Anthropic Agent Skills](https://docs.claude.com/en/docs/agents-and-tools/agent-skills) that teach AI agents to offload math to the [Hissab](https://hissab.io) engine instead of computing it themselves. Use them to get hallucination-free arithmetic, unit conversions, date/time math, percentages, statistics, probability, finance, health and fitness metrics, geometry, IP address math, symbolic algebra, complex numbers, coordinate systems, matrices, graphing with `draw`/`plot`, bitwise ops, number-system conversions, color math, random numbers / UUIDs, and text hashing from natural-language prompts.
 
 ## Pick a skill
 
@@ -9,14 +9,14 @@
 | [`hissab-cli`](./hissab-cli/SKILL.md) | The `hissab` binary is installed locally. Best for offline work, CI pipelines, shell-driven workflows, and any agent that can spawn subprocesses. |
 | [`hissab-cloud`](./hissab-cloud/SKILL.md) | Running inside an MCP-capable host (Claude Code, Claude Desktop, Claude Agent SDK). No local install required — the agent talks to the hosted Hissab MCP server at `https://api.hissab.io/mcp`. |
 
-Both skills share the same expression language. Each skill bundles `documentation.md` — the **base reference** (basics + catalog of categories). For full syntax of any individual category, the agent fetches a chunk on demand: `hissab docs <tag>` (CLI) or `Hissab_docs({ tag })` (cloud / MCP).
+Both skills share the same expression language. Each skill bundles `documentation.md` — the **base reference** (basics + catalog of categories). For full syntax of any individual category, the agent fetches a chunk on demand: `hissab docs <tag>` (CLI) or `Hissab_docs({ tag })` (cloud / MCP). Large-context CLI agents can run `hissab docs --all` to load the complete reference at once.
 
 Current documentation tags are generated from `lib/documentation`: `arithmetic`,
 `percentage`, `unit_conversion`, `compound_units`, `set_operations`,
-`number_theory`, `logarithm`, `statistics`, `probability`, `finance`,
-`trigonometry`, `date_time`, `number_systems`, `bitwise`, `color`,
+`number_theory`, `logarithm`, `statistics`, `probability`, `finance`, `health`,
+`trigonometry`, `geometry`, `date_time`, `number_systems`, `bitwise`, `color`,
 `ip_address`, `symbolic`, `complex_numbers`, `coordinate_systems`, `matrix`,
-`visualization`, and `labels_and_prev`.
+`visualization`, `random`, `hashing`, and `labels_and_prev`.
 
 ## Install (Claude Code / Claude Desktop)
 

@@ -23,9 +23,12 @@ console.log(result.resultToken); // parsed result token
 
 Supported expression families include arithmetic, percentages, unit conversion,
 compound units, sets/combinatorics, number theory, logarithms, statistics,
-probability, finance, trigonometry, dates/times, number systems, bitwise
-operations, colors, IP addresses, symbolic algebra, complex numbers,
-coordinate systems, matrices, and visualization (`draw`/`plot`).
+probability, finance, health and fitness, trigonometry, geometry, dates/times,
+number systems, bitwise operations, colors, IP addresses, symbolic algebra,
+complex numbers,
+coordinate systems, matrices, visualization (`draw`/`plot`), random numbers /
+UUIDs / nanoids (`random`, `uuid`, `nanoid`), and text hashing (`md5`, `sha256`,
+`crc32`, …).
 
 ## Advanced Usage
 

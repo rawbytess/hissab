@@ -1,0 +1,28 @@
+# Health & Fitness. Inputs accept units (kg/lb, m/cm/ft) and convert; a bare
+# number is read in metric. Formula standards: BMR = Mifflin-St Jeor,
+# body fat = Deurenberg (from BMI), ideal weight = Devine.
+
+# --- BMI (weight kg / height m^2) ---
+["bmi(70, 1.75)", "22.8571"]
+["bmi(70 kg, 1.75 meter)", "22.8571"]
+["bmi(154 pound, 5.9 feet)", "21.5999"]
+
+# --- BMR (kcal/day, Mifflin-St Jeor) and TDEE ---
+["bmr male(80, 180, 30)", "1,780"]
+["bmr female(65, 168, 28)", "1,399"]
+["tdee(1780, 1.55)", "2,759"]
+
+# --- Body fat % (Deurenberg) ---
+["body fat male(80, 1.8, 30)", "20.3296"]
+["body fat female(65, 1.68, 28)", "28.6761"]
+
+# --- Ideal body weight (Devine), result in kilograms ---
+["ideal weight male(180 cm)", "74.9921 kilogram"]
+["ideal weight female(165 cm)", "56.9094 kilogram"]
+["ideal weight male(5.9 feet)", "74.84 kilogram"]
+
+# --- Heart rate & activity ---
+["max heart rate(30)", "190"]
+["target heart rate(30, 70%)", "133"]
+["calories burned(8, 70, 30)", "280"]
+["water intake(70 kg)", "2.31 liter"]

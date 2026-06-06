@@ -23,8 +23,10 @@ import {
   type PlotSeries,
   PlotToken,
   PointToken,
+  SeedToken,
   StringToken,
   SymbolToken,
+  TextToken,
   UnitToken,
   VariableNameToken,
   VariableToken,
@@ -100,7 +102,8 @@ async function parse(
       token instanceof ComplexToken ||
       token instanceof MatrixToken ||
       token instanceof SymbolToken ||
-      token instanceof ExprToken
+      token instanceof ExprToken ||
+      token instanceof TextToken
     )
       parseState = await parseState.handleOperand(parseTree, token);
     else if (token instanceof StringToken || token instanceof VariableNameToken)
@@ -115,6 +118,8 @@ async function parse(
       parseState = parseState.handlePoint(parseTree, token);
     else if (token instanceof BooleanToken)
       parseState = parseState.handleBoolean(parseTree, token);
+    else if (token instanceof SeedToken)
+      parseState = parseState.handleSeed(parseTree, token);
     else if (token instanceof OperatorToken)
       parseState = parseState.handleOperator(parseTree, token);
     else if (token instanceof FunctionToken)
@@ -157,40 +162,55 @@ async function parse(
         }
       } else if (parseState === FunctionState) {
         if (token.basetype === "BRAC_START") {
-          // Collect this function's args with a *local* flag. Using the `func`
-          // parameter here would clobber it — when an arg is itself a function
-          // call (`distance(point(1,2), point(3,4))`, `min(max(1,2), 3)`), the
-          // inner arg-loop would flip `func` to false and the parent's
-          // comma/paren separator would then be misread.
-          let argFunc = true;
-          while (argFunc) {
+          const nextTok = tokens[parseIndex + 1];
+          if (
+            nextTok instanceof ControllerToken &&
+            nextTok.basetype === "BRAC_END"
+          ) {
+            // Empty argument list (`uuid()`, `random()`). Skip the arg-collection
+            // loop entirely — the FunctionToken keeps its empty args[]. Advance
+            // onto the `)` so the loop's own +1 steps past it.
             parseIndex += 1;
-            const { result, index, isFunc, isExplicit } = await parse(
-              tokens,
-              parseIndex,
-              argFunc,
-            );
-            parseIndex = index;
-            argFunc = isFunc;
-            parseTree.setIsExplicit(isExplicit);
-            if (
-              result instanceof NumberToken ||
-              result instanceof ComplexToken ||
-              result instanceof MatrixToken ||
-              result instanceof SymbolToken ||
-              result instanceof ExprToken
-            )
-              parseState = await parseState.handleOperand(parseTree, result);
-            else if (result instanceof DateToken)
-              parseState = parseState.handleDate(parseTree, result);
-            else if (result instanceof IpToken)
-              parseState = parseState.handleIp(parseTree, result);
-            else if (result instanceof PointToken)
-              parseState = parseState.handlePoint(parseTree, result);
-            else if (result instanceof BooleanToken)
-              parseState = parseState.handleBoolean(parseTree, result);
+            parseState = CompleteState;
+          } else {
+            // Collect this function's args with a *local* flag. Using the `func`
+            // parameter here would clobber it — when an arg is itself a function
+            // call (`distance(point(1,2), point(3,4))`, `min(max(1,2), 3)`), the
+            // inner arg-loop would flip `func` to false and the parent's
+            // comma/paren separator would then be misread.
+            let argFunc = true;
+            while (argFunc) {
+              parseIndex += 1;
+              const { result, index, isFunc, isExplicit } = await parse(
+                tokens,
+                parseIndex,
+                argFunc,
+              );
+              parseIndex = index;
+              argFunc = isFunc;
+              parseTree.setIsExplicit(isExplicit);
+              if (
+                result instanceof NumberToken ||
+                result instanceof ComplexToken ||
+                result instanceof MatrixToken ||
+                result instanceof SymbolToken ||
+                result instanceof ExprToken ||
+                result instanceof TextToken
+              )
+                parseState = await parseState.handleOperand(parseTree, result);
+              else if (result instanceof DateToken)
+                parseState = parseState.handleDate(parseTree, result);
+              else if (result instanceof IpToken)
+                parseState = parseState.handleIp(parseTree, result);
+              else if (result instanceof PointToken)
+                parseState = parseState.handlePoint(parseTree, result);
+              else if (result instanceof BooleanToken)
+                parseState = parseState.handleBoolean(parseTree, result);
+              else if (result instanceof SeedToken)
+                parseState = parseState.handleSeed(parseTree, result);
+            }
+            parseState = CompleteState;
           }
-          parseState = CompleteState;
         }
       }
     } else {

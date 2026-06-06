@@ -1,2 +1,0 @@
-["10000 gauss to tesla", "1 tesla"]
-["1 maxwell to weber", "0.00000001 weber"]

@@ -1,0 +1,28 @@
+# Hash / digest functions. Pure (deterministic over their input) — no seed
+# machinery, just a text (or number) argument hashed to a lowercase hex digest.
+# Strings are quoted literals (the engine's only string input). Values are the
+# canonical published vectors for "hello" / "hello world".
+
+# Cryptographic hashes of "hello"
+["md5(\"hello\")", "5d41402abc4b2a76b9719d911017c592"]
+["sha1(\"hello\")", "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d"]
+["sha256(\"hello\")", "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"]
+["sha384(\"hello\")", "59e1748777448c69de6b800d7a33bbfb9ff1b463e44354c3553bcdb9c666fa90125a3c79f90397bdf5f6a13de828684f"]
+["sha512(\"hello\")", "9b71d224bd62f3785d96d46ad3ea3d73319bfbc2890caadae2dff72519673ca72323c3d99ba5c11d7c7acc6e14b8c5da0c4663475c2e5c3adef46f73bcdec043"]
+
+# SHA3-256 (sha3 is an alias for sha3_256)
+["sha3(\"hello\")", "3338be694f50c5f338814986cdf0686453a888b84f424d792af4b9202398f392"]
+["sha3_256(\"hello\")", "3338be694f50c5f338814986cdf0686453a888b84f424d792af4b9202398f392"]
+
+# RIPEMD-160 and CRC32 checksum
+["ripemd160(\"hello\")", "108f07b8382412612c048d07d13f814118445acd"]
+["crc32(\"hello\")", "3610a686"]
+
+# Strings with spaces are fine (quoted literal preserves the interior space)
+["sha256(\"hello world\")", "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"]
+
+# A number argument is hashed as its written form ("42")
+["md5(42)", "a1d0c6e83f027327d8461063f4ac58a6"]
+
+# A bare quoted string evaluates to its text
+["\"just text\"", "just text"]

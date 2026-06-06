@@ -1,0 +1,5 @@
+# Invalid compound-unit expressions.
+5 celsius/meter
+5 fahrenheit/second
+1 meter/second to kilogram
+1 newton to kilo gram

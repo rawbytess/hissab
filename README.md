@@ -2,7 +2,7 @@
 
 Hissab is a natural-language calculator and math engine for people and AI
 agents. It accepts expressions such as `15 km to miles`, `25% of 200`,
-`today - 1 feb 1990 to years`, `avg(10, 20, 30)`,
+`today - 1 feb 1990 to years`, `avg(10, 20, 30)`, `circle area(5 meter)`,
 `derivative(2x^2, x)`, or `(2 + 3i) * (1 - i)` and returns deterministic,
 formatted results.
 
@@ -18,9 +18,11 @@ The project includes:
 
 Hissab is built around a small expression language that reads like everyday
 math. You can write plain arithmetic, unit conversions, dates, statistics,
-probability, finance, IP subnet math, symbolic algebra, complex numbers,
-coordinate-system geometry, matrix algebra, colors, bitwise operations,
-graphing with `draw`/`plot`, and multi-line calculations with named labels.
+probability, finance, health and fitness metrics, IP subnet math, symbolic
+algebra, complex numbers, coordinate-system geometry, shape area and volume,
+matrix algebra, colors, bitwise operations, graphing with `draw`/`plot`,
+random numbers / UUIDs / nanoids, text hashing (SHA, MD5, CRC32), and
+multi-line calculations with named labels.
 
 ```text
 15 kilometers to miles
@@ -52,8 +54,10 @@ Hissab currently supports these operation categories:
 | Logarithms | `log`, `log10`, `log2` |
 | Statistics | `avg`, `median`, `range`, `variance`, standard/harmonic/geometric mean |
 | Probability | `P(...)`, complement/AND/OR, conditional probability, Bayes, odds, binomial, expected value |
-| Finance | Simple/compound interest, future/present value, EMI/mortgage, annuities, CAGR, ROI, APY, margin, markup, break-even, runway |
+| Finance | Simple/compound interest, future/present value, EMI/mortgage, annuities, CAGR, ROI, APY, margin, markup, break-even, runway, tip, discount, sales tax, NPV, IRR, depreciation |
+| Health & fitness | BMI, BMR, TDEE, body fat, ideal weight, max/target heart rate, calories burned, water intake |
 | Trigonometry | `sin`, `cos`, `tan`, inverse trig, hyperbolic variants |
+| Geometry | Area, perimeter/circumference, surface area, volume of common shapes; line slope (length-unit aware) |
 | Date and time | Date arithmetic, durations, timezones, Unix epoch/timestamp conversion |
 | Number systems | Decimal, binary, octal, hexadecimal conversion and arithmetic |
 | Bitwise operations | `~`, `&`, `|`, `xor`, `<<`, `>>` |
@@ -64,6 +68,8 @@ Hissab currently supports these operation categories:
 | Coordinate systems | `point`/`vector`, polar/cylindrical/spherical/Minkowski, `to`-conversions, `distance`, `dot`, `cross`, `angle` |
 | Matrices | Literals `[1 2, 3 4]` (space=column, comma/semicolon=row), `*`/`+`/`-`/`^`, `transpose`, `determinant`, `inverse`, `rank`, `rref`, `eigenvalues` |
 | Visualization | `draw`/`plot` curves `y=f(x)`, complex numbers on the Argand plane, coordinate points/vectors |
+| Random | `random()`, `random(min, max)`, `uuid()` (v7/v4), `nanoid()`, `coin()`, `randombool()`, `pick(...)`, `randomcolor()` (value freezes in-app; hover to re-roll) |
+| Hashing | `md5`, `sha1`, `sha256`, `sha384`, `sha512`, `sha3`, `ripemd160`, `crc32` of text → hex digest |
 | Multi-line scope | Labels, `prev`, `line<N>`, `total<N>` |
 
 The canonical operation docs live in [`lib/documentation`](./lib/documentation).
@@ -171,8 +177,12 @@ hissab run <file>           # one expression per line, shared variable scope
 hissab list <kind>          # kind = functions | units | operators
 hissab docs [tag]           # base docs or a specific docs chunk
 hissab docs --list          # list documentation tags
-hissab docs --all           # base docs plus every chunk
+hissab docs --all           # full docs dump for large-context LLMs
 ```
+
+Use `hissab docs --all` when an LLM has enough context to ingest the full
+reference at once. For smaller contexts, use `hissab docs --list` and fetch only
+the needed tag chunks.
 
 ### Running from source
 

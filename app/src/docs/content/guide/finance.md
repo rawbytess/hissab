@@ -94,6 +94,44 @@ runway(2000000, 150000)
 doubling time(8%)
 ```
 
+## Consumer
+
+Everyday money math for tips, discounts, and tax.
+
+| Function | Description | Example |
+| ----------------------------- | ------------------------------- | --------------------------- |
+| `tip(bill, rate)` | Tip amount | `tip(80, 18%)` |
+| `tip total(bill, rate)` | Bill including the tip | `tip total(80, 18%)` |
+| `discount(price, rate)` | Sale price after a discount (alias `sale price`) | `discount(200, 25%)` |
+| `sales tax(price, rate)` | Tax on a price | `sales tax(100, 8%)` |
+| `price with tax(price, rate)` | Price including tax | `price with tax(100, 8%)` |
+
+```hissab
+tip(80, 18%)
+tip total(80, 18%)
+discount(200, 25%)
+sales tax(100, 8%)
+price with tax(100, 8%)
+```
+
+## Investment appraisal
+
+| Function | Description | Example |
+| ------------------------------------ | ------------------------------------------ | -------------------------------- |
+| `npv(rate, cf0, cf1, ...)` | Net present value of a cashflow series; the first cashflow is at t = 0 | `npv(10%, -1000, 500, 500, 500)` |
+| `irr(cf0, cf1, ...)` | Internal rate of return, as a percent | `irr(-1000, 500, 500, 500)` |
+| `depreciation(cost, salvage, life)` | Straight-line depreciation per year | `depreciation(10000, 1000, 5)` |
+
+`irr` needs at least one negative and one positive cashflow (a sign change).
+`life` may be a bare number of years or carry the `years` unit.
+
+```hissab
+npv(10%, -1000, 500, 500, 500)
+irr(-1000, 500, 500, 500)
+depreciation(10000, 1000, 5)
+depreciation(10000, 1000, 5 years)
+```
+
 ## Return values
 
 - Amount functions return money-like numbers: `simple interest`,
@@ -103,6 +141,9 @@ doubling time(8%)
   `profit margin`, and `markup`.
 - `break even` returns units. `runway` returns months. `doubling time` returns
   years.
+- Consumer and investment functions return money (`tip`, `tip total`,
+  `discount`, `sales tax`, `price with tax`, `npv`, `depreciation`); `irr`
+  returns a percentage.
 
 To get principal plus simple interest, add the principal yourself.
 

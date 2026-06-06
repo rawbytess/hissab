@@ -22,6 +22,7 @@ import {
   getResultExtension,
   resultStateField,
 } from "@/lib/editor/resultWidget.ts";
+import { seedInjection } from "@/lib/editor/seedInjection.ts";
 import { tokenDecorations } from "@/lib/editor/tokenDecorations.ts";
 import {
   getStreamLanguage,
@@ -292,6 +293,7 @@ export default class HissabEditor {
       ),
       mathDecorations,
       tokenDecorations,
+      seedInjection,
       hissabHoverTooltip,
       EditorView.theme(
         hissabTheme(

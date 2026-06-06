@@ -1319,6 +1319,52 @@ class UndefinedToken extends Token {
   }
 }
 
+// A `@<base36>` seed literal (e.g. `@7f3a`), lexed only inside a function's
+// argument list. It is editor-managed plumbing for the entropy-drawing
+// functions (`random`, `uuid`): it pins their PRNG so the result stays stable
+// across the app's evaluate-on-every-keystroke loop. It is NOT an operand —
+// `isOperand()` stays false so it never triggers implicit-`*`/`+` juxtaposition —
+// and it never reaches output; the impure functions read `.seed` off the
+// trailing arg and drop it. See engine/src/random.ts.
+class SeedToken extends Token {
+  kind = "seedToken";
+  seed: number;
+
+  constructor(value: string, originalValue: string) {
+    super(value, originalValue);
+    const raw = value.replace(/^@/, "");
+    const n = Number.parseInt(raw, 36);
+    this.seed = Number.isNaN(n) ? 0 : n >>> 0;
+  }
+
+  getString(): string {
+    return this.value;
+  }
+}
+
+// A terminal string result (a UUID, and any future textual output). Like
+// BooleanToken / ListToken it is produced only inside solve() and is never lexed
+// from input, so it does not need the parser's operand-dispatch sites — only the
+// doParse() result allow-list in index.ts. Distinct from StringToken, which is
+// an *input* token filtered out before parse.
+class TextToken extends Token {
+  kind = "textToken";
+  text: string;
+
+  constructor(text: string, originalValue = text) {
+    super(text, originalValue);
+    this.text = text;
+  }
+
+  isOperand() {
+    return true;
+  }
+
+  getString(): string {
+    return this.text;
+  }
+}
+
 function isMultiSymbol(symbol: string) {
   const multisymbol = {
     "*": true,
@@ -1352,8 +1398,10 @@ export {
   OperatorToken,
   PlotToken,
   PointToken,
+  SeedToken,
   StringToken,
   SymbolToken,
+  TextToken,
   Token,
   UndefinedToken,
   UnitToken,

@@ -1,3 +1,0 @@
-["1 curie to becquerel", "37,000,000,000 becquerel"]
-["100 rad to gray", "1 gray"]
-["1 sievert to rem", "100 rem"]

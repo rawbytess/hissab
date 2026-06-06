@@ -4,3 +4,7 @@ xy
 xyz
 apples
 2 apples
+diff(x^2, a)
+limit(x, a, 0)
+solve(x^2, x)
+x to meter

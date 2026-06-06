@@ -9,7 +9,9 @@ export const OPERATION_TAGS = [
   "statistics",
   "probability",
   "finance",
+  "health",
   "trigonometry",
+  "geometry",
   "date_time",
   "number_systems",
   "bitwise",
@@ -20,6 +22,8 @@ export const OPERATION_TAGS = [
   "coordinate_systems",
   "matrix",
   "visualization",
+  "random",
+  "hashing",
   "labels_and_prev",
 ] as const;
 
@@ -41,9 +45,13 @@ export const tagDescriptions: Record<OperationTag, string> = {
   probability:
     "P() probabilities, complement/AND/OR via ~ & |, conditional, Bayes, odds, binomial, expected value",
   finance:
-    "Simple & compound interest, future/present value, loan & mortgage EMI, annuities, CAGR, ROI, APY, profit margin, markup, break-even, runway",
+    "Simple & compound interest, future/present value, loan & mortgage EMI, annuities, CAGR, ROI, APY, profit margin, markup, break-even, runway; tip, discount/sale price, sales tax, NPV, IRR, depreciation",
+  health:
+    "BMI, BMR (Mifflin–St Jeor), TDEE, body fat (Deurenberg), ideal weight (Devine), max/target heart rate, calories burned, water intake",
   trigonometry:
     "sin / cos / tan and inverse + hyperbolic variants; default unit is degree",
+  geometry:
+    "Area, perimeter/circumference, surface area & volume of common 2-D and 3-D shapes; slope of a line. Length-unit aware (meter → meter^2/meter^3)",
   date_time:
     "Date and time formats, date arithmetic, durations, timezones, unix epoch/timestamp",
   number_systems:
@@ -63,6 +71,10 @@ export const tagDescriptions: Record<OperationTag, string> = {
     "Matrix literals [1 2, 3 4] (space=column, comma/semicolon=row); add/subtract/multiply, scalar ops, power/inverse, transpose, determinant, rank, rref, eigenvalues",
   visualization:
     "Graph expressions and values with draw()/plot(): single-variable curves y=f(x), complex numbers on the Argand plane, and coordinate points/vectors",
+  random:
+    "Random values: random() in [0,1)/random(max)/random(min,max), uuid() (v7, or uuid(4)), nanoid(), coin(), randombool(), pick(...), randomcolor(). In the app the value freezes (a managed seed) so it stays put across edits; re-roll for a new one",
+  hashing:
+    "Cryptographic & checksum hashes of text (or a number): md5, sha1, sha256, sha384, sha512, sha3 (sha3_256), ripemd160, crc32 — returns a lowercase hex digest",
   labels_and_prev:
     "Label expressions with `=`, reference earlier results via labels or the `prev` keyword",
 };

@@ -12,8 +12,10 @@ import type {
   NumberToken,
   OperatorToken,
   PointToken,
+  SeedToken,
   StringToken,
   SymbolToken,
+  TextToken,
   UndefinedToken,
   UnitToken,
   VariableNameToken,
@@ -35,6 +37,8 @@ enum TokenBaseType {
   IP,
   BOOLEAN,
   MATRIX,
+  SEED,
+  TEXT,
 }
 
 export type TokenType =
@@ -55,6 +59,8 @@ export type TokenType =
   | MatrixToken
   | PointToken
   | CoordTargetToken
+  | SeedToken
+  | TextToken
   | VariableNameToken
   | UndefinedToken;
 

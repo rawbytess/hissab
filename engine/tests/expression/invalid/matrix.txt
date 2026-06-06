@@ -31,3 +31,12 @@ determinant(7)
 
 # Complex eigenvectors are not supported
 eigenvectors([0 -1, 1 0])
+
+# Shape and index edge cases
+linsolve([1 2, 3 4], [1 2])
+minor([1 2, 3 4], 0, 1)
+cofactor([1 2, 3 4], 1, 3)
+identity(2.5)
+zeros(2, 0)
+diag()
+eigenvalues([1 2 3, 4 5 6])

@@ -16,7 +16,10 @@ export function registerDocs(program: Command): void {
       `print Hissab documentation. With no argument: base overview + catalog. With a tag: that category's full chunk (tags: ${OPERATION_TAGS.join(", ")})`,
     )
     .option("-l, --list", "list available documentation tags and exit")
-    .option("-a, --all", "print the full documentation (base + all chunks)")
+    .option(
+      "-a, --all",
+      "print the full documentation (base + all chunks; for large-context LLMs)",
+    )
     .action(
       (tag: string | undefined, opts: { list?: boolean; all?: boolean }) => {
         if (opts.list && opts.all) {

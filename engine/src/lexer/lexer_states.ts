@@ -14,6 +14,8 @@ export type LexerStateTypes =
   | typeof StringState
   | typeof SymbolState
   | typeof ColorState
+  | typeof SeedState
+  | typeof QuoteState
   | typeof MatrixState
   | typeof Ip4State
   | typeof Ip6State
@@ -54,6 +56,16 @@ class LexerStates {
 
   static handleSymbol(tokens: TokensType, char: string): LexerStateTypes {
     tokens.flushToken();
+    // `'` or `"` opens a string literal. Unlike the other sigils the quote
+    // itself is not part of the token — QuoteState accumulates the inner text
+    // (any char, including spaces) until the matching closing quote and emits a
+    // TextToken. This is the engine's only string *input*; functions like
+    // `sha256("hi")` / `pick("a","b")` read it. See QuoteState.
+    if (char === "'" || char === '"') {
+      tokens.quoteChar = char;
+      tokens.tokentype = TokenBaseType.TEXT;
+      return QuoteState;
+    }
     if (isMultiSymbol(char)) {
       tokens.thetoken += char;
       tokens.tokentype = TokenBaseType.SYMBOL;
@@ -63,6 +75,14 @@ class LexerStates {
       tokens.thetoken += char;
       tokens.tokentype = TokenBaseType.COLOR;
       return ColorState;
+    }
+    // `@` opens a seed literal (`@7f3a`) — editor-injected plumbing for the
+    // entropy-drawing functions. Mirrors the `#`→ColorState entry: the sigil
+    // opens a sub-lexer that swallows the following base36 run as one token.
+    if (char === "@") {
+      tokens.thetoken += char;
+      tokens.tokentype = TokenBaseType.SEED;
+      return SeedState;
     }
     // `[` opens a matrix literal. Spaces are the column separator, so the whole
     // `[...]` is accumulated as one raw token (the lexer otherwise flushes on
@@ -130,6 +150,66 @@ class ColorState extends LexerStates {
     }
     tokens.tokentype = TokenBaseType.UNDEFINED;
     return UndefinedState;
+  }
+}
+
+// Accumulates a `@<base36>` seed literal after the `@` sigil. Mirrors
+// ColorState: base36 chars (digits + letters) extend the token; any other char
+// flushes the accumulated SEED token (via the inherited symbol/whitespace
+// handlers) and is reprocessed — e.g. the `)` that closes `random(10, 100,
+// @7f3a)`. tokenFactory turns the buffer into a SeedToken.
+class SeedState extends LexerStates {
+  static handleNumber(tokens: TokensType, char: string): LexerStateTypes {
+    tokens.thetoken += char;
+    tokens.tokentype = TokenBaseType.SEED;
+    return SeedState;
+  }
+
+  static handleString(tokens: TokensType, char: string): LexerStateTypes {
+    if (/[a-z]/i.test(char)) {
+      tokens.thetoken += char;
+      tokens.tokentype = TokenBaseType.SEED;
+      return SeedState;
+    }
+    // Anything else (only `_` reaches here from STRING_BEGIN) ends the seed.
+    tokens.flushToken();
+    return LexerStates.handleString(tokens, char);
+  }
+}
+
+// Accumulates a string literal opened by `'` or `"` (the opening quote was
+// consumed by the base handler, which set `quoteChar`). Every character —
+// digits, letters, symbols, whitespace — is swallowed as content until the
+// matching closing quote, which flushes the buffer as a TEXT token (→
+// TextToken) and returns to FreshState. An unterminated literal flushes at
+// end-of-line. Leading/trailing whitespace is trimmed by flushToken; interior
+// spaces are preserved. Mirrors MatrixState's "swallow everything until the
+// closer" shape.
+class QuoteState extends LexerStates {
+  static handleNumber(tokens: TokensType, char: string): LexerStateTypes {
+    return QuoteState.consume(tokens, char);
+  }
+  static handleString(tokens: TokensType, char: string): LexerStateTypes {
+    return QuoteState.consume(tokens, char);
+  }
+  static handleWhiteSpace(tokens: TokensType, char: string): LexerStateTypes {
+    return QuoteState.consume(tokens, char);
+  }
+  static handleUndefined(tokens: TokensType, char: string): LexerStateTypes {
+    return QuoteState.consume(tokens, char);
+  }
+  static handleSymbol(tokens: TokensType, char: string): LexerStateTypes {
+    if (char === tokens.quoteChar) {
+      tokens.flushToken(TokenBaseType.TEXT);
+      tokens.quoteChar = "";
+      return FreshState;
+    }
+    return QuoteState.consume(tokens, char);
+  }
+  private static consume(tokens: TokensType, char: string): LexerStateTypes {
+    tokens.thetoken += char;
+    tokens.tokentype = TokenBaseType.TEXT;
+    return QuoteState;
   }
 }
 
@@ -290,13 +370,9 @@ class DecimalState extends LexerStates {
       tokens.tokentype = TokenBaseType.TIME;
       return TimeState;
     }
-    if (char === "'" || char === '"') {
-      tokens.flushToken();
-      tokens.thetoken += char;
-      tokens.tokentype = TokenBaseType.STRING;
-      tokens.flushToken();
-      return FreshState;
-    }
+    // A quote after a number (`5"`) flushes the number and opens a string
+    // literal via the base handler (QuoteState). It is not feet/inch notation —
+    // the engine has no such unit.
     return LexerStates.handleSymbol(tokens, char);
   }
 }

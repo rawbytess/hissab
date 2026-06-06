@@ -1,0 +1,4 @@
+# Invalid statistics function spellings and arity.
+geomean(8, 12, 15)
+stddev(2, 4, 4)
+median()

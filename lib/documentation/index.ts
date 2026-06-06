@@ -7,6 +7,9 @@ import { compound_units } from "./chunks/compound_units";
 import { coordinate_systems } from "./chunks/coordinate_systems";
 import { date_time } from "./chunks/date_time";
 import { finance } from "./chunks/finance";
+import { geometry } from "./chunks/geometry";
+import { hashing } from "./chunks/hashing";
+import { health } from "./chunks/health";
 import { ip_address } from "./chunks/ip_address";
 import { labels_and_prev } from "./chunks/labels_and_prev";
 import { logarithm } from "./chunks/logarithm";
@@ -15,6 +18,7 @@ import { number_systems } from "./chunks/number_systems";
 import { number_theory } from "./chunks/number_theory";
 import { percentage } from "./chunks/percentage";
 import { probability } from "./chunks/probability";
+import { random } from "./chunks/random";
 import { set_operations } from "./chunks/set_operations";
 import { statistics } from "./chunks/statistics";
 import { symbolic } from "./chunks/symbolic";
@@ -41,7 +45,9 @@ export const chunks: Record<OperationTag, string> = {
   statistics,
   probability,
   finance,
+  health,
   trigonometry,
+  geometry,
   date_time,
   number_systems,
   bitwise,
@@ -52,6 +58,8 @@ export const chunks: Record<OperationTag, string> = {
   coordinate_systems,
   matrix,
   visualization,
+  random,
+  hashing,
   labels_and_prev,
 };
 

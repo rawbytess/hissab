@@ -1,0 +1,51 @@
+# Entropy-drawing functions (random, uuid, nanoid, coin, randombool, pick,
+# randomcolor). Only the *seeded* forms are deterministic and therefore testable
+# here — the editor injects a trailing `@seed` arg so the value is reproducible
+# across re-evaluation. Unseeded forms draw fresh entropy (Math.random / Web
+# Crypto / the clock) and are exercised elsewhere. Seed values are base36; the
+# PRNG is the pure mulberry32 in src/random.ts.
+
+# random(min, max, @seed) → inclusive integer in [min, max]
+["random(10, 100, @7f3a)", "82"]
+["random(10, 100, @b9e1)", "42"]
+["random(1, 6, @abc)", "2"]
+["random(100, 10, @7f3a)", "82"]
+
+# random(max, @seed) → inclusive integer in [0, max]
+["random(6, @abc)", "1"]
+
+# random(@seed) → real in [0, 1)
+["random(@xyz)", "0.733"]
+
+# non-integer bounds → real in [min, max)
+["random(2.5, 7.5, @abc)", "3.926"]
+
+# composes like any numeric result
+["5 + random(10, 20, @k1)", "15"]
+
+# uuid() defaults to v7 (time-ordered); uuid(7) is explicit. When seeded the
+# timestamp is derived from the PRNG so the value is reproducible.
+["uuid(@abc)", "49029ac6-0000-7323-84d7-cdfa02c8a8a6"]
+["uuid(7, @abc)", "49029ac6-0000-7323-84d7-cdfa02c8a8a6"]
+
+# uuid(4, @seed) → reproducible v4 (random) UUID
+["uuid(4, @abc)", "49d32384-d7cd-4a02-88a8-a66bed9ed696"]
+["uuid(4, @def)", "405e7fc9-e28a-4bc9-b1f8-fdd68fec0367"]
+
+# nanoid(@seed) → 21-char URL-safe id; nanoid(n, @seed) → n chars (a prefix)
+["nanoid(@abc)", "2XDnx9ye-WSFGRppC_MyX"]
+["nanoid(10, @abc)", "2XDnx9ye-W"]
+
+# coin(@seed) → "heads" or "tails"
+["coin(@abc)", "heads"]
+["coin(@xyz)", "tails"]
+
+# randombool(@seed) → true / false
+["randombool(@abc)", "true"]
+
+# pick(...options, @seed) → one option at random (text or number)
+["pick(\"red\", \"green\", \"blue\", @abc)", "red"]
+["pick(10, 20, 30, @def)", "10"]
+
+# randomcolor(@seed) → a random hex colour
+["randomcolor(@abc)", "#49d323"]

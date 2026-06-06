@@ -41,3 +41,16 @@
 ["limit(4x^2 - 3x + 10, x, 0)", "10"]
 ["limit((x^2 - 1)*(x - 1)^(-1), x, 1)", "2"]
 ["limit(sin(x)/x, x, 0)", "1"]
+
+# Additional expansion, calculus aliases, partials, and removable limits
+["(x + 1)*(x - 1)", "x^2 - 1"]
+["(x + y)*(x - y)", "x^2 - y^2"]
+["x y + 2 x y", "3xy"]
+["derivative(x^2 + 3y, y)", "3"]
+["diff(cos(x), x)", "-sin(x)"]
+["derivative(sin(x^2), x)", "2cos(x^2)x"]
+["integral(3x^2, x)", "x^3"]
+["integrate(sin(x), x)", "-cos(x)"]
+["limit((x^2 - 4)/(x - 2), x, 2)", "4"]
+["limit((1 - cos(x))/(x^2), x, 0)", "1/2"]
+["simplify((x + 2)*(x - 2))", "x^2 - 4"]

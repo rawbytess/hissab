@@ -1,2 +1,0 @@
-["1 molar to mole/liter", "1 mole/liter"]
-["1 katal to mole/second", "1 mole/second"]

@@ -1,2 +1,0 @@
-["60 rpm to hertz", "1 hertz"]
-["1 hertz to rpm", "60 rpm"]

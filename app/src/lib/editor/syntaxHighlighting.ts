@@ -34,6 +34,9 @@ export function HissabHighlightStyle(isDark: boolean): TagStyle[] {
     },
     { tag: hissabTags.undefinedToken, color: isDark ? "#f984e1" : "#999999" },
     { tag: hissabTags.stringToken, color: isDark ? "#D4F984" : "#999999" },
+    // Quoted string literals (`"hello"` in sha256/pick) — a warm string colour
+    // distinct from the grey unrecognized-word stringToken.
+    { tag: hissabTags.textToken, color: isDark ? "#c3e88d" : "#4e7a1e" },
     // Recently added token kinds — kept bright/light so they read clearly on the
     // dark editor background (and dark enough on the light background).
     { tag: hissabTags.symbolToken, color: isDark ? "#d2a8ff" : "#8250df" },
@@ -81,6 +84,7 @@ export const hissabTags = {
   VariableNameToken: Tag.define(),
   dateToken: Tag.define(),
   stringToken: Tag.define(),
+  textToken: Tag.define(),
   colorToken: Tag.define(),
   symbolToken: Tag.define(),
   complexToken: Tag.define(),

@@ -19,8 +19,10 @@ import {
   MatrixToken,
   NumberToken,
   OperatorToken,
+  SeedToken,
   StringToken,
   SymbolToken,
+  TextToken,
   UndefinedToken,
   UnitToken,
   VariableNameToken,
@@ -94,6 +96,12 @@ export default function tokenFactory(
   }
   if (basetype === TokenBaseType.MATRIX) {
     return buildMatrix(value, originalValue);
+  }
+  if (basetype === TokenBaseType.TEXT) {
+    return new TextToken(value, originalValue);
+  }
+  if (basetype === TokenBaseType.SEED) {
+    return new SeedToken(value, originalValue);
   }
   if (basetype === TokenBaseType.VARIABLENAME)
     return new VariableNameToken(originalValue, originalValue);

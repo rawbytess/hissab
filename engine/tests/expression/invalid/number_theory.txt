@@ -1,0 +1,7 @@
+# Number theory domain errors.
+factors(0)
+factors(-12)
+factors(12.5)
+fraction(i)
+5 comb 6
+5 perm 6

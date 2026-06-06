@@ -13,3 +13,14 @@
 ["atanh 0.123", "0.124"]
 ["acosh 100", "5.2983"]
 ["asech 100", "0.189"]
+
+# Angle units, inverse functions, and hyperbolic edges
+["tan 45", "1"]
+["cos 200 grad", "-1"]
+["sec 60", "2"]
+["cot 45", "1"]
+["asin 0.5", "30 degree"]
+["asinh 1", "0.881"]
+["acsch 2", "0.693"]
+["cosh 0", "1"]
+["sech 0", "1"]

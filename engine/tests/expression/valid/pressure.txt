@@ -1,4 +1,0 @@
-["1 psi to pascal", "6,894.7573 pascal"]
-["1 atmosphere to psi", "14.6959 psi"]
-["760 torr to atmosphere", "1 atmosphere"]
-["1 atmosphere to mmhg", "759.9998 mmhg"]

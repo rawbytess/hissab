@@ -22,7 +22,7 @@ hissab run <file>           # evaluate a file (one expression per line, shared v
 hissab list <kind>          # list built-ins; kind = functions | units | operators
 hissab docs [tag]           # print documentation (base overview, or a category chunk)
 hissab docs --list          # list documentation tags
-hissab docs --all           # print the full reference
+hissab docs --all           # print the full reference for large-context LLMs
 ```
 
 Examples:
@@ -33,6 +33,8 @@ hissab eval "5 km to miles"
 hissab eval "15% of 200"
 hissab eval "derivative(2x^2, x)"
 hissab eval "(2 + 3i) * (1 - i)"
+hissab eval "circle area(5 meter)"
+hissab eval "bmi(70, 1.75)"
 hissab eval "point(3,4) to polar"
 hissab eval "draw(x^2)"
 hissab run examples/budget.hsb
@@ -52,10 +54,12 @@ press `Ctrl+D` to quit.
 The CLI evaluates the same expression language documented in
 [`../lib/documentation`](../lib/documentation): arithmetic, percentages, unit
 conversion, compound units, sets/combinatorics, number theory, logarithms,
-statistics, probability, finance, trigonometry, date/time math, number systems,
-bitwise operations, color math, IP addresses, symbolic algebra, complex numbers,
-coordinate systems, matrices, graphing with `draw`/`plot`, and labelled
-multi-line workflows.
+statistics, probability, finance, health and fitness, trigonometry, geometry,
+date/time math, number systems, bitwise operations, color math, IP addresses,
+symbolic algebra, complex numbers,
+coordinate systems, matrices, graphing with `draw`/`plot`, random numbers /
+UUIDs / nanoids, text hashing (SHA, MD5, CRC32), and labelled multi-line
+workflows.
 
 ## Output
 

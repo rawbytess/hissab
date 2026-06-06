@@ -347,6 +347,23 @@ class TokenDecorations {
         );
       }
 
+      // Seed literal (`@7f3a`): editor-managed plumbing for the entropy-drawing
+      // functions. Hide it entirely (along with its leading `, `) so the call
+      // reads cleanly; the hover tooltip on the function name surfaces the seed
+      // and offers a re-roll. Atomic so the caret treats the hidden run as one
+      // unit — it steps over it, and a selection still carries the seed so
+      // copy/paste keeps the value reproducible.
+      if (span.kind === "seedToken") {
+        const prev = spans[i - 1];
+        const hideFrom =
+          prev?.kind === "controllerToken" && prev.text === ","
+            ? prev.from
+            : span.from;
+        const r = Decoration.replace({}).range(hideFrom, span.to);
+        all.push(r);
+        atomic.push(r);
+      }
+
       // Date trigger (after concrete dates only — skip relative operands like
       // `today` / `now` / `next week`, which carry no digits).
       if (span.kind === "dateToken" && /\d/.test(span.text)) {

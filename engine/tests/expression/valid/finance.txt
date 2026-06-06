@@ -56,3 +56,19 @@
 
 # Finance results compose with the rest of the language
 ["100 + simple interest(100, 10%, 1 year)", "110"]
+
+# Consumer math: tip, discount/sale price, sales tax
+["tip(80, 18%)", "14.4"]
+["tip(80, 18)", "14.4"]
+["tip($80, 18%)", "14.4"]
+["tip total(80, 18%)", "94.4"]
+["discount(200, 25%)", "150"]
+["sale price(200, 25%)", "150"]
+["sales tax(100, 8%)", "8"]
+["price with tax(100, 8%)", "108"]
+
+# Investment: net present value, internal rate of return, depreciation
+["npv(10%, -1000, 500, 500, 500)", "243.426"]
+["irr(-1000, 500, 500, 500)", "23.3752"]
+["depreciation(10000, 1000, 5)", "1,800"]
+["depreciation(10000, 1000, 5 years)", "1,800"]

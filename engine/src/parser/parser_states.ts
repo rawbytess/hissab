@@ -18,8 +18,10 @@ import {
   NumberToken,
   OperatorToken,
   type PointToken,
+  type SeedToken,
   type StringToken,
   SymbolToken,
+  type TextToken,
   type UnitAtom,
   UnitToken,
   type VariableNameToken,
@@ -38,7 +40,8 @@ type OperandToken =
   | ComplexToken
   | MatrixToken
   | SymbolToken
-  | ExprToken;
+  | ExprToken
+  | TextToken;
 
 // True when juxtaposing this operand against another implies multiplication
 // (`2x`, `6i`, `(x+1)(x+2)`) rather than the unit implicit-addition case.
@@ -407,9 +410,25 @@ class FreshParseState {
     parseTree.currentpt = functionToken;
     return FunctionState;
   }
+
+  // A `@seed` literal only ever appears as a function argument, where each
+  // comma-segment is parsed in its own fresh sub-tree. Carry it out as the head
+  // so the sub-parse returns it cleanly; the parent FunctionState then inserts
+  // it as the call's trailing arg (see FunctionState.handleSeed).
+  static handleSeed(
+    parseTree: ParseTreeType,
+    seedToken: SeedToken,
+  ): ParserStateTypes {
+    parseTree.head = seedToken;
+    return CompleteState;
+  }
 }
 
 class CompleteState {
+  static handleSeed(): ParserStateTypes {
+    throw new UserError(240);
+  }
+
   static handleOperand(
     parseTree: ParseTreeType,
     operand: OperandToken,
@@ -593,6 +612,10 @@ function expectOperator(parseTree: ParseTreeType): OperatorToken {
 }
 
 class NeedNumberState {
+  static handleSeed(): ParserStateTypes {
+    throw new UserError(240);
+  }
+
   static async handleOperand(
     parseTree: ParseTreeType,
     operand: OperandToken,
@@ -713,6 +736,10 @@ class NeedNumberState {
 }
 
 class NeedUnitState {
+  static handleSeed(): ParserStateTypes {
+    throw new UserError(240);
+  }
+
   static handleOperand(): ParserStateTypes {
     throw new UserError(211);
   }
@@ -855,6 +882,18 @@ class FunctionState {
     return FunctionState;
   }
 
+  // The seed rides as the call's trailing argument; the impure functions read
+  // `.seed` off it and drop it (see random/uuid in function.ts).
+  static handleSeed(
+    parseTree: ParseTreeType,
+    seedToken: SeedToken,
+  ): ParserStateTypes {
+    if (!(parseTree.currentpt instanceof FunctionToken))
+      throw new UnhandledError(1234);
+    parseTree.currentpt?.insertChild(seedToken);
+    return FunctionState;
+  }
+
   static handleOperator(): ParserStateTypes {
     throw new UserError(215);
   }
@@ -877,6 +916,10 @@ class FunctionState {
 }
 
 class PreNumberState {
+  static handleSeed(): ParserStateTypes {
+    throw new UserError(240);
+  }
+
   static handleOperand(
     parseTree: ParseTreeType,
     operand: OperandToken,
@@ -953,6 +996,10 @@ class PreNumberState {
 }
 
 class CombineNumberState {
+  static handleSeed(): ParserStateTypes {
+    throw new UserError(240);
+  }
+
   static handleOperand(
     parseTree: ParseTreeType,
     operand: OperandToken,

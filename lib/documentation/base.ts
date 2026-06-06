@@ -80,7 +80,9 @@ ${catalog}
 The way to fetch a chunk depends on the consumer:
 
 - **Hissab CLI**: \`hissab docs <tag>\` (e.g. \`hissab docs compound_units\`).
-  Run \`hissab docs --list\` to see every tag.
+  Run \`hissab docs --list\` to see every tag. For LLMs with very large context
+  windows, run \`hissab docs --all\` to dump the base reference plus every chunk
+  at once.
 - **Hissab MCP server (cloud)**: call the \`Hissab_docs\` tool with
   \`{ tag: "<tag>" }\`. The MCP server's \`Hissab\` tool evaluates expressions;
   \`Hissab_docs\` returns this base doc or a chunk.

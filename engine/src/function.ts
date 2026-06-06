@@ -1,3 +1,7 @@
+// biome-ignore-all assist/source/organizeImports: ./tokens/compound must be
+// imported after the unit_types/token_factory/plurals modules below; alphabetical
+// sorting would pull it earlier and break the engine's module-init order
+// (plurals.ts reads Units before unit_types finishes). Keep compound's import last.
 import chroma from "chroma-js";
 import {
   combination,
@@ -22,11 +26,13 @@ import {
 import { UserError } from "./exceptions";
 import * as ip from "./ip";
 import * as mat from "./matrix";
+import { hashText, type HashName } from "./hash";
+import { mulberry32, nanoidId, seededUuidV4, seededUuidV7 } from "./random";
 import TokenBaseType, { type TokenType } from "./tokens/token_basetypes";
 import tokenFactory from "./tokens/token_factory";
 import {
   BooleanToken,
-  type ColorToken,
+  ColorToken,
   ComplexToken,
   convertPointToken,
   type expressionUnit,
@@ -38,16 +44,68 @@ import {
   type PlotSeries,
   PlotToken,
   PointToken,
+  SeedToken,
+  TextToken,
   type UnitToken,
 } from "./tokens/tokens";
 import UnitTypes from "./types/unit_enum";
 import ProcessConversions from "./units_processor";
+
+// New calculator domains, kept as a separate trailing import group (the blank
+// line above stops the import organizer from folding them into the block above
+// and re-sorting them). The engine graph has a unit_types ↔ token_factory ↔
+// plurals load-order cycle; pulling ./tokens/compound in *after* the modules
+// above ensures `Units` is defined before plurals.ts reads it. geometry/health
+// otherwise depend only on ./exceptions.
+import {
+  boxVolume,
+  circleArea,
+  circleCircumference,
+  coneSurfaceArea,
+  coneVolume,
+  cubeSurfaceArea,
+  cubeVolume,
+  cylinderSurfaceArea,
+  cylinderVolume,
+  ellipseArea,
+  heronArea,
+  lineSlope,
+  parallelogramArea,
+  pyramidVolume,
+  rectangleArea,
+  rectanglePerimeter,
+  sphereSurfaceArea,
+  sphereVolume,
+  squareArea,
+  squarePerimeter,
+  trapezoidArea,
+  triangleArea,
+} from "./geometry_functions";
+import {
+  bmi,
+  bmrFemale,
+  bmrMale,
+  bodyFatFemale,
+  bodyFatMale,
+  caloriesBurned,
+  devineFemale,
+  devineMale,
+  maxHeartRate,
+  waterIntakeLiters,
+} from "./health_functions";
+import { scaleUnit } from "./tokens/compound";
 
 type functionType = {
   [fn: string]: {
     run: (...args: any[]) => any;
     description: string;
     isRaw: boolean;
+    // Entropy-drawing functions (`random`, `uuid`) whose output is NOT a pure
+    // function of the written expression. Consumers read this flag (via the
+    // exported `Functions` table) to manage stability — the app editor injects a
+    // `@seed` arg so the value is reproducible across re-evaluation. Pure
+    // functions omit it (defaults to falsy).
+    impure?: boolean;
   };
 };
 
@@ -227,6 +285,256 @@ const Functions: functionType = {
   "doubling time": {
     run: doublingTime,
     description: "Years to double an investment (Rule of 72): 72 / rate%",
+    isRaw: true,
+  },
+  tip: {
+    run: tipFn,
+    description: "Tip amount on a bill: bill * rate (e.g. tip(80, 18%))",
+    isRaw: true,
+  },
+  "tip total": {
+    run: tipTotalFn,
+    description: "Bill including tip: bill * (1 + rate)",
+    isRaw: true,
+  },
+  discount: {
+    run: discountFn,
+    description: "Sale price after a discount: price * (1 - rate)",
+    isRaw: true,
+  },
+  "sale price": {
+    run: discountFn,
+    description: "Sale price after a discount (alias of discount)",
+    isRaw: true,
+  },
+  "sales tax": {
+    run: salesTaxFn,
+    description: "Tax amount on a price: price * rate",
+    isRaw: true,
+  },
+  "price with tax": {
+    run: priceWithTaxFn,
+    description: "Price including tax: price * (1 + rate)",
+    isRaw: true,
+  },
+  npv: {
+    run: npvFn,
+    description:
+      "Net present value of cashflows at a discount rate: npv(rate, cf0, cf1, …)",
+    isRaw: true,
+  },
+  irr: {
+    run: irrFn,
+    description:
+      "Internal rate of return of a cashflow series (percentage): irr(cf0, cf1, …)",
+    isRaw: true,
+  },
+  depreciation: {
+    run: depreciationFn,
+    description: "Straight-line depreciation per year: (cost - salvage) / life",
+    isRaw: true,
+  },
+
+  // ---- Geometry ---------------------------------------------------------
+  // Area / perimeter / surface-area / volume of common shapes, plus line
+  // slope. Raw so a length unit on the arguments carries into the result
+  // (meter → meter^2 for an area, meter^3 for a volume). The shape is the
+  // leading word so names never collide with units. See ./geometry_functions.ts.
+  "circle area": {
+    run: circleAreaFn,
+    description: "Area of a circle: π·r² — circle area(radius)",
+    isRaw: true,
+  },
+  "circle circumference": {
+    run: circleCircumferenceFn,
+    description: "Circumference of a circle: 2·π·r",
+    isRaw: true,
+  },
+  "circle perimeter": {
+    run: circleCircumferenceFn,
+    description: "Circumference of a circle (alias of circle circumference)",
+    isRaw: true,
+  },
+  "square area": {
+    run: squareAreaFn,
+    description: "Area of a square: side²",
+    isRaw: true,
+  },
+  "square perimeter": {
+    run: squarePerimeterFn,
+    description: "Perimeter of a square: 4·side",
+    isRaw: true,
+  },
+  "rectangle area": {
+    run: rectangleAreaFn,
+    description: "Area of a rectangle: width·height",
+    isRaw: true,
+  },
+  "rectangle perimeter": {
+    run: rectanglePerimeterFn,
+    description: "Perimeter of a rectangle: 2·(width + height)",
+    isRaw: true,
+  },
+  "triangle area": {
+    run: triangleAreaFn,
+    description:
+      "Area of a triangle: ½·base·height, or Heron's from three sides",
+    isRaw: true,
+  },
+  "trapezoid area": {
+    run: trapezoidAreaFn,
+    description: "Area of a trapezoid: ½·(a + b)·height",
+    isRaw: true,
+  },
+  "parallelogram area": {
+    run: parallelogramAreaFn,
+    description: "Area of a parallelogram: base·height",
+    isRaw: true,
+  },
+  "ellipse area": {
+    run: ellipseAreaFn,
+    description: "Area of an ellipse: π·a·b (semi-axes a, b)",
+    isRaw: true,
+  },
+  "sphere volume": {
+    run: sphereVolumeFn,
+    description: "Volume of a sphere: 4/3·π·r³",
+    isRaw: true,
+  },
+  "sphere surface area": {
+    run: sphereSurfaceAreaFn,
+    description: "Surface area of a sphere: 4·π·r²",
+    isRaw: true,
+  },
+  "sphere area": {
+    run: sphereSurfaceAreaFn,
+    description: "Surface area of a sphere (alias of sphere surface area)",
+    isRaw: true,
+  },
+  "cube volume": {
+    run: cubeVolumeFn,
+    description: "Volume of a cube: side³",
+    isRaw: true,
+  },
+  "cube surface area": {
+    run: cubeSurfaceAreaFn,
+    description: "Surface area of a cube: 6·side²",
+    isRaw: true,
+  },
+  "cylinder volume": {
+    run: cylinderVolumeFn,
+    description: "Volume of a cylinder: π·r²·height",
+    isRaw: true,
+  },
+  "cylinder surface area": {
+    run: cylinderSurfaceAreaFn,
+    description: "Surface area of a closed cylinder: 2·π·r·(r + height)",
+    isRaw: true,
+  },
+  "cone volume": {
+    run: coneVolumeFn,
+    description: "Volume of a cone: 1/3·π·r²·height",
+    isRaw: true,
+  },
+  "cone surface area": {
+    run: coneSurfaceAreaFn,
+    description: "Surface area of a cone: π·r·(r + √(r² + h²))",
+    isRaw: true,
+  },
+  "rectangular prism volume": {
+    run: boxVolumeFn,
+    description: "Volume of a rectangular prism (box): length·width·height",
+    isRaw: true,
+  },
+  "box volume": {
+    run: boxVolumeFn,
+    description: "Volume of a box (alias of rectangular prism volume)",
+    isRaw: true,
+  },
+  "pyramid volume": {
+    run: pyramidVolumeFn,
+    description: "Volume of a rectangular pyramid: 1/3·length·width·height",
+    isRaw: true,
+  },
+  slope: {
+    run: slopeFn,
+    description: "Slope of the line through two points: slope(x1, y1, x2, y2)",
+    isRaw: true,
+  },
+
+  // ---- Health & Fitness -------------------------------------------------
+  // Body metrics. Inputs accept units (kg/lb, m/cm/ft); a bare number is read
+  // in metric — kilograms, and meters for BMI / centimeters for BMR. Sex
+  // formulas split into `… male` / `… female` because functions take no string
+  // arguments. See ./health_functions.ts for the formula standards used.
+  bmi: {
+    run: bmiFn,
+    description:
+      "Body Mass Index: weight(kg) / height(m)² — bmi(70 kg, 1.75 m)",
+    isRaw: true,
+  },
+  "bmr male": {
+    run: bmrMaleFn,
+    description:
+      "Basal metabolic rate for men (Mifflin–St Jeor), kcal/day: bmr male(weight, height, age)",
+    isRaw: true,
+  },
+  "bmr female": {
+    run: bmrFemaleFn,
+    description:
+      "Basal metabolic rate for women (Mifflin–St Jeor), kcal/day: bmr female(weight, height, age)",
+    isRaw: true,
+  },
+  tdee: {
+    run: tdeeFn,
+    description:
+      "Total daily energy expenditure: bmr · activity factor (1.2 sedentary … 1.9 athlete)",
+    isRaw: false,
+  },
+  "body fat male": {
+    run: bodyFatMaleFn,
+    description:
+      "Body fat % for men (Deurenberg): body fat male(weight, height, age)",
+    isRaw: true,
+  },
+  "body fat female": {
+    run: bodyFatFemaleFn,
+    description:
+      "Body fat % for women (Deurenberg): body fat female(weight, height, age)",
+    isRaw: true,
+  },
+  "ideal weight male": {
+    run: idealWeightMaleFn,
+    description:
+      "Ideal body weight for men (Devine): ideal weight male(height)",
+    isRaw: true,
+  },
+  "ideal weight female": {
+    run: idealWeightFemaleFn,
+    description:
+      "Ideal body weight for women (Devine): ideal weight female(height)",
+    isRaw: true,
+  },
+  "max heart rate": {
+    run: maxHeartRate,
+    description: "Predicted maximum heart rate (bpm): 220 - age",
+    isRaw: false,
+  },
+  "target heart rate": {
+    run: targetHeartRateFn,
+    description:
+      "Target heart rate (bpm): (220 - age) · intensity — target heart rate(age, intensity%)",
+    isRaw: true,
+  },
+  "calories burned": {
+    run: caloriesBurnedFn,
+    description:
+      "Calories burned: MET · weight(kg) · minutes/60 — calories burned(met, weight, minutes)",
+    isRaw: true,
+  },
+  "water intake": {
+    run: waterIntakeFn,
+    description: "Suggested daily water (liters): about 33 ml per kg of weight",
     isRaw: true,
   },
 
@@ -699,6 +1007,108 @@ const Functions: functionType = {
   plot: {
     run: drawFn,
     description: "Graph expressions/points (alias of draw)",
+    isRaw: true,
+  },
+
+  // ---- Random / entropy-drawing (impure) --------------------------------
+  // The only functions whose output isn't a pure function of the written
+  // expression. They stay reproducible *given a seed*: an editor-injected
+  // trailing `@seed` arg pins the PRNG so the value is stable across the app's
+  // evaluate-on-every-keystroke loop. With no seed they draw fresh entropy (the
+  // natural behaviour for a one-shot CLI / AI evaluation). See random.ts.
+  random: {
+    run: randomFn,
+    description:
+      "Random number: random() in [0,1), random(max) integer in [0,max], random(min,max) integer in [min,max]",
+    isRaw: true,
+    impure: true,
+  },
+  uuid: {
+    run: uuidFn,
+    description:
+      "Generate a UUID: uuid() (v7, time-ordered), uuid(4) (random), or uuid(7)",
+    isRaw: true,
+    impure: true,
+  },
+  nanoid: {
+    run: nanoidFn,
+    description:
+      "Generate a URL-safe random id: nanoid() (21 chars) or nanoid(length)",
+    isRaw: true,
+    impure: true,
+  },
+  coin: {
+    run: coinFn,
+    description: 'Flip a coin: coin() → "heads" or "tails"',
+    isRaw: true,
+    impure: true,
+  },
+  randombool: {
+    run: randomBoolFn,
+    description: "Random boolean: randombool() → true or false",
+    isRaw: true,
+    impure: true,
+  },
+  pick: {
+    run: pickFn,
+    description:
+      'Pick one option at random: pick("a", "b", "c") or pick(1, 2, 3)',
+    isRaw: true,
+    impure: true,
+  },
+  randomcolor: {
+    run: randomColorFn,
+    description: "Generate a random colour: randomcolor()",
+    isRaw: true,
+    impure: true,
+  },
+
+  // ---- Hashing (pure) -----------------------------------------------------
+  // Deterministic digests of a text (or number) argument, returned as lowercase
+  // hex. Not impure — no seed machinery — just functions that take a string.
+  md5: {
+    run: makeHashFn("md5"),
+    description: 'MD5 digest of text: md5("hello")',
+    isRaw: true,
+  },
+  sha1: {
+    run: makeHashFn("sha1"),
+    description: 'SHA-1 digest of text: sha1("hello")',
+    isRaw: true,
+  },
+  sha256: {
+    run: makeHashFn("sha256"),
+    description: 'SHA-256 digest of text: sha256("hello")',
+    isRaw: true,
+  },
+  sha384: {
+    run: makeHashFn("sha384"),
+    description: 'SHA-384 digest of text: sha384("hello")',
+    isRaw: true,
+  },
+  sha512: {
+    run: makeHashFn("sha512"),
+    description: 'SHA-512 digest of text: sha512("hello")',
+    isRaw: true,
+  },
+  sha3: {
+    run: makeHashFn("sha3_256"),
+    description: 'SHA3-256 digest of text: sha3("hello")',
+    isRaw: true,
+  },
+  sha3_256: {
+    run: makeHashFn("sha3_256"),
+    description: 'SHA3-256 digest of text: sha3_256("hello")',
+    isRaw: true,
+  },
+  ripemd160: {
+    run: makeHashFn("ripemd160"),
+    description: 'RIPEMD-160 digest of text: ripemd160("hello")',
+    isRaw: true,
+  },
+  crc32: {
+    run: makeHashFn("crc32"),
+    description: 'CRC32 checksum of text (hex): crc32("hello")',
     isRaw: true,
   },
 };
@@ -1194,6 +1604,518 @@ async function doublingTime(args: TokenType[]): Promise<NumberToken> {
   const ratePercent = readRate(rate) * 100;
   if (ratePercent === 0) throw new UserError(7724);
   return plain(72 / ratePercent);
+}
+
+// ---- Finance: consumer & investment -------------------------------------
+
+async function tipFn(
+  args: TokenType[],
+  _exprUnit: expressionUnit,
+  setIsExplicit: SetExplicit,
+): Promise<NumberToken> {
+  const [bill, rate] = need(args, 2, 2, 7725);
+  return money(bill.toNumber() * readRate(rate), bill, setIsExplicit);
+}
+
+async function tipTotalFn(
+  args: TokenType[],
+  _exprUnit: expressionUnit,
+  setIsExplicit: SetExplicit,
+): Promise<NumberToken> {
+  const [bill, rate] = need(args, 2, 2, 7726);
+  return money(bill.toNumber() * (1 + readRate(rate)), bill, setIsExplicit);
+}
+
+async function discountFn(
+  args: TokenType[],
+  _exprUnit: expressionUnit,
+  setIsExplicit: SetExplicit,
+): Promise<NumberToken> {
+  const [price, rate] = need(args, 2, 2, 7727);
+  return money(price.toNumber() * (1 - readRate(rate)), price, setIsExplicit);
+}
+
+async function salesTaxFn(
+  args: TokenType[],
+  _exprUnit: expressionUnit,
+  setIsExplicit: SetExplicit,
+): Promise<NumberToken> {
+  const [price, rate] = need(args, 2, 2, 7728);
+  return money(price.toNumber() * readRate(rate), price, setIsExplicit);
+}
+
+async function priceWithTaxFn(
+  args: TokenType[],
+  _exprUnit: expressionUnit,
+  setIsExplicit: SetExplicit,
+): Promise<NumberToken> {
+  const [price, rate] = need(args, 2, 2, 7729);
+  return money(price.toNumber() * (1 + readRate(rate)), price, setIsExplicit);
+}
+
+// Net present value: Σ cashflow_t / (1 + rate)^t for t = 0, 1, 2, …
+function npvAt(rate: number, cashflows: number[]): number {
+  let sum = 0;
+  for (let t = 0; t < cashflows.length; t++)
+    sum += cashflows[t] / (1 + rate) ** t;
+  return sum;
+}
+
+async function npvFn(
+  args: TokenType[],
+  _exprUnit: expressionUnit,
+  setIsExplicit: SetExplicit,
+): Promise<NumberToken> {
+  const [rate, ...cashflows] = need(args, 2, Number.POSITIVE_INFINITY, 7730);
+  const value = npvAt(
+    readRate(rate),
+    cashflows.map((c) => c.toNumber()),
+  );
+  return money(value, cashflows[0], setIsExplicit);
+}
+
+// Internal rate of return: the discount rate where NPV(r) = 0. Solved by
+// bisection over [-99.99%, 1000%]; needs a sign change in NPV (a conventional
+// series with at least one negative and one positive cashflow).
+function irrSolve(cashflows: number[]): number {
+  let lo = -0.9999;
+  let hi = 10;
+  let flo = npvAt(lo, cashflows);
+  const fhi = npvAt(hi, cashflows);
+  if (flo * fhi > 0) throw new UserError(7731);
+  for (let i = 0; i < 200; i++) {
+    const mid = (lo + hi) / 2;
+    const fmid = npvAt(mid, cashflows);
+    if (Math.abs(fmid) < 1e-9 || (hi - lo) / 2 < 1e-12) return mid;
+    if (flo * fmid < 0) {
+      hi = mid;
+    } else {
+      lo = mid;
+      flo = fmid;
+    }
+  }
+  return (lo + hi) / 2;
+}
+
+async function irrFn(args: TokenType[]): Promise<NumberToken> {
+  const cashflows = need(args, 2, Number.POSITIVE_INFINITY, 7732);
+  return pct(irrSolve(cashflows.map((c) => c.toNumber())));
+}
+
+async function depreciationFn(
+  args: TokenType[],
+  _exprUnit: expressionUnit,
+  setIsExplicit: SetExplicit,
+): Promise<NumberToken> {
+  const [cost, salvage, life] = need(args, 3, 3, 7733);
+  const years = await readYears(life);
+  if (years === 0) throw new UserError(7734);
+  return money(
+    (cost.toNumber() - salvage.toNumber()) / years,
+    cost,
+    setIsExplicit,
+  );
+}
+
+// ---- Geometry -----------------------------------------------------------
+
+// The common length unit across the numeric args, or null when the args carry
+// no length unit or a mix of different length units. Used to dimension a
+// shape result (a single side's unit, raised to the shape's power).
+function lengthUnitOf(args: TokenType[]): UnitToken | null {
+  let found: UnitToken | null = null;
+  for (const a of args) {
+    if (!(a instanceof NumberToken)) continue;
+    const u = a.unit;
+    if (!u || u.unitdata.type !== UnitTypes.LENGTH) continue;
+    if (!found) found = u;
+    else if (u.value !== found.value || u.factor !== found.factor) return null;
+  }
+  return found;
+}
+
+// Build a geometry result, attaching the args' length unit raised to
+// `exponent` (1 = length, 2 = area, 3 = volume) when present. A compound
+// area/volume unit renders as `meter^2` / `meter^3`; a length result (exponent
+// 1) humanizes like any other length. A unitless input stays a plain number.
+// Build a geometry result, attaching the args' length unit raised to
+// `exponent` (1 = length, 2 = area, 3 = volume) when present, and marking the
+// result explicit so it renders on one line (`78.5398 meter^2`, `31.4159
+// meter`) rather than humanizing a length into a metric breakdown. A unitless
+// input stays a plain number.
+function geomResult(
+  value: number,
+  args: TokenType[],
+  exponent: number,
+  setIsExplicit: SetExplicit,
+): NumberToken {
+  const r = plain(value);
+  const unit = scaleUnit(lengthUnitOf(args), exponent);
+  if (unit) {
+    r.unit = unit;
+    setIsExplicit(true);
+  }
+  return r;
+}
+
+function circleAreaFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [r] = need(args, 1, 1, 9601);
+  return geomResult(circleArea(r.toNumber()), args, 2, setExplicit);
+}
+
+function circleCircumferenceFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [r] = need(args, 1, 1, 9602);
+  return geomResult(circleCircumference(r.toNumber()), args, 1, setExplicit);
+}
+
+function squareAreaFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [s] = need(args, 1, 1, 9603);
+  return geomResult(squareArea(s.toNumber()), args, 2, setExplicit);
+}
+
+function squarePerimeterFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [s] = need(args, 1, 1, 9604);
+  return geomResult(squarePerimeter(s.toNumber()), args, 1, setExplicit);
+}
+
+function rectangleAreaFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [w, h] = need(args, 2, 2, 9605);
+  return geomResult(
+    rectangleArea(w.toNumber(), h.toNumber()),
+    args,
+    2,
+    setExplicit,
+  );
+}
+
+function rectanglePerimeterFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [w, h] = need(args, 2, 2, 9606);
+  return geomResult(
+    rectanglePerimeter(w.toNumber(), h.toNumber()),
+    args,
+    1,
+    setExplicit,
+  );
+}
+
+function triangleAreaFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const a = need(args, 2, 3, 9607);
+  const value =
+    a.length === 3
+      ? heronArea(a[0].toNumber(), a[1].toNumber(), a[2].toNumber())
+      : triangleArea(a[0].toNumber(), a[1].toNumber());
+  return geomResult(value, args, 2, setExplicit);
+}
+
+function trapezoidAreaFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [a, b, h] = need(args, 3, 3, 9608);
+  return geomResult(
+    trapezoidArea(a.toNumber(), b.toNumber(), h.toNumber()),
+    args,
+    2,
+    setExplicit,
+  );
+}
+
+function parallelogramAreaFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [b, h] = need(args, 2, 2, 9609);
+  return geomResult(
+    parallelogramArea(b.toNumber(), h.toNumber()),
+    args,
+    2,
+    setExplicit,
+  );
+}
+
+function ellipseAreaFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [a, b] = need(args, 2, 2, 9611);
+  return geomResult(
+    ellipseArea(a.toNumber(), b.toNumber()),
+    args,
+    2,
+    setExplicit,
+  );
+}
+
+function sphereVolumeFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [r] = need(args, 1, 1, 9612);
+  return geomResult(sphereVolume(r.toNumber()), args, 3, setExplicit);
+}
+
+function sphereSurfaceAreaFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [r] = need(args, 1, 1, 9613);
+  return geomResult(sphereSurfaceArea(r.toNumber()), args, 2, setExplicit);
+}
+
+function cubeVolumeFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [s] = need(args, 1, 1, 9614);
+  return geomResult(cubeVolume(s.toNumber()), args, 3, setExplicit);
+}
+
+function cubeSurfaceAreaFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [s] = need(args, 1, 1, 9615);
+  return geomResult(cubeSurfaceArea(s.toNumber()), args, 2, setExplicit);
+}
+
+function cylinderVolumeFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [r, h] = need(args, 2, 2, 9616);
+  return geomResult(
+    cylinderVolume(r.toNumber(), h.toNumber()),
+    args,
+    3,
+    setExplicit,
+  );
+}
+
+function cylinderSurfaceAreaFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [r, h] = need(args, 2, 2, 9617);
+  return geomResult(
+    cylinderSurfaceArea(r.toNumber(), h.toNumber()),
+    args,
+    2,
+    setExplicit,
+  );
+}
+
+function coneVolumeFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [r, h] = need(args, 2, 2, 9618);
+  return geomResult(
+    coneVolume(r.toNumber(), h.toNumber()),
+    args,
+    3,
+    setExplicit,
+  );
+}
+
+function coneSurfaceAreaFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [r, h] = need(args, 2, 2, 9619);
+  return geomResult(
+    coneSurfaceArea(r.toNumber(), h.toNumber()),
+    args,
+    2,
+    setExplicit,
+  );
+}
+
+function boxVolumeFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [l, w, h] = need(args, 3, 3, 9621);
+  return geomResult(
+    boxVolume(l.toNumber(), w.toNumber(), h.toNumber()),
+    args,
+    3,
+    setExplicit,
+  );
+}
+
+function pyramidVolumeFn(
+  args: TokenType[],
+  _e: expressionUnit,
+  setExplicit: SetExplicit,
+): NumberToken {
+  const [l, w, h] = need(args, 3, 3, 9622);
+  return geomResult(
+    pyramidVolume(l.toNumber(), w.toNumber(), h.toNumber()),
+    args,
+    3,
+    setExplicit,
+  );
+}
+
+function slopeFn(args: TokenType[]): NumberToken {
+  const [x1, y1, x2, y2] = need(args, 4, 4, 9623);
+  return plain(
+    lineSlope(x1.toNumber(), y1.toNumber(), x2.toNumber(), y2.toNumber()),
+  );
+}
+
+// ---- Health & Fitness ---------------------------------------------------
+
+// Convert a token to `target` when it carries a unit of `type`; otherwise read
+// its bare number as already being in the target unit. Mirrors readYears.
+async function readAs(
+  token: NumberToken,
+  target: string,
+  type: UnitTypes,
+): Promise<number> {
+  const unit = token.unit;
+  if (unit && unit.unitdata.type === type) {
+    const tu = tokenFactory(target, TokenBaseType.STRING, [], {}) as UnitToken;
+    const converted = (await new ProcessConversions(token)
+      .to(tu)
+      .convert()) as NumberToken;
+    return converted.toNumber();
+  }
+  return token.toNumber();
+}
+
+const readKg = (t: NumberToken) => readAs(t, "kilogram", UnitTypes.WEIGHT);
+const readMeters = (t: NumberToken) => readAs(t, "meter", UnitTypes.LENGTH);
+const readCm = (t: NumberToken) => readAs(t, "centimeter", UnitTypes.LENGTH);
+
+// Height in inches: a length unit is converted; a bare number is taken as cm
+// (the metric default), since the Devine formula is defined in inches.
+async function readHeightInches(t: NumberToken): Promise<number> {
+  const u = t.unit;
+  if (u && u.unitdata.type === UnitTypes.LENGTH)
+    return readAs(t, "inch", UnitTypes.LENGTH);
+  return t.toNumber() / 2.54;
+}
+
+// A weight result expressed in kilograms (rendered explicitly as `kg`).
+function kilograms(value: number, setIsExplicit: SetExplicit): NumberToken {
+  const r = plain(value);
+  r.unit = tokenFactory("kilogram", TokenBaseType.STRING) as UnitToken;
+  setIsExplicit(true);
+  return r;
+}
+
+async function bmiFn(args: TokenType[]): Promise<NumberToken> {
+  const [w, h] = need(args, 2, 2, 9702);
+  return plain(bmi(await readKg(w), await readMeters(h)));
+}
+
+async function bmrMaleFn(args: TokenType[]): Promise<NumberToken> {
+  const [w, h, age] = need(args, 3, 3, 9703);
+  return plain(bmrMale(await readKg(w), await readCm(h), age.toNumber()));
+}
+
+async function bmrFemaleFn(args: TokenType[]): Promise<NumberToken> {
+  const [w, h, age] = need(args, 3, 3, 9704);
+  return plain(bmrFemale(await readKg(w), await readCm(h), age.toNumber()));
+}
+
+async function bodyFatMaleFn(args: TokenType[]): Promise<NumberToken> {
+  const [w, h, age] = need(args, 3, 3, 9705);
+  const b = bmi(await readKg(w), await readMeters(h));
+  return plain(bodyFatMale(b, age.toNumber()));
+}
+
+async function bodyFatFemaleFn(args: TokenType[]): Promise<NumberToken> {
+  const [w, h, age] = need(args, 3, 3, 9706);
+  const b = bmi(await readKg(w), await readMeters(h));
+  return plain(bodyFatFemale(b, age.toNumber()));
+}
+
+async function idealWeightMaleFn(
+  args: TokenType[],
+  _exprUnit: expressionUnit,
+  setIsExplicit: SetExplicit,
+): Promise<NumberToken> {
+  const [h] = need(args, 1, 1, 9707);
+  return kilograms(devineMale(await readHeightInches(h)), setIsExplicit);
+}
+
+async function idealWeightFemaleFn(
+  args: TokenType[],
+  _exprUnit: expressionUnit,
+  setIsExplicit: SetExplicit,
+): Promise<NumberToken> {
+  const [h] = need(args, 1, 1, 9708);
+  return kilograms(devineFemale(await readHeightInches(h)), setIsExplicit);
+}
+
+async function targetHeartRateFn(args: TokenType[]): Promise<NumberToken> {
+  const [age, intensity] = need(args, 2, 2, 9709);
+  return plain((220 - age.toNumber()) * readRate(intensity));
+}
+
+async function caloriesBurnedFn(args: TokenType[]): Promise<NumberToken> {
+  const [met, weight, minutes] = need(args, 3, 3, 9710);
+  return plain(
+    caloriesBurned(met.toNumber(), await readKg(weight), minutes.toNumber()),
+  );
+}
+
+function tdeeFn(bmrValue: number, activityFactor: number): number {
+  return bmrValue * activityFactor;
+}
+
+async function waterIntakeFn(
+  args: TokenType[],
+  _exprUnit: expressionUnit,
+  setIsExplicit: SetExplicit,
+): Promise<NumberToken> {
+  const [weight] = need(args, 1, 1, 9711);
+  const r = plain(waterIntakeLiters(await readKg(weight)));
+  r.unit = tokenFactory("liter", TokenBaseType.STRING) as UnitToken;
+  setIsExplicit(true);
+  return r;
 }
 
 // ---- IP address helpers -------------------------------------------------
@@ -1775,6 +2697,158 @@ function eigenvaluesFn(args: TokenType[]): MatrixToken {
 
 function eigenvectorsFn(args: TokenType[]): MatrixToken {
   return new MatrixToken(mat.eigenvectors(matArg(args, 9159).data));
+}
+
+// ---- Random / entropy-drawing -------------------------------------------
+
+// Pull the (optional) trailing `@seed` arg out of a raw arg list and return a
+// PRNG plus the remaining args and whether a seed was present. A SeedToken makes
+// the generator reproducible; its absence draws fresh entropy via Math.random.
+// `seeded` lets callers that also depend on the clock (uuid v7) stay reproducible
+// when seeded. The editor always appends the seed last, but we scan defensively.
+function takeSeed(args: TokenType[]): {
+  rng: () => number;
+  rest: TokenType[];
+  seeded: boolean;
+} {
+  const seedTok = args.find((a): a is SeedToken => a instanceof SeedToken);
+  const rest = args.filter((a) => !(a instanceof SeedToken));
+  return {
+    rng: seedTok ? mulberry32(seedTok.seed) : Math.random,
+    rest,
+    seeded: Boolean(seedTok),
+  };
+}
+
+// random() → real in [0,1); random(max) → integer in [0,max]; random(min,max)
+// → integer in [min,max]. Integer bounds yield an inclusive integer (so
+// `random(10,100)` reads as "between 10 and 100"); non-integer bounds yield a
+// real in the half-open interval.
+function randomFn(args: TokenType[]): NumberToken {
+  const { rng, rest } = takeSeed(args);
+  for (const a of rest)
+    if (!(a instanceof NumberToken)) throw new UserError(7960);
+  const nums = (rest as NumberToken[]).map((n) => n.toNumber());
+  if (nums.length > 2) throw new UserError(7960);
+
+  let lo = 0;
+  let hi = 1;
+  if (nums.length === 1) hi = nums[0];
+  else if (nums.length === 2) {
+    lo = nums[0];
+    hi = nums[1];
+  }
+  if (lo > hi) [lo, hi] = [hi, lo];
+
+  const value =
+    nums.length > 0 && nums.every((n) => Number.isInteger(n))
+      ? lo + Math.floor(rng() * (hi - lo + 1))
+      : lo + rng() * (hi - lo);
+  return plain(value);
+}
+
+// uuid() → v7 (time-ordered, the modern default); uuid(4) → v4 (random);
+// uuid(7) → v7 explicitly. When seeded, v7's timestamp is derived from the PRNG
+// (not the clock) so a frozen editor value never drifts; unseeded v7 uses the
+// real time for genuine ordering.
+function uuidFn(
+  args: TokenType[],
+  _exprUnit: expressionUnit,
+  setIsExplicit: (isExplicit: boolean) => void,
+): TextToken {
+  const { rng, rest, seeded } = takeSeed(args);
+  let version = 7;
+  if (rest.length === 1 && rest[0] instanceof NumberToken)
+    version = rest[0].toNumber();
+  else if (rest.length > 0) throw new UserError(7961);
+  if (version !== 4 && version !== 7) throw new UserError(7963);
+  setIsExplicit(true);
+  if (version === 4) return new TextToken(seededUuidV4(rng));
+  const unixMs = seeded ? Math.floor(rng() * 2 ** 48) : Date.now();
+  return new TextToken(seededUuidV7(rng, unixMs));
+}
+
+// nanoid() → a 21-char URL-safe id (nanoid's default alphabet); nanoid(n) → n
+// chars. The entropy is the seeded PRNG when frozen, else the platform CSPRNG
+// (Web Crypto `getRandomValues`, available in browsers and Node ≥18) for a
+// cryptographically strong id. See nanoidId in random.ts.
+function nanoidFn(
+  args: TokenType[],
+  _exprUnit: expressionUnit,
+  setIsExplicit: (isExplicit: boolean) => void,
+): TextToken {
+  const { rng, rest, seeded } = takeSeed(args);
+  let size = 21;
+  if (rest.length === 1 && rest[0] instanceof NumberToken) {
+    size = rest[0].toNumber();
+    if (!Number.isInteger(size) || size < 1 || size > 512)
+      throw new UserError(7962);
+  } else if (rest.length > 0) throw new UserError(7962);
+  const nextByte = seeded
+    ? () => Math.floor(rng() * 256) & 0xff
+    : () => globalThis.crypto.getRandomValues(new Uint8Array(1))[0];
+  setIsExplicit(true);
+  return new TextToken(nanoidId(nextByte, size));
+}
+
+// coin() → "heads" or "tails".
+function coinFn(
+  args: TokenType[],
+  _exprUnit: expressionUnit,
+  setIsExplicit: (isExplicit: boolean) => void,
+): TextToken {
+  const { rng, rest } = takeSeed(args);
+  if (rest.length > 0) throw new UserError(7966);
+  setIsExplicit(true);
+  return new TextToken(rng() < 0.5 ? "heads" : "tails");
+}
+
+// randombool() → true or false.
+function randomBoolFn(args: TokenType[]): BooleanToken {
+  const { rng, rest } = takeSeed(args);
+  if (rest.length > 0) throw new UserError(7966);
+  return new BooleanToken(rng() < 0.5);
+}
+
+// pick(a, b, c, ...) → one of the arguments at random (any token type). Raw so it
+// receives the option tokens directly rather than their numeric values.
+function pickFn(args: TokenType[]): TokenType {
+  const { rng, rest } = takeSeed(args);
+  if (rest.length === 0) throw new UserError(7965);
+  return rest[Math.floor(rng() * rest.length)];
+}
+
+// randomcolor() → a random opaque colour (hex), rendered as a swatch in the app.
+function randomColorFn(args: TokenType[]): ColorToken {
+  const { rng, rest } = takeSeed(args);
+  if (rest.length > 0) throw new UserError(7966);
+  const channel = () =>
+    (Math.floor(rng() * 256) & 0xff).toString(16).padStart(2, "0");
+  const hex = `#${channel()}${channel()}${channel()}`;
+  return new ColorToken(hex, hex, hex, "HEX");
+}
+
+// Build the raw function for a hash algorithm. Pure (no seed): hashes a single
+// text (or number, hashed as its written form) argument to a lowercase hex
+// digest. Async because hash-wasm instantiates wasm on first use.
+function makeHashFn(name: HashName) {
+  return async (
+    args: TokenType[],
+    _exprUnit: expressionUnit,
+    setIsExplicit: (isExplicit: boolean) => void,
+  ): Promise<TextToken> => {
+    if (args.length !== 1) throw new UserError(7964);
+    const a = args[0];
+    const input =
+      a instanceof TextToken
+        ? a.text
+        : a instanceof NumberToken
+          ? a.toNumber().toString()
+          : null;
+    if (input === null) throw new UserError(7964);
+    setIsExplicit(true);
+    return new TextToken(await hashText(name, input));
+  };
 }
 
 export default Functions;

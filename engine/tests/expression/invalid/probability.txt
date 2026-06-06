@@ -3,6 +3,8 @@
 # P() enforces the [0,1] range.
 p(1.5)
 p(-0.2)
+P(50)
+P(1.1)
 
 # A bare number combined with a probability must also be a valid probability.
 p(0.2) & 5
@@ -12,10 +14,15 @@ conditional(0.1, 0)
 
 # odds(1) is undefined (division by zero).
 odds(1)
+odds(-0.1)
+probability from odds(-1)
 
 # binomial needs integer 0 <= k <= n.
 binomial(3, 5, 0.5)
+binomial(5, 6, 0.5)
+binomial(5.5, 2, 0.5)
 
 # Wrong arity.
 bayes(0.01, 0.9)
+bayes(0.01, 1.2, 0.05)
 expected value(10, 0.5, 20)

@@ -78,6 +78,31 @@ derivative(2x^2, x)
 | `break even(fixed, price, variable)` | Units needed to break even | `break even(10000, 50, 30)` |
 | `runway(cash, burn)` | Months of cash runway | `runway(100000, 8000)` |
 | `doubling time(rate)` | Rule-of-72 estimate in years | `doubling time(8%)` |
+| `tip(bill, rate)` | Tip amount | `tip(80, 18%)` |
+| `tip total(bill, rate)` | Bill including the tip | `tip total(80, 18%)` |
+| `discount(price, rate)` | Sale price after a discount (alias `sale price`) | `discount(200, 25%)` |
+| `sales tax(price, rate)` | Tax on a price | `sales tax(100, 8%)` |
+| `price with tax(price, rate)` | Price including tax | `price with tax(100, 8%)` |
+| `npv(rate, cf0, cf1, ...)` | Net present value of a cashflow series | `npv(10%, -1000, 500, 500, 500)` |
+| `irr(cf0, cf1, ...)` | Internal rate of return, as a percent | `irr(-1000, 500, 500, 500)` |
+| `depreciation(cost, salvage, life)` | Straight-line depreciation per year | `depreciation(10000, 1000, 5)` |
+
+## Health and fitness
+
+Body-composition and fitness metrics. Inputs accept weight/height units. See
+**Health & Fitness** for the formula standards.
+
+| Function | Description | Example |
+| --- | --- | --- |
+| `bmi(weight, height)` | Body Mass Index | `bmi(70, 1.75)` |
+| `bmr male(w, h, age)` / `bmr female(...)` | Basal metabolic rate, kcal/day | `bmr male(80, 180, 30)` |
+| `tdee(bmr, factor)` | Total daily energy expenditure | `tdee(1780, 1.55)` |
+| `body fat male(w, h, age)` / `body fat female(...)` | Body fat % (Deurenberg) | `body fat male(80, 1.8, 30)` |
+| `ideal weight male(height)` / `ideal weight female(...)` | Ideal weight, kg (Devine) | `ideal weight male(180 cm)` |
+| `max heart rate(age)` | Maximum heart rate, bpm | `max heart rate(30)` |
+| `target heart rate(age, intensity)` | Target heart-rate zone, bpm | `target heart rate(30, 70%)` |
+| `calories burned(met, weight, minutes)` | Calories for an activity | `calories burned(8, 70, 30)` |
+| `water intake(weight)` | Suggested daily water | `water intake(70 kg)` |
 
 ## Symbolic algebra
 
@@ -126,6 +151,29 @@ numeric arguments. See **Trigonometry** and **Logarithms** for details.
 | Hyperbolic | `sinh`, `cosh`, `tanh`, `sech`, `csch`, `coth` |
 | Inverse hyperbolic | `asinh`, `acosh`, `atanh`, `asech`, `acsch`, `acoth` |
 | Logarithms | `log` / `loge` (natural), `log10`, `log2` |
+
+## Geometry
+
+Shape area, perimeter/circumference, surface area, volume, and line slope.
+Length units on the arguments carry into the result. See **Geometry**.
+
+| Function | Description | Example |
+| --- | --- | --- |
+| `circle area(r)` | π·r² | `circle area(5)` |
+| `circle circumference(r)` | 2·π·r (alias `circle perimeter`) | `circle circumference(5)` |
+| `square area(s)` / `square perimeter(s)` | Square area / perimeter | `square area(4)` |
+| `rectangle area(w, h)` / `rectangle perimeter(w, h)` | Rectangle area / perimeter | `rectangle area(3, 4)` |
+| `triangle area(base, height)` | ½·base·height (or Heron from three sides) | `triangle area(3, 4, 5)` |
+| `trapezoid area(a, b, h)` | ½·(a + b)·h | `trapezoid area(4, 6, 3)` |
+| `parallelogram area(base, height)` | base × height | `parallelogram area(5, 3)` |
+| `ellipse area(a, b)` | π·a·b | `ellipse area(3, 2)` |
+| `sphere volume(r)` / `sphere surface area(r)` | Sphere volume / area (alias `sphere area`) | `sphere volume(3)` |
+| `cube volume(s)` / `cube surface area(s)` | Cube volume / surface area | `cube volume(3)` |
+| `cylinder volume(r, h)` / `cylinder surface area(r, h)` | Cylinder volume / surface area | `cylinder volume(2, 5)` |
+| `cone volume(r, h)` / `cone surface area(r, h)` | Cone volume / surface area | `cone volume(2, 6)` |
+| `rectangular prism volume(l, w, h)` | Box volume (alias `box volume`) | `box volume(2, 3, 4)` |
+| `pyramid volume(l, w, h)` | 1/3·l·w·h | `pyramid volume(3, 3, 9)` |
+| `slope(x1, y1, x2, y2)` | Slope of a line | `slope(0, 0, 2, 4)` |
 
 ## Coordinate systems
 
@@ -185,6 +233,40 @@ Produce a graph rendered below the editor. See **Graphing**.
 | --- | --- | --- |
 | `draw(...)` | Graph curves `y=f(x)`, complex numbers, or points (alias `plot`) | `draw(x^2)` |
 | `plot(...)` | Alias for `draw` | `plot(sin(x), cos(x))` |
+
+## Random
+
+Draw random values. In the app the result freezes (a hidden managed seed) so it
+stays stable across edits; hover the function name to reveal the seed and
+re-roll. See **Random & IDs**.
+
+| Function | Description | Example |
+| --- | --- | --- |
+| `random()` | Real number in `[0, 1)` | `random()` |
+| `random(max)` | Whole number from `0` to `max` | `random(6)` |
+| `random(min, max)` | Whole number from `min` to `max` | `random(10, 100)` |
+| `uuid()` | UUID — v7 by default; `uuid(4)` / `uuid(7)` | `uuid()` |
+| `nanoid()` | URL-safe id; `nanoid(n)` sets length | `nanoid()` |
+| `coin()` | `"heads"` or `"tails"` | `coin()` |
+| `randombool()` | `true` or `false` | `randombool()` |
+| `pick(...)` | One argument chosen at random | `pick(1, 2, 3)` |
+| `randomcolor()` | A random colour | `randomcolor()` |
+
+## Hashing
+
+Deterministic hashes and checksums of a quoted string (or a number). Returns a
+lowercase hex digest. See **Hashing**.
+
+| Function | Description | Example |
+| --- | --- | --- |
+| `md5(text)` | MD5 (128-bit) | `md5("hello")` |
+| `sha1(text)` | SHA-1 (160-bit) | `sha1("hello")` |
+| `sha256(text)` | SHA-256 (256-bit) | `sha256("hello")` |
+| `sha384(text)` | SHA-384 (384-bit) | `sha384("hello")` |
+| `sha512(text)` | SHA-512 (512-bit) | `sha512("hello")` |
+| `sha3(text)` | SHA3-256 (alias `sha3_256`) | `sha3("hello")` |
+| `ripemd160(text)` | RIPEMD-160 (160-bit) | `ripemd160("hello")` |
+| `crc32(text)` | CRC32 checksum | `crc32("hello")` |
 
 ## Color constructors
 

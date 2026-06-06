@@ -29,3 +29,15 @@
 ["probability from odds(3)", "0.75"]
 ["binomial(10, 3, 0.5)", "0.117"]
 ["expected value(10, 0.5, 20, 0.5)", "15"]
+
+# Boundary probabilities, grouping, percent inputs, and helper edges
+["P(1)", "1"]
+["P(25%) | P(50%)", "0.625"]
+["~(P(0.2) | P(0.3))", "0.56"]
+["P(0.1) xor P(0.1)", "0.18"]
+["conditional(P(0.12), P(0.3))", "0.4"]
+["binomial(5, 0, 0.2)", "0.328"]
+["binomial(5, 5, 0.2)", "0.00032"]
+["binomial(4, 2, 25%)", "0.211"]
+["expected value(-10, 0.25, 20, 0.75)", "12.5"]
+["odds(0.5)", "1"]

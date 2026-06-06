@@ -1,0 +1,4 @@
+# Trigonometry and logarithm domain errors.
+acosh 0.5
+atanh 2
+log -1

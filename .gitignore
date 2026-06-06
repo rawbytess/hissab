@@ -38,3 +38,4 @@ Dockerfile
 .env.prod
 .env.dev
 docs/plans/
+docs/private/

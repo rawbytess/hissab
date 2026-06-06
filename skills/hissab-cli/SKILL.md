@@ -35,9 +35,9 @@ pnpm -F cli dev <command> [args]
 3. **Fetch detailed docs for any unfamiliar category** before writing expressions for it:
    - List available categories: `hissab docs --list`
    - Fetch a specific category: `hissab docs <tag>` (e.g. `hissab docs compound_units`)
-   - Full reference (rarely needed): `hissab docs --all`
+   - Full reference for large-context LLMs: `hissab docs --all`
 
-   Skip the fetch for plain arithmetic; pull a chunk for anything else you're not already confident about (units, dates, statistics, color, bitwise, etc.).
+   Skip the fetch for plain arithmetic; pull a chunk for anything else you're not already confident about (units, dates, statistics, color, bitwise, etc.). If your context window can comfortably hold the complete reference, you may run `hissab docs --all` once instead of fetching chunks incrementally.
 4. **Formulate Hissab expression(s)** using the syntax. Use parentheses to match the user's intended grouping. Include units inline (e.g. `15 kilometers to miles`).
 5. **Run the CLI**:
    - One expression: `hissab eval "<expr>"`

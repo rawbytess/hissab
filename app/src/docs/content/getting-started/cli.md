@@ -34,7 +34,7 @@ hissab --help
 | `hissab list <kind>` | list functions, units, or operators |
 | `hissab docs [chunk]` | print the syntax reference |
 | `hissab docs --list` | list documentation chunks |
-| `hissab docs --all` | print the full reference |
+| `hissab docs --all` | print the full reference for large-context LLMs |
 
 ## Evaluate one expression
 
@@ -115,7 +115,8 @@ hissab docs date_time
 ```
 
 Fetch a specific docs chunk before writing expressions for a category you do not
-use often.
+use often. For LLMs with very large context windows, `hissab docs --all` dumps
+the base reference plus every category chunk in one response.
 
 ## When to use the CLI
 

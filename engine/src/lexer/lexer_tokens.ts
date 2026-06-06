@@ -10,6 +10,7 @@ export class Tokens {
   private _variables: Variables;
   private _lineNumber: number;
   private _multiWord: boolean;
+  private _quoteChar: string;
 
   constructor(variables: Variables, lineNumber: number) {
     this._thetoken = "";
@@ -19,6 +20,7 @@ export class Tokens {
     this._variables = variables;
     this._lineNumber = lineNumber;
     this._multiWord = false;
+    this._quoteChar = "";
   }
 
   flushToken(tokentype = this._tokentype) {
@@ -74,6 +76,17 @@ export class Tokens {
 
   public get multiWord() {
     return this._multiWord;
+  }
+
+  // The opening quote char (`'` or `"`) of an in-progress string literal, so
+  // QuoteState closes on the matching quote and a `'` inside a `"..."` (and
+  // vice-versa) is treated as content, not a terminator.
+  public set quoteChar(char: string) {
+    this._quoteChar = char;
+  }
+
+  public get quoteChar() {
+    return this._quoteChar;
   }
 
   public set variables(variables: Variables) {

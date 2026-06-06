@@ -1,0 +1,44 @@
+# Geometry: shape area / perimeter / surface area / volume, and line slope.
+# A bare number returns a plain number; a length unit on the arguments carries
+# into the result raised to the shape's dimension (meter -> meter^2 / meter^3).
+
+# --- Circle ---
+["circle area(5)", "78.5398"]
+["circle area(5 meter)", "78.5398 meter^2"]
+["circle area(5 feet)", "78.5398 feet^2"]
+["circle circumference(5 meter)", "31.4159 meter"]
+["circle perimeter(5 meter)", "31.4159 meter"]
+
+# --- Square & rectangle ---
+["square area(4)", "16"]
+["square area(4 meter)", "16 meter^2"]
+["square perimeter(4 km)", "16 km"]
+["rectangle area(3 meter, 4 meter)", "12 meter^2"]
+["rectangle perimeter(3 meter, 4 meter)", "14 meter"]
+
+# --- Triangle (base/height, and Heron from three sides) ---
+["triangle area(6, 8)", "24"]
+["triangle area(3, 4, 5)", "6"]
+["trapezoid area(4, 6, 3)", "15"]
+["parallelogram area(5, 3)", "15"]
+["ellipse area(3, 2)", "18.8496"]
+
+# --- Solids ---
+["sphere volume(3)", "113.0973"]
+["sphere volume(3 feet)", "113.0973 feet^3"]
+["sphere surface area(3)", "113.0973"]
+["sphere area(3)", "113.0973"]
+["cube volume(3)", "27"]
+["cube volume(3 meter)", "27 meter^3"]
+["cube surface area(3)", "54"]
+["cylinder volume(2 meter, 5 meter)", "62.8319 meter^3"]
+["cylinder surface area(2, 5)", "87.9646"]
+["cone volume(2, 6)", "25.1327"]
+["cone surface area(3, 4)", "75.3982"]
+["rectangular prism volume(2, 3, 4)", "24"]
+["box volume(2, 3, 4)", "24"]
+["pyramid volume(3, 3, 9)", "27"]
+
+# --- Line slope (dimensionless) ---
+["slope(0, 0, 2, 4)", "2"]
+["slope(2, 3, 6, 11)", "2"]

@@ -9,3 +9,11 @@
 ["sin 30 / sin 30", "1"]
 ["log10 100 / log10 10", "2"]
 ["log log 100", "1.5272"]
+
+# Constants, small inputs, and nested arithmetic
+["log e", "1"]
+["log10 1000", "3"]
+["log2 0.5", "-1"]
+["log10 1000 + log2 8", "6"]
+["2 / (log 7)", "1.0278"]
+["log (e^2)", "2"]

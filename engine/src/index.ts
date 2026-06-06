@@ -23,6 +23,7 @@ import {
   PointToken,
   StringToken,
   SymbolToken,
+  TextToken,
   UndefinedToken,
   type Variables,
 } from "./tokens/tokens";
@@ -81,7 +82,8 @@ async function doParse(tokens: TokenType[]): Promise<ParseResult> {
     result instanceof PointToken ||
     result instanceof MatrixToken ||
     result instanceof ExprToken ||
-    result instanceof PlotToken
+    result instanceof PlotToken ||
+    result instanceof TextToken
   ) {
     if (!isExplicit && result instanceof NumberToken) {
       const humanized: string = humanize(result, convertTo);

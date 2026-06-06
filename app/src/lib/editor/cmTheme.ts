@@ -119,6 +119,24 @@ export function hissabTheme(
       opacity: "0.75",
       verticalAlign: "baseline",
     },
+    // Hover tooltip for an impure call (`random`, `uuid`): shows the otherwise
+    // hidden seed, with a re-roll button.
+    ".cm-seed-hover": {
+      display: "flex",
+      alignItems: "center",
+      gap: "0.5em",
+    },
+    ".cm-seed-reroll": {
+      cursor: "pointer",
+      font: "inherit",
+      fontSize: "0.92em",
+      padding: "0.05em 0.45em",
+      borderRadius: "6px",
+      border: `1px solid ${isDark ? "rgba(255,255,255,0.22)" : "rgba(0,0,0,0.2)"}`,
+      background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
+      color: "inherit",
+      whiteSpace: "nowrap",
+    },
     // Depth-cycled bracket colours. `!important` for the same reason as
     // `.cm-variable` — these marks overlap the controllerToken highlight span.
     ".cm-bracket-d0": { color: `${isDark ? "#ffd700" : "#b58900"} !important` },

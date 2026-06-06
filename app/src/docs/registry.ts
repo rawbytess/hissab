@@ -79,6 +79,11 @@ export const docSections: DocSection[] = [
         load: () => import("./content/guide/number-theory.md?raw"),
       },
       {
+        slug: "guide/random",
+        title: "Random & IDs",
+        load: () => import("./content/guide/random.md?raw"),
+      },
+      {
         slug: "guide/percentages",
         title: "Percentages",
         load: () => import("./content/guide/percentages.md?raw"),
@@ -87,6 +92,11 @@ export const docSections: DocSection[] = [
         slug: "guide/finance",
         title: "Finance",
         load: () => import("./content/guide/finance.md?raw"),
+      },
+      {
+        slug: "guide/health",
+        title: "Health & Fitness",
+        load: () => import("./content/guide/health.md?raw"),
       },
       {
         slug: "guide/unit-conversion",
@@ -134,6 +144,11 @@ export const docSections: DocSection[] = [
         load: () => import("./content/science-data/trigonometry.md?raw"),
       },
       {
+        slug: "science-data/geometry",
+        title: "Geometry",
+        load: () => import("./content/science-data/geometry.md?raw"),
+      },
+      {
         slug: "science-data/date-time",
         title: "Date & Time",
         load: () => import("./content/science-data/date-time.md?raw"),
@@ -177,6 +192,11 @@ export const docSections: DocSection[] = [
         slug: "science-data/colors",
         title: "Colors",
         load: () => import("./content/science-data/colors.md?raw"),
+      },
+      {
+        slug: "science-data/hashing",
+        title: "Hashing",
+        load: () => import("./content/science-data/hashing.md?raw"),
       },
     ],
   },

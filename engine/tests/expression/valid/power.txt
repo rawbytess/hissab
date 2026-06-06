@@ -1,3 +1,0 @@
-["1 horsepower to watt", "745.6999 watt"]
-["1 metric horsepower to watt", "735.4987 watt"]
-["1000 watt to horsepower", "1.341 horsepower"]
