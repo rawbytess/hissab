@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator.tsx";
 
 const GITHUB_URL = "https://github.com/rawbytess/hissab";
 const ISSUES_URL = "https://github.com/rawbytess/hissab/issues/new";
-const KOFI_URL = "https://ko-fi.com/H2H017GQK4";
+const GITHUB_SPONSORS_BUTTON_URL = "https://github.com/sponsors/prenx4x/button";
 const SHARE_URL =
   "https://twitter.com/intent/tweet?text=I%20found%20this%20amazing%20AI%20calculator%20called%20Hissab!&url=https%3A%2F%2Fhissab.io";
 
@@ -77,7 +77,7 @@ export function Support() {
       <section className="flex flex-col gap-3">
         <div className="flex flex-col gap-1">
           <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-            <Icon icon="mdi:coffee" width={16} height={16} />
+            <Icon icon="mdi:github" width={16} height={16} />
             Support development
           </h3>
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -87,14 +87,13 @@ export function Support() {
         </div>
 
         <div className="flex flex-row items-center gap-3 flex-wrap">
-          <a href={KOFI_URL} target="_blank" rel="noopener noreferrer">
-            <img
-              height="32"
-              style={{ border: "0px", height: "32px" }}
-              src="https://storage.ko-fi.com/cdn/kofi4.png?v=6"
-              alt="Buy Me a Coffee at ko-fi.com"
-            />
-          </a>
+          <iframe
+            src={GITHUB_SPONSORS_BUTTON_URL}
+            title="Sponsor prenx4x"
+            height="32"
+            width="114"
+            style={{ border: 0, borderRadius: "6px" }}
+          />
         </div>
       </section>
 
