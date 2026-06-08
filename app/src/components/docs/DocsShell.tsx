@@ -1,6 +1,8 @@
+import { Icon } from "@iconify/react";
 import { BookOpen } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
+import { DocSearchBox } from "@/components/DocSearchBox.tsx";
 import { defaultDocSlug, docSections, findDoc } from "@/docs/registry.ts";
 import "@/styles/docs.css";
 import { DocsMarkdown } from "./DocsMarkdown.tsx";
@@ -9,6 +11,7 @@ import { DocsSidebar } from "./DocsSidebar.tsx";
 // Loaded markdown is cached so re-visiting a page is instant and doesn't
 // re-trigger its dynamic import.
 const contentCache = new Map<string, string>();
+const GITHUB_URL = "https://github.com/rawbytess/hissab";
 
 function formatCrumbTitle(title: string) {
   return title.replace(/\b[a-z]/g, (letter) => letter.toUpperCase());
@@ -16,7 +19,7 @@ function formatCrumbTitle(title: string) {
 
 export default function DocsShell() {
   const [location, navigate] = useLocation();
-  const rawSlug = location.replace(/^\/docs\/?/, "");
+  const rawSlug = location.replace(/^\/docs\/?/, "").replace(/\/+$/, "");
   const slug = rawSlug || defaultDocSlug;
   const page = findDoc(slug);
   const section = docSections.find((docSection) =>
@@ -73,9 +76,20 @@ export default function DocsShell() {
               {page?.title ?? "Loading"}
             </span>
           </div>
+          <DocSearchBox />
+          <a
+            className="topbar-iconbtn topbar-github-btn"
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open GitHub repository"
+            aria-label="Open GitHub repository"
+          >
+            <Icon icon="mdi:github" width={16} height={16} aria-hidden="true" />
+          </a>
         </header>
         <div className="wb-body">
-          <article className="docs-canvas scroll">
+          <article className="docs-canvas scroll DocSearch-content">
             {content !== null ? (
               <DocsMarkdown>{content}</DocsMarkdown>
             ) : (

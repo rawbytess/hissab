@@ -1,5 +1,7 @@
+import { Icon } from "@iconify/react";
 import { BookOpen, PanelLeft } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { DocSearchBox } from "@/components/DocSearchBox.tsx";
 import type { Notebook } from "@/lib/atoms/notebooks.ts";
 import { useDocsNavigation } from "@/lib/docsNav.ts";
 
@@ -10,6 +12,8 @@ interface TopbarProps {
   isSidebarOpen: boolean;
   isRunning?: boolean;
 }
+
+const GITHUB_URL = "https://github.com/rawbytess/hissab";
 
 export function Topbar({
   notebook,
@@ -71,6 +75,7 @@ export function Topbar({
         )}
       </div>
       <div className="spacer" />
+      <DocSearchBox />
       {isRunning && (
         <span className="tb-pill warn">
           <span className="dot" />
@@ -87,6 +92,16 @@ export function Topbar({
         <BookOpen size={15} />
         <span>Documentation</span>
       </button>
+      <a
+        className="topbar-iconbtn topbar-github-btn"
+        href={GITHUB_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Open GitHub repository"
+        aria-label="Open GitHub repository"
+      >
+        <Icon icon="mdi:github" width={16} height={16} aria-hidden="true" />
+      </a>
     </header>
   );
 }

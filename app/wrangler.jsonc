@@ -9,6 +9,7 @@
   },
   "assets": {
     "directory": "dist",
+    "html_handling": "auto-trailing-slash",
     // Serve index.html (200) for unmatched paths so clean docs URLs like
     // /docs/<slug> work on refresh/deep-link; the in-app NotFound view then
     // handles genuinely unknown routes.

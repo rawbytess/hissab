@@ -1,5 +1,6 @@
 import { Check, Copy } from "lucide-react";
 import {
+  type HTMLAttributes,
   isValidElement,
   type KeyboardEvent,
   type ReactNode,
@@ -105,6 +106,42 @@ const TYPESCRIPT_TOKEN =
 
 function codeText(children: ReactNode): string {
   return String(children).replace(/\n$/, "");
+}
+
+function plainText(children: ReactNode): string {
+  if (
+    children === null ||
+    children === undefined ||
+    typeof children === "boolean"
+  ) {
+    return "";
+  }
+  if (typeof children === "string" || typeof children === "number") {
+    return String(children);
+  }
+  if (Array.isArray(children)) return children.map(plainText).join("");
+  if (isValidElement<{ children?: ReactNode }>(children)) {
+    return plainText(children.props.children);
+  }
+  return "";
+}
+
+function slugifyHeading(value: string) {
+  return (
+    value
+      .toLowerCase()
+      .replaceAll("&", " and ")
+      .replace(/[`'"’]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "section"
+  );
+}
+
+function headingId(children: ReactNode, counts: Map<string, number>) {
+  const base = slugifyHeading(plainText(children));
+  const count = counts.get(base) ?? 0;
+  counts.set(base, count + 1);
+  return count === 0 ? base : `${base}-${count + 1}`;
 }
 
 function languageFromClassName(className?: string) {
@@ -294,54 +331,97 @@ function PackageInstallTabs({
   );
 }
 
-const components: Components = {
-  a: ({ node: _node, ...props }) => (
-    <a {...props} target="_blank" rel="noreferrer" />
-  ),
-  // Unwrap the <pre> around a ```hissab block so the live example can render
-  // as a block-level element (a <div> nested in <pre> is invalid markup).
-  pre: ({ node: _node, children, ...props }) => {
-    if (
-      isValidElement<{ className?: string; children?: ReactNode }>(children) &&
-      HISSAB_LANG.test(children.props.className ?? "")
-    ) {
-      return <>{children}</>;
-    }
+function DocsHeading({
+  level,
+  headingCounts,
+  node: _node,
+  children,
+  ...props
+}: HTMLAttributes<HTMLHeadingElement> & {
+  headingCounts: Map<string, number>;
+  level: 1 | 2 | 3 | 4 | 5 | 6;
+  node?: unknown;
+}) {
+  const Tag = `h${level}` as const;
+  return (
+    <Tag {...props} id={props.id ?? headingId(children, headingCounts)}>
+      {children}
+    </Tag>
+  );
+}
 
-    if (
-      isValidElement<{ className?: string; children?: ReactNode }>(children)
-    ) {
-      const language = languageFromClassName(children.props.className);
-      const text = codeText(children.props.children);
-      const installCommands =
-        language && SHELL_LANGS.has(language)
-          ? parseNpmInstallCommand(text)
-          : null;
+function docsComponents(headingCounts: Map<string, number>): Components {
+  return {
+    h1: (props) => (
+      <DocsHeading {...props} headingCounts={headingCounts} level={1} />
+    ),
+    h2: (props) => (
+      <DocsHeading {...props} headingCounts={headingCounts} level={2} />
+    ),
+    h3: (props) => (
+      <DocsHeading {...props} headingCounts={headingCounts} level={3} />
+    ),
+    h4: (props) => (
+      <DocsHeading {...props} headingCounts={headingCounts} level={4} />
+    ),
+    h5: (props) => (
+      <DocsHeading {...props} headingCounts={headingCounts} level={5} />
+    ),
+    h6: (props) => (
+      <DocsHeading {...props} headingCounts={headingCounts} level={6} />
+    ),
+    a: ({ node: _node, ...props }) => (
+      <a {...props} target="_blank" rel="noreferrer" />
+    ),
+    // Unwrap the <pre> around a ```hissab block so the live example can render
+    // as a block-level element (a <div> nested in <pre> is invalid markup).
+    pre: ({ node: _node, children, ...props }) => {
+      if (
+        isValidElement<{ className?: string; children?: ReactNode }>(
+          children,
+        ) &&
+        HISSAB_LANG.test(children.props.className ?? "")
+      ) {
+        return <>{children}</>;
+      }
 
-      if (installCommands)
-        return <PackageInstallTabs commands={installCommands} />;
-      return <CodeSurface code={text} language={language} />;
-    }
+      if (
+        isValidElement<{ className?: string; children?: ReactNode }>(children)
+      ) {
+        const language = languageFromClassName(children.props.className);
+        const text = codeText(children.props.children);
+        const installCommands =
+          language && SHELL_LANGS.has(language)
+            ? parseNpmInstallCommand(text)
+            : null;
 
-    return <pre {...props}>{children}</pre>;
-  },
-  code: ({ node: _node, className, children, ...props }) => {
-    if (HISSAB_LANG.test(className ?? "")) {
-      return <HissabExample text={codeText(children)} />;
-    }
-    return (
-      <code className={className} {...props}>
-        {children}
-      </code>
-    );
-  },
-};
+        if (installCommands)
+          return <PackageInstallTabs commands={installCommands} />;
+        return <CodeSurface code={text} language={language} />;
+      }
+
+      return <pre {...props}>{children}</pre>;
+    },
+    code: ({ node: _node, className, children, ...props }) => {
+      if (HISSAB_LANG.test(className ?? "")) {
+        return <HissabExample text={codeText(children)} />;
+      }
+      return (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
+    },
+  };
+}
 
 interface DocsMarkdownProps {
   children: string;
 }
 
 export function DocsMarkdown({ children }: DocsMarkdownProps) {
+  const headingCounts = new Map<string, number>();
+
   return (
     <div className="docs-md">
       <ReactMarkdown
@@ -353,7 +433,7 @@ export function DocsMarkdown({ children }: DocsMarkdownProps) {
         ]}
         rehypePlugins={[rehypeKatex]}
         skipHtml
-        components={components}
+        components={docsComponents(headingCounts)}
       >
         {children}
       </ReactMarkdown>

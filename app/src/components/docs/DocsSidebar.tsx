@@ -21,26 +21,36 @@ export function DocsSidebar({
         </span>
       </div>
       <div className="docs-sb-head">
-        <button type="button" className="sb-foot-btn" onClick={onBack}>
+        <a
+          href="/"
+          className="sb-foot-btn"
+          onClick={(event) => {
+            event.preventDefault();
+            onBack();
+          }}
+        >
           <ArrowLeft size={14} />
           <span>Back to app</span>
-        </button>
+        </a>
       </div>
       <nav className="sb-scroll scroll docs-nav">
         {docSections.map((section) => (
           <div className="docs-nav-section" key={section.title}>
             <div className="sb-section">{section.title}</div>
             {section.pages.map((page) => (
-              <button
-                type="button"
+              <a
+                href={`/docs/${page.slug}`}
                 key={page.slug}
                 className={`docs-nav-item${
                   page.slug === activeSlug ? " active" : ""
                 }`}
-                onClick={() => onNavigate(page.slug)}
+                onClick={(event) => {
+                  event.preventDefault();
+                  onNavigate(page.slug);
+                }}
               >
                 {page.title}
-              </button>
+              </a>
             ))}
           </div>
         ))}

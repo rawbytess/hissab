@@ -1,14 +1,17 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import "@docsearch/css/dist/style.css";
 import "./styles/workbook.css";
-import React from "react";
 
 const LOCAL_LLM_CLEANUP_KEY = "hissab-local-llm-cleanup-v1";
 
 void cleanupRemovedLocalLLMArtifacts();
 
-createRoot(document.getElementById("root")!).render(<App />);
+const root = document.getElementById("root");
+if (!root) throw new Error("Root element not found");
+
+createRoot(root).render(<App />);
 
 async function cleanupRemovedLocalLLMArtifacts() {
   if (typeof window === "undefined") return;

@@ -26,6 +26,7 @@
   display: block;
   width: 100%;
   text-align: left;
+  text-decoration: none;
   padding: 6px 10px;
   border-radius: var(--r-sm);
   font-size: 13px;
@@ -53,6 +54,7 @@
 }
 .docs-topbar-title {
   min-width: 0;
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
   gap: 10px;
