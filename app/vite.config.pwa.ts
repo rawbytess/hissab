@@ -1,6 +1,6 @@
+import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
-import path from "path";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
@@ -29,6 +29,10 @@ export default defineConfig({
         // have no precached file. Fall back to the app shell so an installed/
         // offline PWA can still load (and refresh) those routes client-side.
         navigateFallback: "index.html",
+        // Keep crawler/static endpoints out of the SPA navigation fallback.
+        // Without this, an installed service worker can answer a browser
+        // navigation to /sitemap.xml with index.html even though dist has XML.
+        navigateFallbackDenylist: [/^\/[^/?]+\.[^/?]+$/],
         runtimeCaching: [
           {
             urlPattern: /\.(?:png|woff|woff2|ttf)$/,

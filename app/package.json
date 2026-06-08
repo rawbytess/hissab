@@ -22,7 +22,7 @@
     "build:zip": "npm-build-zip --source=dist/ --name=chrome",
     "chrome": "VITE_CHROME=true pnpm build:crx && pnpm build:zip",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview --config vite.config.pwa.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.98.0",
