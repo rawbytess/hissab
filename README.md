@@ -1,18 +1,25 @@
+<div align="center">
+
+<img alt="Hissab" src="app/public/icons/100.png" width="92" height="92" />
+
 # Hissab
 
-Hissab is a natural-language calculator and math engine for people and AI
-agents. It accepts expressions such as `15 km to miles`, `25% of 200`,
-`today - 1 feb 1990 to years`, `avg(10, 20, 30)`, `circle area(5 meter)`,
-`derivative(2x^2, x)`, or `(2 + 3i) * (1 - i)` and returns deterministic,
-formatted results.
+**A strict, unit-aware natural-language calculator for humans and AI agents.**
+Type real-world math like `15 km to miles`, `emi(500000, 6.5%, 30 years)`, or
+`derivative(2x^2, x)` and get exact, auditable answers — across the web, a CLI,
+an embeddable library, and as a tool AI agents can call.
 
-The project includes:
+[![Web app](https://img.shields.io/badge/Web_app-app.hissab.io-8100ff)](https://app.hissab.io)
+&nbsp;·&nbsp;
+[![Engine on npm](https://img.shields.io/npm/v/%40rawbytes%2Fhissab?logo=npm&label=engine)](https://www.npmjs.com/package/@rawbytes/hissab)
+&nbsp;·&nbsp;
+[![CLI on npm](https://img.shields.io/npm/v/%40rawbytes%2Fhissab-cli?logo=npm&label=CLI)](https://www.npmjs.com/package/@rawbytes/hissab-cli)
+&nbsp;·&nbsp;
+[![Agent skills](https://img.shields.io/badge/Agent_skills-MCP-2b6cb0)](#agent-skills)
+&nbsp;·&nbsp;
+[![License: MIT](https://img.shields.io/badge/License-MIT-3aa657.svg)](./LICENSE)
 
-- A web/PWA calculator app.
-- A TypeScript calculation engine published as `@rawbytes/hissab`.
-- A terminal CLI for one-shot calculations, REPL sessions, scripts, and docs.
-- Agent skills and an MCP workflow so AI assistants can offload exact math to
-  Hissab instead of guessing.
+</div>
 
 ## What is Hissab?
 
@@ -291,17 +298,6 @@ geometric token classes (`ExprToken`, `SymbolToken`, `ComplexToken`,
 rendering, and
 the sampling helpers `evalExpr` / `freeSymbols` used to plot `draw`/`plot`
 curves — for consumers that need autocomplete catalogs or graphing.
-
-## Repository Layout
-
-```text
-app/                 React/Vite PWA calculator app
-cli/                 Hissab command-line interface
-engine/              TypeScript parser and calculation engine
-lib/documentation/   Shared documentation chunks for app, CLI, and agents
-skills/              Agent skills for local CLI and hosted MCP use
-website/             Astro marketing/docs website
-```
 
 ## Development
 

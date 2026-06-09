@@ -59,6 +59,11 @@ export const docSections: DocSection[] = [
         load: () => import("./content/getting-started/skills.md?raw"),
       },
       {
+        slug: "getting-started/comparison",
+        title: "Hissab vs Alternatives",
+        load: () => import("./content/getting-started/comparison.md?raw"),
+      },
+      {
         slug: "getting-started/faq",
         title: "FAQs",
         load: () => import("./content/getting-started/faq.md?raw"),
