@@ -9,13 +9,13 @@ Type real-world math like `15 km to miles`, `emi(500000, 6.5%, 30 years)`, or
 `derivative(2x^2, x)` and get exact, auditable answers — across the web, a CLI,
 an embeddable library, and as a tool AI agents can call.
 
-[![Web app](https://img.shields.io/badge/Web_app-app.hissab.io-8100ff)](https://app.hissab.io)
+[![Web app](https://img.shields.io/badge/Web_app-hissab.io-8100ff)](https://hissab.io)
 &nbsp;·&nbsp;
 [![Engine on npm](https://img.shields.io/npm/v/%40rawbytes%2Fhissab?logo=npm&label=engine)](https://www.npmjs.com/package/@rawbytes/hissab)
 &nbsp;·&nbsp;
 [![CLI on npm](https://img.shields.io/npm/v/%40rawbytes%2Fhissab-cli?logo=npm&label=CLI)](https://www.npmjs.com/package/@rawbytes/hissab-cli)
 &nbsp;·&nbsp;
-[![Agent skills](https://img.shields.io/badge/Agent_skills-MCP-2b6cb0)](#agent-skills)
+[![Agent skills](https://img.shields.io/badge/Agent_skills-2b6cb0)](#agent-skills)
 &nbsp;·&nbsp;
 [![License: MIT](https://img.shields.io/badge/License-MIT-3aa657.svg)](./LICENSE)
 
@@ -136,7 +136,7 @@ Important syntax notes:
 
 ## Using the App
 
-Use the web app at [app.hissab.io](https://app.hissab.io). It can also be
+Use the web app at [hissab.io](https://hissab.io). It can also be
 installed as a PWA on desktop and mobile browsers.
 
 The app provides:
