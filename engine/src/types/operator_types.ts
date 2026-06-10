@@ -147,6 +147,9 @@ const Operators: Record<string, OperatorDef> = {
   "^": {
     precedence: 4,
     operands: ["prenumber", "postnumber"],
+    // Exponentiation is right-associative by mathematical convention (and in
+    // Python, Excel, …): 2^3^2 = 2^(3^2) = 512, not (2^3)^2 = 64.
+    associativity: "right",
     func: makePowFunc(),
     isRaw: true,
     description: "Power operator",
@@ -154,6 +157,7 @@ const Operators: Record<string, OperatorDef> = {
   "**": {
     precedence: 4,
     operands: ["prenumber", "postnumber"],
+    associativity: "right",
     func: makePowFunc(),
     isRaw: true,
     description: "Power operator",
