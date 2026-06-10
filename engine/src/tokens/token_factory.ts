@@ -46,6 +46,17 @@ const NUMBER_BASETYPES = new Set<TokenBaseType>([
   TokenBaseType.HEX,
 ]);
 
+// The look-back contract. tokenFactory may absorb the previous token into the
+// one being built (date assembly, AM/PM, unit prefixes, …); this is the ONLY
+// sanctioned way to consume from tokens[]. It asserts that the token being
+// removed is exactly the one the caller examined, so a future edit can't pop
+// blindly after its look-back check has drifted out of sync.
+function absorbPrev<T extends TokenType>(tokens: TokenType[], prev: T): T {
+  if (tokens[tokens.length - 1] !== prev) throw new UnhandledError(9007);
+  tokens.pop();
+  return prev;
+}
+
 export default function tokenFactory(
   value: string,
   basetype: TokenBaseType,
@@ -168,14 +179,14 @@ function buildNumber(
   if (prevToken instanceof DateToken) {
     const n = parseFloat(value);
     if (n < 32 && !prevToken.date) {
-      tokens.pop();
+      absorbPrev(tokens, prevToken);
       return prevToken
         .set({ date: n })
         .appendOriginalValue(originalValue)
         .setObject();
     }
     if (n > 99 && !prevToken.year) {
-      tokens.pop();
+      absorbPrev(tokens, prevToken);
       return prevToken
         .set({ year: n })
         .appendOriginalValue(originalValue)
@@ -220,7 +231,7 @@ function buildMonth(
 ): TokenType {
   const monthFactor = Units[value].factor!;
   if (prevToken instanceof NumberToken && parseFloat(prevToken.value) > 99) {
-    tokens.pop();
+    absorbPrev(tokens, prevToken);
     return new DateToken(
       `${prevToken.value} ${value}`,
       `${prevToken.originalValue} ${originalValue}`,
@@ -233,7 +244,7 @@ function buildMonth(
     parseFloat(prevToken.value) < 32 &&
     parseFloat(prevToken.value) > 0
   ) {
-    tokens.pop();
+    absorbPrev(tokens, prevToken);
     return new DateToken(
       `${prevToken.value} ${value}`,
       `${prevToken.originalValue} ${originalValue}`,
@@ -243,7 +254,7 @@ function buildMonth(
   }
   if (prevToken instanceof DateToken) {
     if (prevToken.month) return new UndefinedToken(value, originalValue);
-    tokens.pop();
+    absorbPrev(tokens, prevToken);
     return prevToken
       .set({ month: monthFactor })
       .appendOriginalValue(originalValue)
@@ -264,7 +275,7 @@ function buildTime(
   if (prevToken instanceof DateToken) {
     dt = prevToken;
     dt.appendOriginalValue(originalValue);
-    tokens.pop();
+    absorbPrev(tokens, prevToken);
   } else {
     dt = new DateToken(value, originalValue);
   }
@@ -397,7 +408,7 @@ function buildString(
   const tz = soft(value);
   if (tz.length > 0) {
     if (prevToken instanceof DateToken) {
-      tokens.pop();
+      absorbPrev(tokens, prevToken);
       return prevToken
         .set({ iana: tz[0].iana, timezone: originalValue })
         .appendOriginalValue(originalValue)
@@ -438,7 +449,7 @@ function buildUnit(
   }
   if (unitData.type === UnitTypes.AMPM && prevToken instanceof DateToken) {
     if (prevToken.hour) {
-      tokens.pop();
+      absorbPrev(tokens, prevToken);
       return prevToken
         .set({ meridian: value })
         .appendOriginalValue(originalValue)
@@ -449,7 +460,7 @@ function buildUnit(
   if (unitData.type === UnitTypes.AMPM && prevToken instanceof NumberToken) {
     const n = parseFloat(prevToken.value);
     if (Number.isInteger(n) && n <= 12) {
-      tokens.pop();
+      absorbPrev(tokens, prevToken);
       return new DateToken(`${prevToken.value}:00`, prevToken.originalValue, "")
         .set({ hour: n, meridian: value })
         .appendOriginalValue(originalValue)
@@ -470,7 +481,7 @@ function buildUnit(
         : prevToken.factor!;
     unitTkn.factor *= mult;
     unitTkn.siFactor *= mult;
-    tokens.pop();
+    absorbPrev(tokens, prevToken);
   }
   return unitTkn;
 }
