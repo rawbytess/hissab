@@ -1,7 +1,7 @@
 {
   "name": "@rawbytes/hissab",
   "version": "1.2.0",
-  "description": "Hissab engine NPM module",
+  "description": "Strict, unit-aware natural-language calculation engine for TypeScript apps and AI agent tools",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -56,6 +56,10 @@
     "natural-language",
     "math",
     "expression-evaluator",
+    "ai-agents",
+    "mcp",
+    "finance",
+    "developer-tools",
     "hissab"
   ],
   "repository": {

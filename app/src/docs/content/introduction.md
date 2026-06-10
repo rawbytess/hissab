@@ -1,9 +1,14 @@
 # Introduction
 
-**Hissab is a natural-language calculator for exact expression work.** Type one
-calculation per line and Hissab evaluates numbers, units, dates, colors, bases,
-statistics, probability, finance, IP addresses, symbolic algebra, complex
-numbers, and chained references in place.
+**Hissab is a strict, unit-aware natural-language calculator for exact
+expression work.** Type one calculation per line and Hissab evaluates numbers,
+units, dates, colors, bases, statistics, probability, finance, IP addresses,
+symbolic algebra, complex numbers, and chained references in place.
+
+The same deterministic engine powers the web/PWA app, Chrome extension, CLI,
+TypeScript library, hosted MCP server, and agent skills. Humans, scripts, apps,
+and AI agents can use the same readable expression and get the same auditable
+answer.
 
 ```hissab
 1 + 1
@@ -29,6 +34,7 @@ yearly_savings = monthly_savings monthly to yearly
 - **Finance and business** — interest, growth, loans, mortgages, annuities, returns, margins, break-even, and runway.
 - **Workflows** — labels, `prev`, `line<N>`, and `total<N>` for multi-line calculations.
 - **AI-assisted calculation** — bring your own model provider key, ask in natural language, and let the assistant produce Hissab expressions before answering.
+- **Agent and developer workflows** — use the CLI, npm package, skills, or MCP server when a script, product, or AI agent needs exact math.
 
 ## Expression first
 

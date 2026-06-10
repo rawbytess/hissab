@@ -1,50 +1,34 @@
-# React + TypeScript + Vite
+# Hissab App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The Hissab app is the web/PWA and Chrome extension shell for the Hissab
+calculation engine. It provides notebook-style expression editing, inline
+results, documentation, local browser storage, bring-your-own-key AI
+calculation, external skills, and remote MCP server configuration.
 
-Currently, two official plugins are available:
+## Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+From the repo root:
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+```sh
+pnpm --filter ./app dev
+pnpm --filter ./app build:pwa
+pnpm --filter ./app build:crx
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+The PWA build also runs `scripts/generate-docs-crawl-pages.mjs`, which creates
+static crawlable docs pages, sitemaps, and `robots.txt` in `app/dist`.
 
-```js
-// eslint.config.js
-import react from "eslint-plugin-react";
+## Documentation
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: "18.3" } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs["jsx-runtime"].rules,
-  },
-});
-```
+Hand-authored app docs live in `src/docs/content`. The navigation manifest is
+`src/docs/registry.ts`.
+
+The canonical expression reference for the engine, CLI, MCP tools, and agent
+skills lives in `../lib/documentation`. Do not duplicate full syntax reference
+content in app docs when the generated docs can provide the source of truth.
+
+## Metadata
+
+Public SEO metadata lives in `index.html`. PWA manifest metadata is configured
+in `vite.config.pwa.ts`, while the Chrome extension manifest is
+`manifest.json`.

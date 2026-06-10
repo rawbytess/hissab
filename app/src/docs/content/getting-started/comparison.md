@@ -23,8 +23,8 @@ engine, many surfaces — including AI agents).
 
 | Tool | What it's great at | Where Hissab differs |
 | --- | --- | --- |
-| **Soulver** | Polished Apple notepad calculator: live results, line references, units, dates. | Hissab runs on every OS (web/PWA, CLI, extension), is open-source, embeddable as a library and callable by AI agents, and goes deeper into developer/STEM domains. |
-| **Numi / Calca / Numbr** | Lightweight desktop NL calculators with variables and units. | Mostly Mac-only and narrower in scope. Hissab adds IP/CIDR, hashing, matrices, complex numbers, symbolic algebra, colors, and graphing — and works beyond the desktop. |
+| **Soulver** | Apple-platform notepad calculator with live results, line references, units, and dates. | Hissab runs on every OS (web/PWA, CLI, extension), is open-source, embeddable as a library and callable by AI agents, and goes deeper into developer/STEM domains. |
+| **Numi / Calca / Numbr** | Desktop natural-language calculators with variables and units. | Many are narrower or more platform-specific. Hissab adds IP/CIDR, hashing, matrices, complex numbers, symbolic algebra, colors, and graphing — and works beyond the desktop. |
 | **Qalculate!** | Extremely capable power calculator with deep unit support. | Powerful but not natural-language or notebook-style. Hissab reads like everyday math and chains results line-to-line. |
 | **Wolfram\|Alpha / Mathematica** | Vast computational knowledge and advanced math/CAS. | Heavyweight and cloud/subscription for depth. Hissab is lighter, local-first for core math, embeddable, CLI-friendly, and agent-oriented — for everyday exact expression work. |
 | **Spreadsheets (Excel / Sheets)** | Tabular models and repeated business workflows. | Can't add `5 ft + 9 in`, reason about timezones, or carry units. Hissab is better for quick, readable, mixed-domain calculations without building rows, columns, and cell references. |
@@ -33,15 +33,12 @@ engine, many surfaces — including AI agents).
 
 ## Hissab vs Python tools (Claude Code, Codex, code interpreters)
 
-This is the objection that sounds devastating: *"My AI agent can already write
-`numpy`/`sympy`/`pint` code and run it — why bolt on a calculator?"*
-
-The framing that wins is **right tool for the job**. A coding agent *can* write
-Python for a calculation, but that turns every calculation into a small software
-task: choose libraries, write code, parse units, pick formulas, manage
-dependencies, run code, and hope the generated program matches your intent.
-Hissab removes that whole layer — the agent only emits a short, documented
-expression like `emi(500000, 6.5%, 30 years)`. Five concrete reasons:
+The framing is **right tool for the job**. A coding agent *can* write Python for
+a calculation, but that turns every calculation into a small software task:
+choose libraries, write code, parse units, pick formulas, manage dependencies,
+run code, and hope the generated program matches your intent. Hissab removes
+that layer — the agent emits a short, documented expression like
+`emi(500000, 6.5%, 30 years)`. The concrete advantages:
 
 1. **It collapses the error surface from "an arbitrary program" to "a one-line
    expression."** When an LLM solves math by writing Python, the *code itself is
@@ -57,10 +54,8 @@ expression like `emi(500000, 6.5%, 30 years)`. Five concrete reasons:
    for timezones, number bases, IP math, and financial conventions — the domain
    rules can't be skipped.
 
-3. **Cheaper and faster for the 95% case.** Spinning up a sandbox, importing
-   `numpy`/`sympy`/`pint`, writing code, and executing it costs seconds and a pile
-   of tokens. For *"15% off $240"* or *"175 lbs to kg"* that's absurd overhead.
-   Hissab is one tiny tool call or a sub-millisecond shell-out.
+3. **Cheaper and faster for common calculations.** For *"15% off $240"* or
+   *"175 lbs to kg"*, a Hissab expression is one small tool call or shell-out.
 
 4. **No code-execution environment required — and no arbitrary-code risk.**
    Running LLM-generated Python is, by definition, arbitrary code execution (it can
@@ -76,9 +71,9 @@ expression like `emi(500000, 6.5%, 30 years)`. Five concrete reasons:
    was produced.
 
 The honest close: Hissab does **not** replace Python for heavy data science, ML,
-large datasets, or custom algorithms — and it doesn't claim to. It replaces the
-*reflex* of either letting the LLM do unreliable mental math or firing a whole
-code interpreter for what is really one expression.
+large datasets, or custom algorithms. It replaces the reflex of either letting
+the LLM do unreliable mental math or firing a code interpreter for what is
+really one expression.
 
 :::tip
 

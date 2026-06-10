@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Hissab - AI Calculator with accurate answers",
-  "description": "Hissab is a natural language calculator. Perform calculations, unit conversions, percentage, date and time calculations.",
+  "name": "Hissab - Natural-Language Calculator",
+  "description": "Strict, unit-aware calculator for units, dates, finance, developer math, and AI-assisted exact answers.",
   "version": "3.2.0",
   "action": { "default_popup": "index.html" },
   "icons": {

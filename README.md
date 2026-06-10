@@ -6,8 +6,8 @@
 
 **A strict, unit-aware natural-language calculator for humans and AI agents.**
 Type real-world math like `15 km to miles`, `emi(500000, 6.5%, 30 years)`, or
-`derivative(2x^2, x)` and get exact, auditable answers — across the web, a CLI,
-an embeddable library, and as a tool AI agents can call.
+`derivative(2x^2, x)` and get exact, auditable answers — across the web/PWA app,
+Chrome extension, CLI, embeddable library, and AI agent tools.
 
 [![Web app](https://img.shields.io/badge/Web_app-hissab.io-8100ff)](https://hissab.io)
 &nbsp;·&nbsp;
@@ -45,6 +45,35 @@ monthly_savings monthly to yearly
 Unlike an LLM, Hissab does not try to infer a result from text. The app and
 agent integrations translate intent into Hissab expressions, then the engine
 parses and evaluates those expressions.
+
+## Why Hissab?
+
+- **Exactness** — Hissab parses and evaluates expressions deterministically. It
+  does not silently drop unknown words or ask a model to do arithmetic from
+  memory.
+- **Breadth** — everyday, business, developer, STEM, and agentic calculations
+  share one expression language.
+- **Auditability** — every answer comes from a short, visible expression you can
+  edit, re-run, copy, or put in a script.
+- **Portability** — the same engine runs in the app, CLI, TypeScript library,
+  hosted MCP server, and agent skills.
+- **AI leverage** — AI can translate messy language and explain the result while
+  Hissab remains the deterministic calculator.
+
+## Who is it for?
+
+- **Calculator power users** who need quick mixed-domain math without turning
+  every question into a spreadsheet or script.
+- **Developers and sysadmins** who need units, dates, IP/CIDR math, bitwise
+  operations, base conversion, hashing, matrices, CLI workflows, or npm
+  embedding.
+- **Students, teachers, and tutors** who want readable calculation notebooks
+  with inline results, graphing, symbolic algebra, geometry, statistics, and
+  probability.
+- **AI users and agent builders** who want models to call a deterministic math
+  engine instead of guessing.
+- **Product developers** who need an embeddable TypeScript expression evaluator
+  with units, types, formatting, and documentation.
 
 ## Features
 
@@ -136,8 +165,9 @@ Important syntax notes:
 
 ## Using the App
 
-Use the web app at [hissab.io](https://hissab.io). It can also be
-installed as a PWA on desktop and mobile browsers.
+Use the web app at [hissab.io](https://hissab.io). It can be installed as a PWA
+on desktop and mobile browsers, and the same app is packaged as a Chrome
+extension.
 
 The app provides:
 
@@ -146,6 +176,10 @@ The app provides:
 - Syntax highlighting for Hissab expressions.
 - Local notebook/file storage in the browser.
 - A documentation UI backed by the same docs used by the CLI and agent tools.
+
+Core calculations run locally in the app shell. Notebooks, provider settings,
+MCP servers, and skills are stored in the browser profile. AI calls, model
+refreshes, realtime search, and remote MCP servers require network access.
 
 ## AI Chat Features
 
@@ -299,6 +333,21 @@ rendering, and
 the sampling helpers `evalExpr` / `freeSymbols` used to plot `draw`/`plot`
 curves — for consumers that need autocomplete catalogs or graphing.
 
+## Limits
+
+Hissab is a practical calculation language, not a replacement for every
+quantitative tool.
+
+- It does **not** fetch live currency or FX rates in the local engine. Provide a
+  rate, or use an AI/realtime lookup flow before calculating.
+- It does **not** solve equations yet. It does support symbolic simplification,
+  expansion, derivatives, integrals, and limits.
+- It does **not** replace Python, Jupyter, R, or Julia for datasets, ML,
+  simulations, custom algorithms, or general programming.
+- It does **not** replace spreadsheets for large tabular models and recurring
+  business workflows.
+- It does **not** replace full CAS systems such as Mathematica.
+
 ## Development
 
 This is a pnpm workspace.
@@ -313,9 +362,8 @@ pnpm check
 Useful package commands:
 
 ```sh
-pnpm -F app dev
-pnpm -F website dev
-pnpm -F cli dev eval "5 km to miles"
+pnpm --filter ./app dev
+pnpm --filter ./cli dev eval "5 km to miles"
 pnpm -F @rawbytes/hissab test
 ```
 

@@ -49,7 +49,8 @@ export default defineConfig({
         display: "standalone",
         name: "Hissab",
         short_name: "Hissab",
-        description: "Just type & calculate anything",
+        description:
+          "Strict, unit-aware natural-language calculator for exact units, dates, finance, developer math, and AI agent workflows.",
         theme_color: "#8100ff",
         background_color: "#1c1c1c",
         lang: "en",

@@ -2,7 +2,7 @@
   "name": "@rawbytes/hissab-app",
   "private": true,
   "version": "1.2.0",
-  "description": "Hissab web client (PWA + Chrome extension) — the natural-language calculator UI",
+  "description": "Hissab web/PWA and Chrome extension - strict natural-language calculator UI for exact math and AI agents",
   "type": "module",
   "author": "Mufaddal Makati <mufaddal@rawbytes.com> (https://hissab.io)",
   "license": "MIT",

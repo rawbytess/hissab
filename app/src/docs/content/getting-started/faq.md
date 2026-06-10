@@ -56,11 +56,11 @@ The app stores notebooks, AI provider settings, MCP servers, and skills in the
 
 ### Isn't this just Soulver with a different coat of paint?
 
-Soulver is a great macOS/iOS app. Hissab differentiates on four fronts:
+Soulver is an Apple-platform notepad calculator. Hissab differs on four fronts:
 **platform reach** (web/extension/CLI/library/agent, every OS, offline),
 **developer + STEM depth** (IP/CIDR, hashing, matrices, complex numbers,
-symbolic algebra, coordinate systems — areas Soulver doesn't go), **open source
-+ bring-your-own AI key**, and **being an embeddable engine and an agent tool**,
+symbolic algebra, coordinate systems), **open source + bring-your-own AI key**,
+and **being an embeddable engine and an agent tool**,
 not just an app.
 
 ### Why not just use a spreadsheet?
@@ -151,6 +151,6 @@ Python's job.
 ### Is Hissab free? What's the business model?
 
 The calculator is **open-source and free.** AI features use **your own provider
-key**, so there is no markup on inference and your keys stay in your browser. The
-hosted MCP server is free with rate limits and has a commercial tier for heavier
-and B2B use.
+key**, so there is no markup on inference and your keys stay in your browser.
+The hosted MCP server is free with rate limits, with commercial options for
+heavier and B2B use.
