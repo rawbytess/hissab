@@ -296,11 +296,11 @@ const Operators: Record<string, OperatorDef> = {
         if (params[0] instanceof NumberToken && params.length > 2) {
           const convertTo: string[] = [];
           for (let i = 1; i < params.length; i++) {
-            if (!(params[i] instanceof UnitToken)) throw new UserError(2333);
-            if (params[0].unit?.value === params[i].value) {
-              // @ts-expect-error
-              convertTo.push(params[i].prefix ? params[i].prefix.value : "_");
-            } else convertTo.push(params[i].value);
+            const target = params[i];
+            if (!(target instanceof UnitToken)) throw new UserError(2333);
+            if (params[0].unit?.value === target.value) {
+              convertTo.push(target.prefix ? target.prefix.value : "_");
+            } else convertTo.push(target.value);
           }
           setConvertTo(convertTo);
           return params[0];

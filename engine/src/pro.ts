@@ -9,15 +9,19 @@ function humanize(
 ): string {
   const { unit } = resultToken;
   if (!unit) return resultToken.getString();
-  // Compound units don't have a meaningful `convertTo` family — emit the
-  // unit's user-form / canonical-form string and let the user request an
-  // explicit `to` for any further breakdown.
+  // Compound units don't have a meaningful display family — emit the unit's
+  // user-form / canonical-form string and let the user request an explicit
+  // `to` for any further breakdown.
   if (unit.isCompound && !convertTo) return resultToken.getString();
-  if (!unit.unitdata.convertTo && !convertTo) return resultToken.getString();
+  // `convertTo` is the user's explicit multi-unit list (`to mile, yard`) and
+  // may mix prefixes and units; the unit's own `display` family is typed by
+  // kind. getFactor resolves either by checking the target's entry.
+  const displayFamily = unit.unitdata.display?.family;
+  if (!displayFamily && !convertTo) return resultToken.getString();
   if (convertTo?.length === 0) throw new UnhandledError(2234);
   let value = resultToken.toNumber();
   let answer = "";
-  const targets = convertTo || unit.unitdata.convertTo || [];
+  const targets = convertTo || displayFamily || [];
   for (const [i, u] of targets.entries()) {
     const { factor, postUnit } = getFactor(u, unit);
     const x = parseFloat((value / factor).toFixed(10));
