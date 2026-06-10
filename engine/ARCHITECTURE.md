@@ -91,7 +91,7 @@ Compatibility between two units is dimensional equality (`dimEquals`), not type 
 
 `OperatorToken` and `FunctionToken` carry their children directly as named fields — they don't share a `_children` array on the base `Token` class.
 
-- **`OperatorToken`** has `left: TokenType | null`, `right: TokenType | null`, and `more: TokenType[]` (variadic tail for things like `to mile, yard, inch`). Helpers `setLeftChild` / `setRightChild` / `setChild(direction, t)` write the named slots; `getLeftChild()` / `getRightChild()` read them. A `children` getter returns the sparse `[left, right, ...more]` view so legacy raw funcs that destructure `[_, n1]` (e.g. trig, `~`) keep working — `right` always lands at index 1 even if `left` is null.
+- **`OperatorToken`** has `left: TokenType | null`, `right: TokenType | null`, and `more: TokenType[]` (variadic tail for things like `to mile, yard, inch`). It carries its whole table entry as `def: OperatorDef`; `precedence` / `shape` are derived at construction and `isRaw` / `associativity` are getters over `def`. `setChild(direction, t)` writes the named slots. A `children` getter returns the sparse `[left, right, ...more]` view so legacy raw funcs that destructure `[_, n1]` (e.g. trig, `~`) keep working — `right` always lands at index 1 even if `left` is null.
 - **`FunctionToken`** has `args: TokenType[]`. `insertChild(token)` pushes; `getChildrenValues()` extracts numeric values for non-raw funcs.
 
 Both expose a uniform `clearChildren()` that the solver calls before grafting the result token into the parent slot.
@@ -101,6 +101,10 @@ Both expose a uniform `clearChildren()` that the solver calls before grafting th
 `src/tokens/token_factory.ts` is where strings become typed tokens. The lexer calls it once per emitted token; the parser also uses it (to synthesise things like an implicit `+` between adjacent numbers, or a `radian` unit for `sin/cos`). It does a lot more than instantiate classes.
 
 The top-level `tokenFactory()` is a thin dispatcher; the actual work lives in named pipeline stages — `buildNumber`, `buildDate` / `buildMonth`, `buildTime`, `buildString`, `buildUnit`, `makeOperator`, `prefixUnits`, `multiWords`. Each stage handles one `TokenBaseType` (or one sub-case of `STRING`), so finding the right entry point for a new keyword is usually obvious from the dispatcher.
+
+`buildString` is a mutating normalization preamble (constants/variables, plural strip, synonym rewrite, multi-word routing) followed by the **`STRING_RESOLVERS` chain** — an ordered, first-match-wins array of small resolvers (function → unit → operator → imaginary `i` → free symbol → boolean literal → datetime keyword → `in`-prefix rewrite → timezone → color name), with `prefixUnits` as the final fallback before `StringToken`. The array order is load-bearing (exact lookups before fuzzy matchers); recognising a new keyword class means inserting one resolver at the right rank.
+
+Every look-back consumption of `tokens[]` goes through `absorbPrev(tokens, prev)`, which asserts that the token being popped is exactly the one the look-back examined — the only sanctioned way to consume from the array.
 
 What that machinery does, regardless of stage:
 
@@ -171,19 +175,20 @@ All states extend `LexerStates`, which provides default behaviours; individual s
 
 ## 4. Parser — token stream → expression tree
 
-`src/parser/parser.ts` is also a state machine, but it iterates over the token array (with recursion for brackets). Each iteration picks a state-handler based on the *current token's class*:
+`src/parser/parser.ts` is also a state machine, but it iterates over the token array (with recursion for brackets). **All token-class → state-handler routing lives in one function, `dispatchToken`** — both the main token loop and the function-argument result loop call it, so a new token class is wired up exactly once:
 
 | Token class | Method dispatched |
 | --- | --- |
-| `NumberToken` | `handleOperand` |
+| `NumberToken` / `ComplexToken` / `MatrixToken` / `SymbolToken` / `ExprToken` / `TextToken` (the `OperandToken` union; `isOperandToken` guard in `parser_states.ts`) | `handleOperand` |
 | `StringToken` / `VariableNameToken` | `handleString` |
 | `DateToken` | `handleDate` |
 | `ColorToken` | `handleColor` |
+| `IpToken` / `PointToken` / `BooleanToken` / `SeedToken` | `handleIp` / `handlePoint` / `handleBoolean` / `handleSeed` |
 | `OperatorToken` | `handleOperator` |
 | `FunctionToken` | `handleFunction` |
 | `UnitToken` | `handleUnit` |
-| `ControllerToken` | handled inline (see brackets below) |
-| `VariableToken` | unwrapped to `valueToken` *before* dispatch |
+| `ControllerToken` | handled inline in the main loop (drives bracket recursion; a sub-parse can never return one) |
+| `VariableToken` | unwrapped to `valueToken` inside `dispatchToken` |
 
 ### States (`src/parser/parser_states.ts`)
 
@@ -197,7 +202,11 @@ All states extend `LexerStates`, which provides default behaviours; individual s
 | `CombineNumberState` | After a `,` between numeric operands (digit grouping) | next digit chunk — concatenates them into a single number string |
 | `CompleteState` | Just finished an operand/sub-expression | binary operator, additional operand (implicit `+`), unit (assigned to head number) |
 
-The state classes are referenced by identity in `parser.ts` (`if (parseState === FreshParseState) ...`) — there is no `instanceName` marker. Adding a new state means exporting it from `parser_states.ts` and matching it directly.
+Each state is a **singleton object built by `defineState(name, rejectCodes, handlers)`**: it declares only the handlers it accepts, and every omitted handler rejects with that state's error code (a plain number → `UserError`, `{ internal: n }` → `UnhandledError` for token classes the parser should never route there). The `ParserState` interface is the checklist for adding a token class — the compiler forces an accept-or-reject decision in every `defineState` call. States are still compared by identity in `parser.ts` (`parseState === FreshParseState`).
+
+The unit-normalization logic shared by `CompleteState.handleUnit`, `NeedNumberState.handleOperand`, and `FunctionState.handleOperand` lives in one helper, `normalizeOperandToExprUnit` (first unit seen becomes `exprUnit`; later same-dimension operands are eagerly converted to its scale).
+
+`PreNumberState` participates in bracket recursion alongside `FreshParseState`/`NeedNumberState`, so a unary minus distributes over a parenthesised group (`-(2+3)` → `-5`).
 
 ### Compound-unit absorption
 
@@ -213,12 +222,12 @@ The `OperatorShape` flag set replaces ad-hoc `operands.includes("prenumber")` lo
 
 ### Operator precedence
 
-`CompleteState.handleOperator` is where precedence is enforced. It walks the right spine of the tree, collecting operators onto `opStack`, then pops until it finds one with **strictly lower** precedence than the incoming operator (note: `>=` means new op takes over the slot). The new operator slides into that gap:
+`CompleteState.handleOperator` is where precedence is enforced. It walks the right spine of the tree, collecting operators onto `opStack`, then pops while the incoming operator `climbsOver` the stack top: a strictly higher precedence number (= looser binding) always climbs; at **equal** precedence, left-associative operators (the default) climb too (`2-3-4` = `(2-3)-4`) while right-associative ones nest under the earlier occupant (`2^3^2` = `2^(3^2)`). The new operator slides into that gap:
 
 - Its **left child** becomes the previous occupant's right child (or the head, if the stack emptied).
 - The previous occupant (or `parseTree.head`) is rewired to point at the new operator.
 
-Lower `precedence` number = higher binding. `^` (4) binds tighter than `*` (5) which binds tighter than `+` (6). Postfix operators like `!` (2) and `%` (3) bind tighter than `^`.
+Lower `precedence` number = higher binding. `^` (4) binds tighter than `*` (5) which binds tighter than `+` (6). Postfix operators like `!` (2) and `%` (3) bind tighter than `^`. `^` and `**` declare `associativity: "right"` in their `Operators` entries; everything else defaults to left.
 
 > See `Operators` in `src/types/operator_types.ts` for the canonical precedence table. **If you change a precedence, run the engine test suite** — `pnpm -F engine test-single` is the fast loop.
 
@@ -250,18 +259,18 @@ After the loop, `parseTree.solve(head, null, RIGHT)` runs a post-order traversal
 
 ## 5. Operators — `src/types/operator_types.ts`
 
-Each operator entry has:
+Each operator entry is an `OperatorDef` — a **discriminated union on `isRaw`**, so a definition cannot declare one calling convention and implement the other (the solver narrows on `def.isRaw` and the compiler checks both call shapes):
 
 ```ts
-{
-  precedence: number;        // lower = binds tighter
-  operands: string[];        // "prenumber" | "postnumber" | "prestring" | "postunit"
-  func: any;                 // see isRaw
-  isRaw: boolean;            // false → func(...rawNumbers) returns a number
-                             // true  → func(children, exprUnit, setIsExplicit, setConvertTo) returns a TokenType
-  description: string;       // shown in user-facing docs
-}
+type OperatorDef =
+  | (Base & { isRaw: true;  func: RawOpFunc })     // (children, exprUnit, setIsExplicit, setConvertTo) → TokenType
+  | (Base & { isRaw: false; func: NumericOpFunc }); // (...values: number[]) → number
+// Base: { precedence: number; operands: OperandSlot[];
+//         associativity?: "left" | "right";  // default "left"
+//         description: string }
 ```
+
+`Functions` entries follow the same pattern (`FunctionDef` in `src/functions/types.ts`, with `run` instead of `func`).
 
 `operands` controls what the parser state machine expects on each side. It's the source of truth; `OperatorToken` derives the `shape: OpShape` flag set from it at construction:
 
@@ -305,24 +314,23 @@ The raw `+` / `-` implementations live on the operand token classes themselves (
 2. **POSTFIX target** (`kilo`, `milli`, …) — divide by `toUnit.factor`.
 3. **CITY target** on a `DateToken` — shift the spacetime to the new IANA zone.
 4. **Compound / cross-type via dim** — if either side is compound, or both sides share a dimensional signature but live in different `UnitTypes` (e.g., `m^2 → square meter`), require `dimEquals(from.dim, to.dim)` and apply `from.siFactor / to.siFactor`. Same-name-different-prefix pairs in the same family (`km → m`) and same-name same-family pairs still flow through path 6 for precision.
-5. **TEMPERATURE** (same-type) — dispatch via the `unitdata[<toUnit.value>]` lambda on the *from* unit (affine; not composable).
+5. **TEMPERATURE** (same-type) — affine lambdas (`kelvin`/`celsius`/`fahrenheit`/`rankine` on the *from* unit's entry), dispatched through the typed `temperatureFn` accessor (throws loudly instead of calling undefined).
 6. **Same-type linear** — `value * linearFactor(from.value, to.value) * (from.factor / to.factor)`. `linearFactor` prefers the hand-tuned `Units[from].factors[to]` entry (precise) and falls back to deriving from each family's canonical SI base in `BASE_UNIT_BY_TYPE` (meter / square meter / liter / gram / degree / bit / second / secondly / kelvin / ampere / mole / candela).
 
-`humanize` in `pro.ts` short-circuits when the result's unit is compound and no explicit `convertTo` was set — there's no meaningful multi-component breakdown for compounds; the user can request one via `to`. For simple-unit results, `humanize` still walks the unit's `convertTo` family using `getFactor` (which calls `linearFactor`).
+Each path is a named private method (`convertViaFunction`, `convertViaPostfix`, `convertCityTimezone`, `convertViaDim`, `convertTemperature`, `convertLinear`); `convert()` is a flat ladder trying them strictly in the order above — the order is precision-load-bearing (same-family pairs must reach `linearFactor`, not the siFactor ratio). Adding a conversion kind = one method + one ladder rung.
 
-The full conversion paths:
-
-- **POSTFIX target** (`kilo`, `mega`, etc.): divide value by `toUnit.factor`. Used by `to milli`, `to kilo` for plain numbers.
-- **FUNCTION target** (`hex`, `binary`, `rgb color`, `epoch`, `human date`, …): invoke `toUnit.unitdata.func(token)`. These are conversion targets that are really transformations.
-- **CITY target** on a `DateToken`: shift the spacetime to the new IANA zone.
-- **TEMPERATURE**: dispatch via the `unitdata[<toUnit.value>]` lambda on the *from* unit (`celsius.fahrenheit`, etc.). Lambdas stay because the math is affine, not linear.
-- **Otherwise** (LENGTH, WEIGHT, VOLUME, …): `value * linearFactor(fromUnit.value, toUnit.value) * (fromUnitToken.factor / toUnitToken.factor)`. The second ratio handles prefix multipliers (`kilo meter` → 1000).
+`humanize` in `pro.ts` short-circuits when the result's unit is compound and no explicit `convertTo` was set — there's no meaningful multi-component breakdown for compounds; the user can request one via `to`. For simple-unit results, `humanize` walks the unit's `display` family using `getFactor` (which calls `linearFactor`).
 
 Mismatched `unitdata.type` throws `UserError(3907)`. Currencies need network data and are wired up elsewhere (the engine ships the type tag; the API layer fills in factors).
 
-### `convertTo` (auto-breakdown)
+### `display` (auto-breakdown)
 
-`Units[<unit>].convertTo` is a list of *other* unit names used by `humanize` when the result has no explicit `to`. `meter` has `convertTo: metricFamily` (`["kilo", "_", "centi", "milli", "micro", "nano"]`) so a meter-typed result is automatically broken down into the most appropriate metric prefix. `acre` has `convertTo: areaFamily`. This is *display only* — the underlying value isn't changed.
+`Units[<unit>].display` is a kind-discriminated family used by `humanize` when the result has no explicit `to`:
+
+- `{ kind: "prefixes", family: ["kilo", "_", "centi", …] }` — POSTFIX names applied to the unit itself; `meter` uses `metricFamily` so a meter result breaks down into the best metric prefix (`1 km 200 meter`).
+- `{ kind: "units", family: ["mile", "yard", …] }` — sibling unit names in the same family; `acre` uses `areaFamily`.
+
+This is *display only* — the underlying value isn't changed. `tests/units_schema.test.ts` validates every family member resolves to a real entry of the declared kind (plus the other table invariants: `factors` keys exist, TEMPERATURE entries carry all four lambdas, `factor` agrees with `factors[BASE]`).
 
 The `_` POSTFIX entry is the identity prefix; it has `factor: 1` and renders without a suffix.
 
@@ -360,7 +368,7 @@ Note: `tokenFactory` does have a special case where bare `total` and `prev` get 
 Two paths exit `doParse`:
 
 - **Explicit conversion was requested** (`isExplicit === true`, set by the `to` operator's func) — call `result.getString()` directly. The result already has the target unit attached.
-- **Implicit / no conversion** — call `humanize(result, convertTo)` from `src/pro.ts`. This walks the unit's `convertTo` family looking for the largest unit where `|value| >= 1` and emits one or more components (`1 km 200 meter`).
+- **Implicit / no conversion** — call `humanize(result, convertTo)` from `src/pro.ts`. This walks the unit's `display` family looking for the largest unit where `|value| >= 1` and emits one or more components (`1 km 200 meter`).
 
 `NumberToken.formatResult` handles number-system formatting (binary/octal/hex prefixes), currency locale formatting, and the small/large number heuristics (scientific notation thresholds, fraction digit caps, locale grouping). Edit there if you're touching how plain numbers render.
 
@@ -372,8 +380,10 @@ Two paths exit `doParse`:
 
 `src/exceptions.ts` defines two error classes:
 
-- `UserError(code)` — the user wrote something the engine can't make sense of. The numeric code is a marker for tracing but isn't surfaced to the user. Throwing this is fine and expected.
+- `UserError(code)` — the user wrote something the engine can't make sense of. The code maps to a human-readable message via `src/errorMessages.ts`; unmapped codes fall back to a generic message. Throwing this is fine and expected.
 - `UnhandledError(code)` — the engine reached a branch it didn't expect. Usually indicates a missing case or an invariant violation; treat as a bug to fix, not a syntax issue.
+
+Codes are distinct per throw site (no code 0 anywhere). `tests/error_codes.test.ts` enforces the registry: a NEW `UserError` code must get a message in `errorMessages.ts` (the legacy unmapped backlog is pinned shrink-only).
 
 Consumers wrap `doParse` in `try/catch`. Don't add `try/catch` inside the engine to swallow errors — let them propagate.
 
@@ -389,13 +399,13 @@ engine/src/
 │   ├── lexer_states.ts               # all state classes (Fresh, Decimal, String, ...)
 │   └── lexer_tokens.ts               # Tokens accumulator class (buffer + flushToken)
 ├── parser/
-│   ├── parser.ts                     # driver loop + bracket recursion
-│   ├── parser_states.ts              # state classes (FreshParse, NeedNumber, ...) + isUnaryPrefix
+│   ├── parser.ts                     # driver loop + dispatchToken (single dispatch site) + bracket recursion
+│   ├── parser_states.ts              # ParserState interface + defineState singletons + isUnaryPrefix + isOperandToken
 │   └── parsetree.ts                  # ParseTree class + post-order solve()
 ├── tokens/
 │   ├── tokens.ts                     # Token class + all subclasses; OpShape lives here
 │   ├── token_basetypes.ts            # TokenBaseType enum, TokenType union
-│   └── token_factory.ts              # named pipeline stages: buildNumber/Date/Time/String/Unit + prefixUnits/multiWords
+│   └── token_factory.ts              # named pipeline stages + STRING_RESOLVERS chain + absorbPrev look-back guard
 ├── types/
 │   ├── operator_types.ts             # Operators table + Controllers table; trig/hyp/log generated via helper loops
 │   ├── unit_types.ts                 # Units table + Constants + BASE_UNIT_BY_TYPE + linearFactor() helper
@@ -409,11 +419,19 @@ engine/src/
 │   ├── render.ts                     # exprToString(): Expr → display string
 │   ├── complex.ts                    # pure complex math over { re, im }
 │   └── index.ts                      # public surface of the subsystem
-├── function.ts                       # Functions table (avg, sum, min, max, lcm, gcd, simplify, derivative, ...)
+├── functions/                        # the Functions table, one module per domain
+│   ├── index.ts                      # aggregates domains (loud duplicate check) + load-bearing token_factory side-effect import
+│   ├── types.ts                      # FunctionDef / RawFn / NumericFn (type-only)
+│   ├── util.ts                       # cross-domain helpers: need / plain / pct / money / readRate
+│   └── statistics.ts, arithmetic.ts, color.ts, finance.ts, geometry.ts,
+│       health.ts, ip.ts, probability.ts, symbolic.ts, coordinates.ts,
+│       matrix.ts, visualization.ts, random.ts
+├── function.ts                       # shim re-exporting ./functions (historical import path)
 ├── arithmetic_functions.ts           # factorial / combination / permutation
 ├── datetime_operands.ts              # now, today, last week, next year, ... → Spacetime (last/next generated from RELATIVE_UNITS)
-├── units_processor.ts                # ProcessConversions class (the .to(...).convert() builder)
+├── units_processor.ts                # ProcessConversions class (the .to(...).convert() strategy ladder)
 ├── pro.ts                            # humanize() — multi-unit breakdown formatter, uses getFactor/formatComponent helpers
+├── errorMessages.ts                  # UserError code → message registry (ratcheted by tests/error_codes.test.ts)
 └── exceptions.ts                     # UserError / UnhandledError
 ```
 
@@ -509,8 +527,8 @@ only the function forms (`derivative(2x^2, x)`) compute.
 | A new unit in an existing family | `types/unit_types.ts` (give it `factors[BASE]` at minimum so `linearFactor` can resolve it; add pairwise entries on siblings if you want hand-tuned precision instead of derived) |
 | A new SI-derived named unit (newton, joule, …) | `types/unit_types.ts` — set an explicit `dim` over the canonical base names (`{gram:1, meter:1, second:-2}` for newton) and a `factor` that converts 1 of the unit into that canonical product |
 | A new family of units | `types/unit_enum.ts` (new enum value) + `types/unit_types.ts` (entries + `BASE_UNIT_BY_TYPE` if it has a canonical SI base unit + a case in `dimOfType` if simple units in the family share a dim) + likely `units_processor.ts` if conversion math differs |
-| A new operator (binary/unary) | `types/operator_types.ts` |
-| A new function (statistical etc.) | `function.ts` |
+| A new operator (binary/unary) | `types/operator_types.ts` (an `OperatorDef`; set `associativity: "right"` if it should chain right-to-left) |
+| A new function | `src/functions/<domain>.ts` — pick the matching domain module (statistics, finance, geometry, …) or add a new one and spread it in `src/functions/index.ts`. Cross-domain arg/result helpers live in `src/functions/util.ts` |
 | A new free-variable symbol | `tokens/token_factory.ts` (the `Symbols` set) — watch for unit collisions |
 | Symbolic simplification / a new `Expr` node | `symbolic/` (`expr.ts` node + `from_tree.ts` capture + `polynomial.ts` math + `render.ts` display) |
 | Differentiation / integration / limit behaviour | `symbolic/calculus.ts` (`differentiate` / `integrate` / `limitOf`, wired through `evaluate`); coefficient/fraction display in `symbolic/util.ts` |
@@ -530,9 +548,10 @@ only the function forms (`derivative(2x^2, x)`) compute.
 
 - **`tokenFactory` mutates `tokens[]`.** It pops earlier tokens when assembling dates, prefixed units, AM/PM, etc. Don't assume `tokens.length` only grows during lex.
 - **Lexer state ≠ final token type.** Lexer state decides character-level grouping; `tokenFactory` decides the final `TokenType` by looking up the string in `Operators` / `Units` / `Functions` / `Synonyms` / `DateTimeOperands` / `Constants`.
-- **`StringToken` and `UndefinedToken` are filtered out before parse.** A free-standing word that doesn't match anything gets silently dropped. If the user's expression contains a stray word, it won't error — it'll just be ignored. Be aware when adding new keywords that *every* unknown identifier currently disappears.
+- **`StringToken` and `UndefinedToken` are rejected before parse.** A free-standing word that doesn't match anything makes `doParse` throw `UserError(103)` — the whole expression yields no result rather than silently ignoring the word (no result > wrong result).
 - **`Synonyms` can re-route lookups.** `kg` → `kilo gram` re-enters `tokenFactory` with two words, then `multiWords` splits them, then `prefixUnits` merges `kilo` into `gram`. Several layers of indirection can be in play; trace carefully.
-- **Precedence semantics: lower number = binds tighter.** `^` (4) binds tighter than `*` (5). Don't get this backwards.
+- **Precedence semantics: lower number = binds tighter.** `^` (4) binds tighter than `*` (5). Don't get this backwards. At *equal* precedence, associativity decides: everything is left-associative except `^`/`**` (`associativity: "right"`, so `2^3^2` = `2^(3^2)` = 512).
+- **Module init order: `token_factory.ts` must be the first entry into the token/unit cluster.** Its import sequence is the only one that initializes `Units` before `plurals.ts` reads it at module top level. Beware TypeScript *import elision*: an `import tokenFactory from …` whose binding is never used as a value is removed from the emitted JS — use a bare side-effect import (`import ".../token_factory";`) when the ordering is the point (see `src/functions/index.ts`, and `tests/units_schema.test.ts` which imports `../src` first before deep-importing `unit_types`).
 - **Parser brackets recurse.** `parse(tokens, index, func)` returns the `index` it stopped at; the parent then splices the result back as if it were a literal token. This means the same token array is consumed cooperatively — be careful if you ever clone or mutate tokens during parse.
 - **Raw operator funcs receive the *children* array.** Non-raw funcs receive *unwrapped numbers* via `getChildrenValues()`. If you write `isRaw: false` but your function expects tokens, it'll silently get numbers. If you write `isRaw: true` but your function expects numbers, you'll get `TokenType[]` and confused arithmetic.
 - **`getNumberType()` derives the result base.** When a non-raw op produces a result, `tokenFactory` is called with `currHead.getNumberType()`, which inspects the left/right child types. Mixed-base operations (e.g. `0b101 + 0x10`) will adopt whichever child the helper finds first — usually fine but worth checking when changing operand handling.
