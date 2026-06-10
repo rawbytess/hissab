@@ -49,6 +49,9 @@
   --danger-soft: rgba(239, 106, 106, 0.16);
   --info: #6db7e8;
   --info-soft: rgba(109, 183, 232, 0.14);
+  --product-hunt: #da552f;
+  --product-hunt-strong: #d04b25;
+  --product-hunt-soft: rgba(218, 85, 47, 0.14);
 
   /* Radius — Soft */
   --r-xs: 4px;
@@ -92,6 +95,9 @@
   min-width: 0;
   overflow: hidden;
   position: relative;
+}
+.wb-main.has-launch-banner {
+  grid-template-rows: auto auto 1fr;
 }
 .wb-body {
   display: grid;
@@ -719,6 +725,61 @@
 .tb-pill.warn .dot {
   background: var(--warning);
   box-shadow: 0 0 0 3px var(--warning-soft);
+}
+
+/* ====== Product Hunt launch banner ====== */
+.ph-launch-banner {
+  min-height: 46px;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--line-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: color-mix(in srgb, var(--product-hunt-soft) 76%, var(--bg-1));
+  color: var(--text-1);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.ph-launch-copy {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.ph-launch-copy strong {
+  color: var(--text-0);
+  font-weight: 600;
+}
+.ph-launch-logo {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  display: block;
+}
+.ph-launch-link {
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--r-sm);
+  border: 1px solid color-mix(in srgb, var(--product-hunt) 72%, transparent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  background: var(--product-hunt);
+  color: #fff;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    color 0.12s;
+}
+.ph-launch-link:hover {
+  background: var(--product-hunt-strong);
+  border-color: var(--product-hunt-strong);
+  color: #fff;
 }
 
 :root,
@@ -3468,6 +3529,19 @@ html[data-theme="dark"] {
 @media (max-width: 720px) {
   .topbar {
     padding-inline: 10px;
+  }
+  .ph-launch-banner {
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+  }
+  .ph-launch-copy {
+    align-items: flex-start;
+  }
+  .ph-launch-link {
+    margin-left: 36px;
   }
   .topbar-title-input {
     min-width: 0;

@@ -27,6 +27,90 @@ const DocsShell = lazy(() => import("@/components/docs/DocsShell.tsx"));
 
 const LAST_NOTEBOOK_KEY = "hissab-last-notebook-id";
 const SIDEBAR_COLLAPSE_QUERY = "(max-width: 1023px)";
+const PRODUCT_HUNT_URL = "https://www.producthunt.com/posts/hissab-3";
+// Jun 10, 2026 12:01 AM PST (UTC-08:00), shown for the 24-hour launch day.
+const PRODUCT_HUNT_LAUNCH_START_MS = Date.UTC(2026, 5, 10, 8, 1);
+const PRODUCT_HUNT_LAUNCH_END_MS =
+  PRODUCT_HUNT_LAUNCH_START_MS + 24 * 60 * 60 * 1000;
+const MAX_TIMER_DELAY_MS = 2_147_483_647;
+
+function isProductHuntBannerVisible(nowMs: number) {
+  return (
+    nowMs >= PRODUCT_HUNT_LAUNCH_START_MS &&
+    nowMs < PRODUCT_HUNT_LAUNCH_END_MS
+  );
+}
+
+function getNextProductHuntBannerTransition(nowMs: number) {
+  if (nowMs < PRODUCT_HUNT_LAUNCH_START_MS) {
+    return PRODUCT_HUNT_LAUNCH_START_MS;
+  }
+  if (nowMs < PRODUCT_HUNT_LAUNCH_END_MS) {
+    return PRODUCT_HUNT_LAUNCH_END_MS;
+  }
+  return null;
+}
+
+function useProductHuntLaunchBanner() {
+  const [isVisible, setIsVisible] = useState(() =>
+    isProductHuntBannerVisible(Date.now()),
+  );
+
+  useEffect(() => {
+    let timeoutId: number | undefined;
+
+    const syncVisibility = () => {
+      const nowMs = Date.now();
+      setIsVisible(isProductHuntBannerVisible(nowMs));
+
+      const nextTransition = getNextProductHuntBannerTransition(nowMs);
+      if (nextTransition === null) return;
+
+      timeoutId = window.setTimeout(
+        syncVisibility,
+        Math.min(Math.max(nextTransition - nowMs, 0), MAX_TIMER_DELAY_MS),
+      );
+    };
+
+    syncVisibility();
+    return () => {
+      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+    };
+  }, []);
+
+  return isVisible;
+}
+
+function ProductHuntLaunchBanner() {
+  return (
+    <aside
+      className="ph-launch-banner"
+      aria-label="Product Hunt launch announcement"
+      aria-live="polite"
+    >
+      <div className="ph-launch-copy">
+        <img
+          className="ph-launch-logo"
+          src="/product-hunt.svg"
+          alt=""
+          aria-hidden="true"
+        />
+        <span>
+          <strong>Hissab is live on Product Hunt today.</strong> Check us out
+          there and share your support.
+        </span>
+      </div>
+      <a
+        className="ph-launch-link"
+        href={PRODUCT_HUNT_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Support us on Product Hunt
+      </a>
+    </aside>
+  );
+}
 
 function AppShell() {
   const store = useStore();
@@ -38,6 +122,7 @@ function AppShell() {
     parseAsString.withDefault(""),
   );
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const showProductHuntBanner = useProductHuntLaunchBanner()
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     if (typeof window === "undefined") return true;
     return !window.matchMedia(SIDEBAR_COLLAPSE_QUERY).matches;
@@ -134,7 +219,9 @@ function AppShell() {
         />
       )}
 
-      <div className="wb-main">
+      <div
+        className={cn("wb-main", showProductHuntBanner && "has-launch-banner")}
+      >
         <Topbar
           notebook={currentNotebook}
           onRenameNotebook={handleRenameNotebook}
@@ -144,6 +231,7 @@ function AppShell() {
             (p) => p.notebookId === currentNotebookId,
           )}
         />
+        {showProductHuntBanner && <ProductHuntLaunchBanner />}
         <div className="wb-body layout-inline">
           {currentNotebookId ? (
             <Notebook notebookId={currentNotebookId} onAskAI={handleAskAI} />
