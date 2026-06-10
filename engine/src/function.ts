@@ -98,10 +98,7 @@ import { scaleUnit } from "./tokens/compound";
 // Function definitions mirror OperatorDef: a discriminated union on `isRaw`
 // so a definition cannot declare one calling convention and implement the
 // other (the solver in parsetree.ts narrows on it).
-import type {
-  SetConvertTo,
-  SetIsExplicit,
-} from "./types/operator_types";
+import type { SetConvertTo, SetIsExplicit } from "./types/operator_types";
 
 // Raw functions receive the call's token args plus the ambient unit context.
 // The nullable return mirrors tokenFactory; the solver guards before grafting.

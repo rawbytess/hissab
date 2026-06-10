@@ -11,6 +11,10 @@ import {
   toCartesian,
 } from "../coordinates";
 import { UnhandledError, UserError } from "../exceptions";
+// Type-only imports — erased at compile time, so they don't add runtime edges
+// to the module graph (function.ts/operator_types.ts import values from this
+// file; a value import back would create a real cycle).
+import type { FunctionDef } from "../function";
 import * as ip from "../ip";
 import {
   formatMatrix,
@@ -22,10 +26,6 @@ import {
 import { type Cx, cxAdd, cxString, cxSub } from "../symbolic/complex";
 import type { Expr } from "../symbolic/expr";
 import { exprToString } from "../symbolic/render";
-// Type-only imports — erased at compile time, so they don't add runtime edges
-// to the module graph (function.ts/operator_types.ts import values from this
-// file; a value import back would create a real cycle).
-import type { FunctionDef } from "../function";
 import type {
   Associativity,
   ControllerKind,
