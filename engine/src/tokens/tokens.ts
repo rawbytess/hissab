@@ -26,7 +26,11 @@ import { exprToString } from "../symbolic/render";
 // to the module graph (function.ts/operator_types.ts import values from this
 // file; a value import back would create a real cycle).
 import type { FunctionDef } from "../function";
-import type { Associativity, OperatorDef } from "../types/operator_types";
+import type {
+  Associativity,
+  ControllerKind,
+  OperatorDef,
+} from "../types/operator_types";
 import UnitTypes from "../types/unit_enum";
 import {
   baseSiFactor,
@@ -1222,9 +1226,9 @@ class OperatorToken extends Token {
 
 class ControllerToken extends Token {
   kind = "controllerToken";
-  basetype: string;
+  basetype: ControllerKind;
 
-  constructor(value: string, originalValue: string, basetype: string) {
+  constructor(value: string, originalValue: string, basetype: ControllerKind) {
     super(value, originalValue);
     this.basetype = basetype;
   }

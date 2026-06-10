@@ -448,10 +448,13 @@ for (const [name, fn, base] of LOGS) {
     description: `Log function with base ${base}`,
   };
 }
-type ControllerType = {
-  [controller: string]: string;
-};
-const Controllers: ControllerType = {
+// Flow-control token kinds. A literal union (not bare string) so every
+// comparison site (`basetype === "BRAC_START"`) is typo-checked, and adding a
+// bracket form means extending this union — the compiler then walks you to
+// every dispatch site that must decide how to handle it.
+export type ControllerKind = "BRAC_START" | "BRAC_END" | "COMMA";
+
+const Controllers: Record<string, ControllerKind> = {
   "(": "BRAC_START",
   ")": "BRAC_END",
   ",": "COMMA",
