@@ -289,6 +289,138 @@ function buildTime(
   return dt.setObject();
 }
 
+// ---------------------------------------------------------------------------
+// buildString — a mutating normalization preamble (constants/variables, plural
+// strip, synonym rewrite, multi-word routing) followed by a first-match-wins
+// resolver chain. To recognise a new keyword class, insert one resolver at the
+// right rank in STRING_RESOLVERS.
+// ---------------------------------------------------------------------------
+
+type BuildStringCtx = {
+  value: string;
+  originalValue: string;
+  // The pre-normalization lowercased words (kept for the `in`-prefix rewrite,
+  // which deliberately reads the words as originally written).
+  words: string[];
+  percent: boolean;
+  lineNumber: number;
+  tokens: TokenType[];
+  variables: Variables;
+};
+
+// A resolver either claims the token (returns it) or passes. Resolvers may
+// mutate ctx (the `in`-prefix rewrite) — later resolvers see the mutation.
+type StringResolver = (ctx: BuildStringCtx) => TokenType | "pass";
+
+function resolveFunction(ctx: BuildStringCtx): TokenType | "pass" {
+  if (!(ctx.value in Functions)) return "pass";
+  return new FunctionToken(ctx.value, ctx.originalValue, Functions[ctx.value]);
+}
+
+function resolveUnit(ctx: BuildStringCtx): TokenType | "pass" {
+  if (!(ctx.value in Units)) return "pass";
+  return buildUnit(
+    ctx.value,
+    ctx.originalValue,
+    ctx.lineNumber,
+    ctx.percent,
+    ctx.tokens[ctx.tokens.length - 1] ?? null,
+    ctx.tokens,
+    ctx.variables,
+  );
+}
+
+function resolveOperator(ctx: BuildStringCtx): TokenType | "pass" {
+  if (!(ctx.value in Operators)) return "pass";
+  return makeOperator(ctx.value, ctx.originalValue);
+}
+
+function resolveImaginary(ctx: BuildStringCtx): TokenType | "pass" {
+  if (ctx.value !== "i") return "pass";
+  return new ComplexToken(0, 1, ctx.originalValue);
+}
+
+function resolveFreeSymbol(ctx: BuildStringCtx): TokenType | "pass" {
+  if (!Symbols.has(ctx.value)) return "pass";
+  return new SymbolToken(ctx.value, ctx.originalValue);
+}
+
+function resolveBooleanLiteral(ctx: BuildStringCtx): TokenType | "pass" {
+  if (ctx.value !== "true" && ctx.value !== "false") return "pass";
+  return new BooleanToken(ctx.value === "true", ctx.originalValue);
+}
+
+function resolveDateTimeOperand(ctx: BuildStringCtx): TokenType | "pass" {
+  if (!(ctx.value in DateTimeOperands)) return "pass";
+  return new DateToken(
+    ctx.value,
+    ctx.originalValue,
+    DateTimeOperands[ctx.value].dateformat,
+    DateTimeOperands[ctx.value].timeformat,
+  ).setObject(DateTimeOperands[ctx.value].func());
+}
+
+// `in <city>` — split the `in` off as its own token (it's a `to` synonym) and
+// leave the remainder for the resolvers below. Never claims the token itself.
+function resolveInPrefix(ctx: BuildStringCtx): TokenType | "pass" {
+  if (ctx.words[0] !== "in") return "pass";
+  const inToken = tokenFactory(ctx.words[0], TokenBaseType.STRING);
+  if (inToken) ctx.tokens.push(inToken);
+  ctx.words.shift();
+  ctx.value = ctx.words.join(" ");
+  const originalWords = ctx.originalValue.split(" ");
+  originalWords.shift();
+  ctx.originalValue = originalWords.join(" ");
+  return "pass";
+}
+
+function resolveTimezone(ctx: BuildStringCtx): TokenType | "pass" {
+  const tz = soft(ctx.value);
+  if (tz.length === 0) return "pass";
+  const prevToken = ctx.tokens[ctx.tokens.length - 1] ?? null;
+  if (prevToken instanceof DateToken) {
+    absorbPrev(ctx.tokens, prevToken);
+    return prevToken
+      .set({ iana: tz[0].iana, timezone: ctx.originalValue })
+      .appendOriginalValue(ctx.originalValue)
+      .setObject();
+  }
+  return new UnitToken(ctx.value, ctx.originalValue, {
+    type: UnitTypes.CITY,
+    timezone: tz[0].iana,
+    description: "City",
+  });
+}
+
+function resolveColorName(ctx: BuildStringCtx): TokenType | "pass" {
+  if (!chroma.valid(ctx.value)) return "pass";
+  return new ColorToken(
+    ctx.value,
+    ctx.originalValue,
+    chroma(ctx.value).hex(),
+    "NAME",
+  );
+}
+
+// THE ORDER IS LOAD-BEARING. Exact table lookups go first (so collisions
+// resolve in their favour); the single-letter literals (`i`, free symbols) and
+// keyword literals come next — before the fuzzy matchers (timezone-soft, CSS
+// color names), which claim anything they recognise and would otherwise grab
+// short words like `x` or `true`. prefixUnits runs after the chain as the
+// final fallback before StringToken.
+const STRING_RESOLVERS: StringResolver[] = [
+  resolveFunction,
+  resolveUnit,
+  resolveOperator,
+  resolveImaginary,
+  resolveFreeSymbol,
+  resolveBooleanLiteral,
+  resolveDateTimeOperand,
+  resolveInPrefix,
+  resolveTimezone,
+  resolveColorName,
+];
+
 function buildString(
   value: string,
   originalValue: string,
@@ -299,8 +431,8 @@ function buildString(
   tokens: TokenType[],
   variables: Variables,
 ): TokenType | null {
-  let prevToken: TokenType | null = tokens[tokens.length - 1] ?? null;
-
+  // --- normalization preamble (order matters; everything below may rewrite
+  // `value`/`basetype` or route the token away entirely) ---
   if (value in Constants) {
     return new NumberToken(
       Constants[value].value.toString(),
@@ -314,8 +446,10 @@ function buildString(
     return new VariableToken(value, originalValue, variables[value]);
   }
 
-  const val = value.toLowerCase().trim().split(" ");
-  const lastWord = val[val.length - 1];
+  // Pre-normalization word snapshot — multi-word routing and the `in`-prefix
+  // resolver read the words as originally written, not the rewritten value.
+  const words = value.toLowerCase().trim().split(" ");
+  const lastWord = words[words.length - 1];
   const irregularSingular = IrregularPlurals[lastWord];
   if (irregularSingular) {
     const parts = value.trim().split(" ");
@@ -333,10 +467,10 @@ function buildString(
   }
   value = value.replace(/^(sq )/i, "square ");
   value = value.replace(/^(cu )/i, "cubic ");
-  multiWord = multiWord && val.length > 1;
+  multiWord = multiWord && words.length > 1;
   if (multiWord) {
     const oVal = originalValue.split(" ");
-    multiWords(val, oVal, [], [], basetype, tokens, variables, lineNumber);
+    multiWords(words, oVal, [], [], basetype, tokens, variables, lineNumber);
     return null;
   }
   // Synonym expansion can introduce compound notation (`mph → mile per hour`,
@@ -363,67 +497,29 @@ function buildString(
   }
   value = value.toLowerCase();
 
-  if (value in Functions) {
-    return new FunctionToken(value, originalValue, Functions[value]);
+  // --- resolver chain ---
+  const ctx: BuildStringCtx = {
+    value,
+    originalValue,
+    words,
+    percent,
+    lineNumber,
+    tokens,
+    variables,
+  };
+  for (const resolve of STRING_RESOLVERS) {
+    const token = resolve(ctx);
+    if (token !== "pass") return token;
   }
-  if (value in Units) {
-    return buildUnit(
-      value,
-      originalValue,
-      lineNumber,
-      percent,
-      prevToken,
-      tokens,
-      variables,
-    );
-  }
-  if (value in Operators) return makeOperator(value, originalValue);
-  // Imaginary unit and free symbols. Placed after the unit/function/operator
-  // lookups (so collisions resolve in their favour) but before the fuzzy
-  // timezone match (which would otherwise grab short letters like `x`).
-  if (value === "i") return new ComplexToken(0, 1, originalValue);
-  if (Symbols.has(value)) return new SymbolToken(value, originalValue);
-  // Boolean literals. Placed with the other literals (after unit/function/
-  // operator lookups so collisions resolve in their favour) and *before* the
-  // fuzzy `soft()` timezone match, which would otherwise mis-claim them.
-  if (value === "true" || value === "false")
-    return new BooleanToken(value === "true", originalValue);
-  if (value in DateTimeOperands) {
-    return new DateToken(
-      value,
-      originalValue,
-      DateTimeOperands[value].dateformat,
-      DateTimeOperands[value].timeformat,
-    ).setObject(DateTimeOperands[value].func());
-  }
-  if (val[0] === "in") {
-    prevToken = tokenFactory(val[0], TokenBaseType.STRING);
-    if (prevToken) tokens.push(prevToken);
-    val.shift();
-    value = val.join(" ");
-    const originalValueA = originalValue.split(" ");
-    originalValueA.shift();
-    originalValue = originalValueA?.join(" ");
-  }
-  const tz = soft(value);
-  if (tz.length > 0) {
-    if (prevToken instanceof DateToken) {
-      absorbPrev(tokens, prevToken);
-      return prevToken
-        .set({ iana: tz[0].iana, timezone: originalValue })
-        .appendOriginalValue(originalValue)
-        .setObject();
-    }
-    return new UnitToken(value, originalValue, {
-      type: UnitTypes.CITY,
-      timezone: tz[0].iana,
-      description: "City",
-    });
-  }
-  if (chroma.valid(value)) {
-    return new ColorToken(value, originalValue, chroma(value).hex(), "NAME");
-  }
-  return prefixUnits(value, originalValue, tokens, variables, lineNumber);
+  // Nothing claimed it — last chance is a prefixed unit (`kilometer`), else an
+  // inert StringToken that doParse will reject.
+  return prefixUnits(
+    ctx.value,
+    ctx.originalValue,
+    tokens,
+    variables,
+    lineNumber,
+  );
 }
 
 function buildUnit(
