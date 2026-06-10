@@ -36,8 +36,7 @@ const MAX_TIMER_DELAY_MS = 2_147_483_647;
 
 function isProductHuntBannerVisible(nowMs: number) {
   return (
-    nowMs >= PRODUCT_HUNT_LAUNCH_START_MS &&
-    nowMs < PRODUCT_HUNT_LAUNCH_END_MS
+    nowMs >= PRODUCT_HUNT_LAUNCH_START_MS && nowMs < PRODUCT_HUNT_LAUNCH_END_MS
   );
 }
 
@@ -122,7 +121,7 @@ function AppShell() {
     parseAsString.withDefault(""),
   );
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const showProductHuntBanner = useProductHuntLaunchBanner()
+  const showProductHuntBanner = useProductHuntLaunchBanner();
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     if (typeof window === "undefined") return true;
     return !window.matchMedia(SIDEBAR_COLLAPSE_QUERY).matches;
