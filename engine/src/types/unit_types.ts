@@ -53,6 +53,31 @@ export interface UnitsTypeIF {
 export interface UnitsIF {
   [unit: string]: UnitsTypeIF;
 }
+
+// Temperature conversion is affine (not a linear factor), so each TEMPERATURE
+// unit carries one lambda per target scale. This accessor replaces the old
+// dynamic `unitdata[toUnit.value](...)` dispatch: it fails loudly (instead of
+// calling undefined) when the target isn't a temperature scale or the source
+// entry is missing a lambda.
+export const TEMP_TARGETS = [
+  "kelvin",
+  "celsius",
+  "fahrenheit",
+  "rankine",
+] as const;
+export type TempTarget = (typeof TEMP_TARGETS)[number];
+
+export function temperatureFn(
+  from: UnitsTypeIF,
+  to: string,
+): (value: number) => number {
+  if (!(TEMP_TARGETS as readonly string[]).includes(to))
+    throw new UnhandledError(9004);
+  const fn = from[to as TempTarget];
+  if (!fn) throw new UnhandledError(9005);
+  return fn;
+}
+
 const metricFamily = ["kilo", "_", "centi", "milli", "micro", "nano"];
 const milesFamily = ["mile", "yard", "feet", "inch"];
 const areaFamily = [

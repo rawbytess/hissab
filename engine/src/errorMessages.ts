@@ -17,6 +17,7 @@ export const userErrorMessages: Record<number, string> = {
   7649: "Unrecognized target unit after `to`. Check the unit spelling.",
   2334: "These units measure different things, so they can't be converted into one another (e.g. length to weight).",
   3907: "These quantities have incompatible units for this operation.",
+  9003: "This value can't be converted to that unit.",
 
   // Implicit addition / compound quantities (parser_states.ts)
   223: "Numbers written next to each other are only combined when a unit is involved (e.g. `5 feet 10 inch`). Put an operator like `+` between plain numbers.",
