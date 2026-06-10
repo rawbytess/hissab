@@ -10,14 +10,12 @@ import type { TokenType } from "../tokens/token_basetypes";
 import {
   BooleanToken,
   ColorToken,
-  ComplexToken,
   ControllerToken,
   DateToken,
   Direction,
   ExprToken,
   FunctionToken,
   IpToken,
-  MatrixToken,
   NumberToken,
   OperatorToken,
   type PlotSeries,
@@ -26,7 +24,6 @@ import {
   SeedToken,
   StringToken,
   SymbolToken,
-  TextToken,
   UnitToken,
   VariableNameToken,
   VariableToken,
@@ -72,9 +69,11 @@ import {
   CompleteState,
   FreshParseState,
   FunctionState,
+  isOperandToken,
   NeedNumberState,
   NeedUnitState,
   type ParserStateTypes,
+  PreNumberState,
 } from "./parser_states";
 import ParseTree from "./parsetree";
 
@@ -86,6 +85,55 @@ interface parseIf {
   convertTo: string[] | undefined;
 }
 
+interface DispatchResult {
+  state: ParserStateTypes;
+  // Tokens consumed beyond the dispatched one — nonzero only for handleUnit's
+  // compound absorption. The main loop adds it to parseIndex on top of its +1.
+  advance: number;
+}
+
+// The single token-class → state-handler dispatch site. Both the main token
+// loop and the function-argument result loop route through here, so wiring up
+// a new token class is a one-place change (plus the state handlers themselves).
+// ControllerToken is deliberately NOT handled here: it drives bracket recursion
+// and index arithmetic that belong to the main loop, and a sub-parse can never
+// return one as its head.
+async function dispatchToken(
+  parseState: ParserStateTypes,
+  token: TokenType,
+  parseTree: ParseTree,
+  tokens: TokenType[],
+  parseIndex: number,
+): Promise<DispatchResult> {
+  if (token instanceof VariableToken) token = token.valueToken;
+  if (isOperandToken(token))
+    return {
+      state: await parseState.handleOperand(parseTree, token),
+      advance: 0,
+    };
+  if (token instanceof StringToken || token instanceof VariableNameToken)
+    return { state: parseState.handleString(parseTree, token), advance: 0 };
+  if (token instanceof DateToken)
+    return { state: parseState.handleDate(parseTree, token), advance: 0 };
+  if (token instanceof ColorToken)
+    return { state: parseState.handleColor(parseTree, token), advance: 0 };
+  if (token instanceof IpToken)
+    return { state: parseState.handleIp(parseTree, token), advance: 0 };
+  if (token instanceof PointToken)
+    return { state: parseState.handlePoint(parseTree, token), advance: 0 };
+  if (token instanceof BooleanToken)
+    return { state: parseState.handleBoolean(parseTree, token), advance: 0 };
+  if (token instanceof SeedToken)
+    return { state: parseState.handleSeed(parseTree, token), advance: 0 };
+  if (token instanceof OperatorToken)
+    return { state: parseState.handleOperator(parseTree, token), advance: 0 };
+  if (token instanceof FunctionToken)
+    return { state: parseState.handleFunction(parseTree, token), advance: 0 };
+  if (token instanceof UnitToken)
+    return await parseState.handleUnit(parseTree, token, tokens, parseIndex);
+  throw new UserError(201);
+}
+
 async function parse(
   tokens: TokenType[],
   parseIndex = 0,
@@ -95,46 +143,28 @@ async function parse(
   let parseState: ParserStateTypes = FreshParseState;
 
   for (; parseIndex < tokens.length; parseIndex += 1) {
-    let token: TokenType = tokens[parseIndex];
-    if (token instanceof VariableToken) token = token.valueToken;
-    if (
-      token instanceof NumberToken ||
-      token instanceof ComplexToken ||
-      token instanceof MatrixToken ||
-      token instanceof SymbolToken ||
-      token instanceof ExprToken ||
-      token instanceof TextToken
-    )
-      parseState = await parseState.handleOperand(parseTree, token);
-    else if (token instanceof StringToken || token instanceof VariableNameToken)
-      parseState = parseState.handleString(parseTree, token);
-    else if (token instanceof DateToken)
-      parseState = parseState.handleDate(parseTree, token);
-    else if (token instanceof ColorToken)
-      parseState = parseState.handleColor(parseTree, token);
-    else if (token instanceof IpToken)
-      parseState = parseState.handleIp(parseTree, token);
-    else if (token instanceof PointToken)
-      parseState = parseState.handlePoint(parseTree, token);
-    else if (token instanceof BooleanToken)
-      parseState = parseState.handleBoolean(parseTree, token);
-    else if (token instanceof SeedToken)
-      parseState = parseState.handleSeed(parseTree, token);
-    else if (token instanceof OperatorToken)
-      parseState = parseState.handleOperator(parseTree, token);
-    else if (token instanceof FunctionToken)
-      parseState = parseState.handleFunction(parseTree, token);
-    else if (token instanceof UnitToken) {
-      const result = await parseState.handleUnit(
-        parseTree,
+    const token: TokenType = tokens[parseIndex];
+    if (!(token instanceof ControllerToken)) {
+      const dispatched = await dispatchToken(
+        parseState,
         token,
+        parseTree,
         tokens,
         parseIndex,
       );
-      parseState = result.state;
-      parseIndex += result.advance;
-    } else if (token instanceof ControllerToken) {
-      if (parseState === FreshParseState || parseState === NeedNumberState) {
+      parseState = dispatched.state;
+      parseIndex += dispatched.advance;
+    } else {
+      // PreNumberState participates in bracket recursion so a unary minus
+      // distributes over the whole group: `-(2+3)` recurses to a 5, which the
+      // next iteration dispatches to PreNumberState.handleOperand → -5.
+      // (Before this, the `(` was silently skipped here, so `-(2+3)` parsed
+      // as `-2+3` and the dangling `)` truncated the rest of the line.)
+      if (
+        parseState === FreshParseState ||
+        parseState === NeedNumberState ||
+        parseState === PreNumberState
+      ) {
         if (token.basetype === "BRAC_START") {
           parseIndex += 1;
 
@@ -189,32 +219,22 @@ async function parse(
               parseIndex = index;
               argFunc = isFunc;
               parseTree.setIsExplicit(isExplicit);
-              if (
-                result instanceof NumberToken ||
-                result instanceof ComplexToken ||
-                result instanceof MatrixToken ||
-                result instanceof SymbolToken ||
-                result instanceof ExprToken ||
-                result instanceof TextToken
-              )
-                parseState = await parseState.handleOperand(parseTree, result);
-              else if (result instanceof DateToken)
-                parseState = parseState.handleDate(parseTree, result);
-              else if (result instanceof IpToken)
-                parseState = parseState.handleIp(parseTree, result);
-              else if (result instanceof PointToken)
-                parseState = parseState.handlePoint(parseTree, result);
-              else if (result instanceof BooleanToken)
-                parseState = parseState.handleBoolean(parseTree, result);
-              else if (result instanceof SeedToken)
-                parseState = parseState.handleSeed(parseTree, result);
+              // The sub-parse result is a synthesized token, not one sitting at
+              // tokens[parseIndex], so the advance is meaningless here (and every
+              // handler FunctionState accepts returns 0 anyway) — discard it.
+              const dispatched = await dispatchToken(
+                parseState,
+                result,
+                parseTree,
+                tokens,
+                parseIndex,
+              );
+              parseState = dispatched.state;
             }
             parseState = CompleteState;
           }
         }
       }
-    } else {
-      throw new UserError(201);
     }
   }
   if (parseState !== CompleteState) throw new UserError(231);

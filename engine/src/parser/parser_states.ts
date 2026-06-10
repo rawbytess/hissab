@@ -14,14 +14,14 @@ import {
   type expressionUnit,
   FunctionToken,
   type IpToken,
-  type MatrixToken,
+  MatrixToken,
   NumberToken,
   OperatorToken,
   type PointToken,
   type SeedToken,
   type StringToken,
   SymbolToken,
-  type TextToken,
+  TextToken,
   type UnitAtom,
   UnitToken,
   type VariableNameToken,
@@ -35,13 +35,28 @@ import type { ParseTreeType } from "./parsetree";
 // the numeric case; the rest are the symbolic/complex extensions. SymbolToken
 // and ExprToken additionally flip the expression into symbolic mode (see
 // isSymbolic in parser.ts); ComplexToken stays on the numeric solve path.
-type OperandToken =
+export type OperandToken =
   | NumberToken
   | ComplexToken
   | MatrixToken
   | SymbolToken
   | ExprToken
   | TextToken;
+
+// The single definition of "what counts as an operand" for parser dispatch.
+// Extending the operand set means updating OperandToken above AND this guard —
+// nothing else; dispatchToken in parser.ts routes through here for both the
+// main token loop and the function-argument loop.
+export function isOperandToken(t: TokenType): t is OperandToken {
+  return (
+    t instanceof NumberToken ||
+    t instanceof ComplexToken ||
+    t instanceof MatrixToken ||
+    t instanceof SymbolToken ||
+    t instanceof ExprToken ||
+    t instanceof TextToken
+  );
+}
 
 // True when juxtaposing this operand against another implies multiplication
 // (`2x`, `6i`, `(x+1)(x+2)`) rather than the unit implicit-addition case.
@@ -1080,4 +1095,5 @@ export {
   FunctionState,
   NeedNumberState,
   NeedUnitState,
+  PreNumberState,
 };
