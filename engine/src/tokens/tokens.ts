@@ -173,7 +173,7 @@ class NumberToken extends Token {
       this._value = `0x${parseFloat(thisVal).toString(TokenBaseType.HEX)}`;
     else {
       const v = this.toNumber();
-      let localeOptions = null;
+      let localeOptions: Intl.NumberFormatOptions | null = null;
       if (this._unit?.unitdata.type === UnitTypes.CURRENCY) {
         localeOptions = {
           style: "currency",
@@ -185,7 +185,6 @@ class NumberToken extends Token {
           parseFloat(thisVal).toPrecision(3),
         ).toLocaleString(
           undefined,
-          // @ts-expect-error
           localeOptions ?? {
             maximumFractionDigits: 10,
             notation: Math.abs(v) < 1e-9 ? "scientific" : "standard",
@@ -195,7 +194,6 @@ class NumberToken extends Token {
       } else {
         this._value = parseFloat(parseFloat(thisVal).toFixed(4)).toLocaleString(
           undefined,
-          // @ts-expect-error
           localeOptions ?? {
             maximumFractionDigits: 10,
             notation: Math.abs(v) > 1e15 ? "scientific" : "standard",
@@ -1355,19 +1353,6 @@ class TextToken extends Token {
   }
 }
 
-function isMultiSymbol(symbol: string) {
-  const multisymbol = {
-    "*": true,
-    "**": true,
-    ">": true,
-    "<": true,
-    ">>": true,
-    "<<": true,
-  };
-
-  return symbol in multisymbol;
-}
-
 export type { Variables };
 export {
   BooleanToken,
@@ -1381,7 +1366,6 @@ export {
   FractionToken,
   FunctionToken,
   IpToken,
-  isMultiSymbol,
   ListToken,
   MatrixToken,
   NumberToken,

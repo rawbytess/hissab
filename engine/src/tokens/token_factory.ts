@@ -1,6 +1,7 @@
 import chroma from "chroma-js";
 import soft from "timezone-soft";
 import DateTimeOperands from "../datetime_operands";
+import { UnhandledError } from "../exceptions";
 import Functions from "../function";
 import { parseIp } from "../ip";
 import { Controllers, Operators } from "../types/operator_types";
@@ -475,7 +476,11 @@ function buildUnit(
 }
 
 function makeOperator(value: string, originalValue: string): OperatorToken {
-  return new OperatorToken(value, originalValue, Operators[value]);
+  const def = Operators[value];
+  // Both call sites guard with `value in Operators`; this catches any future
+  // caller that doesn't.
+  if (!def) throw new UnhandledError(9002);
+  return new OperatorToken(value, originalValue, def);
 }
 
 function prefixUnits(

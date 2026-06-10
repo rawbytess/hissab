@@ -1,6 +1,20 @@
 import TokenBaseType from "../tokens/token_basetypes";
-import { isMultiSymbol } from "../tokens/tokens";
 import type { TokensType } from "./lexer_tokens";
+
+// Multi-character operator symbols the lexer may keep accumulating (`*` can
+// extend to `**`, `>` to `>>`, …). To add a new multi-char symbol, list every
+// valid prefix of it here and register the full symbol in Operators.
+const MULTI_SYMBOLS: ReadonlySet<string> = new Set([
+  "*",
+  "**",
+  ">",
+  "<",
+  ">>",
+  "<<",
+]);
+function isMultiSymbol(symbol: string): boolean {
+  return MULTI_SYMBOLS.has(symbol);
+}
 
 export type LexerStateTypes =
   | typeof FreshState
