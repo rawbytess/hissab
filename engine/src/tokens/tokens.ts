@@ -257,7 +257,7 @@ class NumberToken extends Token {
     }
     if (token instanceof DateToken) {
       if (this.unit === null || this.unit?.unitdata.type !== UnitTypes.TIME)
-        throw new UnhandledError(0);
+        throw new UnhandledError(9028);
       return token
         .setObject(
           token.spacetime?.add(this.toNumber(), this.unit?.value as TimeUnit),
@@ -311,7 +311,7 @@ class NumberToken extends Token {
     }
     if (token instanceof DateToken) {
       if (this.unit === null || this.unit?.unitdata.type !== UnitTypes.TIME)
-        throw new UnhandledError(0);
+        throw new UnhandledError(9029);
       return token
         .setObject(
           token.spacetime!.subtract(
@@ -468,7 +468,7 @@ class DateToken extends Token {
   add(token: TokenType, expUnit: expressionUnit) {
     if (token instanceof NumberToken) {
       if (token.unit === null || token.unit?.unitdata.type !== UnitTypes.TIME)
-        throw new UnhandledError(0);
+        throw new UnhandledError(9030);
       return this.setObject(
         this.spacetime?.add(token.toNumber(), token.unit?.value as TimeUnit),
       ).formatResult();
@@ -479,7 +479,7 @@ class DateToken extends Token {
   subtract(token: TokenType, expUnit: expressionUnit) {
     if (token instanceof NumberToken) {
       if (token.unit === null || token.unit?.unitdata.type !== UnitTypes.TIME)
-        throw new UnhandledError(0);
+        throw new UnhandledError(9031);
       return this.setObject(
         this.spacetime!.subtract(
           token.toNumber(),
@@ -1220,7 +1220,7 @@ class OperatorToken extends Token {
   getNumberType(): TokenBaseType {
     if (this.left instanceof NumberToken) return this.left.numbertype;
     if (this.right instanceof NumberToken) return this.right.numbertype;
-    throw new UnhandledError(0);
+    throw new UnhandledError(9032);
   }
 }
 
@@ -1266,7 +1266,7 @@ class FunctionToken extends Token {
     for (const a of this.args) {
       if (a instanceof NumberToken) return a.numbertype;
     }
-    throw new UnhandledError(0);
+    throw new UnhandledError(9033);
   }
 }
 

@@ -461,7 +461,7 @@ class CompleteState {
       op.right = operand;
       if (parentPt === tempPt) parseTree.head = op;
       else if (parentPt instanceof OperatorToken) parentPt.right = op;
-      else throw new UnhandledError(0);
+      else throw new UnhandledError(9014);
     };
 
     // Implicit multiplication: juxtaposed operands where either side is symbolic
@@ -469,7 +469,7 @@ class CompleteState {
     // grafts at the tail and later operators rebalance via the precedence walk.
     if (isMulJuxtapose(operand) || isMulJuxtapose(tempPt)) {
       const mulToken = tokenFactory("*", TokenBaseType.STRING);
-      if (!(mulToken instanceof OperatorToken)) throw new UnhandledError(0);
+      if (!(mulToken instanceof OperatorToken)) throw new UnhandledError(9015);
       graft(mulToken);
       return CompleteState;
     }
@@ -478,10 +478,10 @@ class CompleteState {
     // cm`). Only when a unit context exists, so bare `10 20 30` does not
     // silently become `60`.
     if (!parseTree.exprUnit) throw new UserError(223);
-    if (!(tempPt instanceof NumberToken)) throw new UnhandledError(0);
-    if (!(operand instanceof NumberToken)) throw new UnhandledError(0);
+    if (!(tempPt instanceof NumberToken)) throw new UnhandledError(9016);
+    if (!(operand instanceof NumberToken)) throw new UnhandledError(9017);
     const addToken = tokenFactory("+", TokenBaseType.STRING);
-    if (!(addToken instanceof OperatorToken)) throw new UnhandledError(0);
+    if (!(addToken instanceof OperatorToken)) throw new UnhandledError(9018);
     graft(addToken);
     return CompleteState;
   }
@@ -490,35 +490,35 @@ class CompleteState {
     _parseTree: ParseTreeType,
     _colorToken: ColorToken,
   ): ParserStateTypes {
-    throw new UnhandledError(0);
+    throw new UnhandledError(9019);
   }
 
   static handleBoolean(
     _parseTree: ParseTreeType,
     _booleanToken: BooleanToken,
   ): ParserStateTypes {
-    throw new UnhandledError(0);
+    throw new UnhandledError(9020);
   }
 
   static handleIp(
     _parseTree: ParseTreeType,
     _ipToken: IpToken,
   ): ParserStateTypes {
-    throw new UnhandledError(0);
+    throw new UnhandledError(9021);
   }
 
   static handlePoint(
     _parseTree: ParseTreeType,
     _pointToken: PointToken,
   ): ParserStateTypes {
-    throw new UnhandledError(0);
+    throw new UnhandledError(9022);
   }
 
   static handleDate(
     _parseTree: ParseTreeType,
     _dateToken: DateToken,
   ): ParserStateTypes {
-    throw new UnhandledError(0);
+    throw new UnhandledError(9023);
   }
 
   static handleOperator(
@@ -630,7 +630,7 @@ class CompleteState {
 // installed, so it must be an OperatorToken — narrow once.
 function expectOperator(parseTree: ParseTreeType): OperatorToken {
   if (!(parseTree.currentpt instanceof OperatorToken))
-    throw new UnhandledError(0);
+    throw new UnhandledError(9024);
   return parseTree.currentpt;
 }
 
@@ -959,7 +959,7 @@ class PreNumberState {
       }
       const mulToken = tokenFactory("*", TokenBaseType.STRING);
       const minusOne = tokenFactory("-1", TokenBaseType.DECIMAL);
-      if (!(mulToken instanceof OperatorToken)) throw new UnhandledError(0);
+      if (!(mulToken instanceof OperatorToken)) throw new UnhandledError(9025);
       mulToken.left = minusOne;
       mulToken.right = operand;
       return mulToken;
@@ -1028,7 +1028,7 @@ class CombineNumberState {
     operand: OperandToken,
   ): ParserStateTypes {
     // Digit grouping (`1,234`) only ever combines plain numbers.
-    if (!(operand instanceof NumberToken)) throw new UnhandledError(0);
+    if (!(operand instanceof NumberToken)) throw new UnhandledError(9026);
     let tempPt: TokenType = parseTree.head!;
     let parentPt: TokenType = tempPt;
     while (tempPt instanceof OperatorToken && tempPt.right) {
@@ -1043,7 +1043,7 @@ class CombineNumberState {
 
       if (parentPt === tempPt) parseTree.head = newValue;
       else if (parentPt instanceof OperatorToken) parentPt.right = newValue;
-      else throw new UnhandledError(0);
+      else throw new UnhandledError(9027);
 
       // The combined NumberToken is the new tail; we leave currentpt unchanged
       // (CompleteState walks the spine via head anyway).

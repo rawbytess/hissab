@@ -259,10 +259,10 @@ const Operators: Record<string, OperatorDef> = {
     precedence: 22,
     operands: ["prestring", "postnumber"],
     func: async (params: TokenType[], toUnit: expressionUnit) => {
-      if (!(params[0] instanceof UnitToken)) throw new UnhandledError(0);
+      if (!(params[0] instanceof UnitToken)) throw new UnhandledError(9010);
       if (params[0].unitdata.type !== UnitTypes.CURRENCY)
-        throw new UnhandledError(0);
-      if (!(params[1] instanceof DateToken)) throw new UnhandledError(0);
+        throw new UnhandledError(9011);
+      if (!(params[1] instanceof DateToken)) throw new UnhandledError(9012);
       // eslint-disable-next-line prefer-destructuring
       params[0].date = params[1];
       return params[0];
@@ -308,7 +308,7 @@ const Operators: Record<string, OperatorDef> = {
         setIsExplicit(true);
         return new ProcessConversions(params[0]).to(params[1]).convert();
       }
-      throw new UnhandledError(0);
+      throw new UnhandledError(9013);
     },
     isRaw: true,
     description: "to operator, used for units and other conversions",
