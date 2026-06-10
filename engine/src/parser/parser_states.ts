@@ -534,9 +534,17 @@ class CompleteState {
         if (!walker.right) break;
         walker = walker.right;
       }
+      // Pop until the incoming operator should nest under `target`. A strictly
+      // higher precedence number (= looser binding) always climbs over; at
+      // equal precedence, left-associative operators (the default) climb too
+      // (`2-3-4` = `(2-3)-4`), while right-associative ones nest under the
+      // earlier occupant (`2^3^2` = `2^(3^2)`).
+      const climbsOver = (target: OperatorToken): boolean =>
+        operatorToken.precedence > target.precedence ||
+        (operatorToken.precedence === target.precedence &&
+          operatorToken.associativity !== "right");
       let target: OperatorToken | undefined = opStack.pop();
-      while (target && operatorToken.precedence >= target.precedence)
-        target = opStack.pop();
+      while (target && climbsOver(target)) target = opStack.pop();
 
       if (target) {
         operatorToken.left = target.right;
