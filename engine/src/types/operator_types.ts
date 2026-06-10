@@ -27,17 +27,50 @@ import {
 import ProcessConversions from "../units_processor";
 import UnitTypes from "./unit_enum";
 
-type operatorType = {
-  [op: string]: {
-    precedence: number;
-    operands: string[];
-    func: any;
-    isRaw: boolean;
-    description: string;
-  };
-};
+// ---------------------------------------------------------------------------
+// Operator definition types
+//
+// The two calling conventions are a discriminated union on `isRaw`, so a
+// definition cannot declare one convention and implement the other — the
+// solver (parsetree.ts) narrows on `def.isRaw` and the compiler checks both
+// call shapes.
+// ---------------------------------------------------------------------------
 
-const Operators: operatorType = {
+export type OperandSlot = "prenumber" | "postnumber" | "prestring" | "postunit";
+export type Associativity = "left" | "right";
+export type SetIsExplicit = (isExplicit: boolean) => void;
+export type SetConvertTo = (convertTo: string[]) => void;
+
+// Raw funcs receive the operator's token children (children[0] = left, which
+// may be absent for prefix/postfix ops; children[1] = right) plus the ambient
+// unit context. The nullable return mirrors tokenFactory's signature; the
+// solver guards against null before grafting.
+export type RawOpFunc = (
+  children: TokenType[],
+  exprUnit: expressionUnit,
+  setIsExplicit: SetIsExplicit,
+  setConvertTo: SetConvertTo,
+) => TokenType | null | Promise<TokenType | null>;
+
+// Non-raw funcs are pure number → number; the solver unwraps the operand
+// values and re-wraps the result with the ambient unit.
+export type NumericOpFunc = (...values: number[]) => number;
+
+interface OperatorDefBase {
+  precedence: number;
+  operands: OperandSlot[];
+  // Equal-precedence stacking. "left" (the default) keeps the earlier operator
+  // tighter (`2-3-4` = `(2-3)-4`); "right" nests the incoming operator under
+  // it. Enforced in CompleteState.handleOperator's precedence walk.
+  associativity?: Associativity;
+  description: string;
+}
+
+export type OperatorDef =
+  | (OperatorDefBase & { isRaw: true; func: RawOpFunc })
+  | (OperatorDefBase & { isRaw: false; func: NumericOpFunc });
+
+const Operators: Record<string, OperatorDef> = {
   "~": {
     precedence: 1,
     operands: ["postnumber"],
@@ -98,14 +131,16 @@ const Operators: operatorType = {
   "%": {
     precedence: 3,
     operands: ["prenumber"],
-    func: async ([n1]: NumberToken[]) =>
-      tokenFactory(
+    func: async ([n1]: TokenType[]) => {
+      if (!(n1 instanceof NumberToken)) throw new UserError(8651);
+      return tokenFactory(
         (n1.toNumber() / 100).toString(),
         n1.numbertype,
         [],
         {},
         true,
-      ),
+      );
+    },
     isRaw: true,
     description: "Percentage operator",
   },
@@ -277,12 +312,8 @@ const Operators: operatorType = {
   "=": {
     precedence: 50,
     operands: ["prestring", "postnumber"],
-    func: async (
-      [variableName, result]: [TokenType, TokenType],
-      expUnit: expressionUnit,
-    ) => {
+    func: async ([variableName, result]: TokenType[]) => {
       result.variableName = variableName.value;
-      // if (expUnit && result instanceof NumberToken) result.unit = expUnit;
       return result;
     },
     isRaw: true,

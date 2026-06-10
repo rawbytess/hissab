@@ -352,12 +352,7 @@ function buildString(
   value = value.toLowerCase();
 
   if (value in Functions) {
-    return new FunctionToken(
-      value,
-      originalValue,
-      Functions[value].run,
-      Functions[value].isRaw,
-    );
+    return new FunctionToken(value, originalValue, Functions[value]);
   }
   if (value in Units) {
     return buildUnit(
@@ -480,15 +475,7 @@ function buildUnit(
 }
 
 function makeOperator(value: string, originalValue: string): OperatorToken {
-  const op = Operators[value];
-  return new OperatorToken(
-    value,
-    originalValue,
-    op.precedence,
-    op.operands,
-    op.func,
-    op.isRaw,
-  );
+  return new OperatorToken(value, originalValue, Operators[value]);
 }
 
 function prefixUnits(

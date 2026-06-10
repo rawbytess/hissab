@@ -22,6 +22,11 @@ import {
 import { type Cx, cxAdd, cxString, cxSub } from "../symbolic/complex";
 import type { Expr } from "../symbolic/expr";
 import { exprToString } from "../symbolic/render";
+// Type-only imports — erased at compile time, so they don't add runtime edges
+// to the module graph (function.ts/operator_types.ts import values from this
+// file; a value import back would create a real cycle).
+import type { FunctionDef } from "../function";
+import type { Associativity, OperatorDef } from "../types/operator_types";
 import UnitTypes from "../types/unit_enum";
 import {
   baseSiFactor,
@@ -1147,56 +1152,43 @@ export type OpShape = {
 
 class OperatorToken extends Token {
   kind = "operatorToken";
+  // The full table entry from Operators. Solve narrows on def.isRaw to pick
+  // the calling convention; everything else (precedence, shape) is derived
+  // here once at construction.
+  readonly def: OperatorDef;
   precedence: number;
-  operands: string[];
   shape: OpShape;
-  func: any;
-  isRaw: boolean;
   left: TokenType | null;
   right: TokenType | null;
   // Variadic tail for operators like `to mile, yard`. Empty for normal
   // binary ops; only NeedUnitState's comma path pushes here.
   more: TokenType[];
 
-  constructor(
-    value: string,
-    originalValue: string,
-    precedence: number,
-    operands: string[],
-    func: any,
-    isRaw: boolean,
-  ) {
+  constructor(value: string, originalValue: string, def: OperatorDef) {
     super(value, originalValue);
-    this.precedence = precedence;
-    this.operands = operands;
+    this.def = def;
+    this.precedence = def.precedence;
     this.shape = {
-      prenumber: operands.includes("prenumber"),
-      postnumber: operands.includes("postnumber"),
-      prestring: operands.includes("prestring"),
-      postunit: operands.includes("postunit"),
+      prenumber: def.operands.includes("prenumber"),
+      postnumber: def.operands.includes("postnumber"),
+      prestring: def.operands.includes("prestring"),
+      postunit: def.operands.includes("postunit"),
     };
-    this.func = func;
-    this.isRaw = isRaw;
     this.left = null;
     this.right = null;
     this.more = [];
   }
 
+  get isRaw(): boolean {
+    return this.def.isRaw;
+  }
+  get associativity(): Associativity {
+    return this.def.associativity ?? "left";
+  }
+
   setChild(direction: Direction, token: TokenType): void {
     if (direction === Direction.RIGHT) this.right = token;
     else this.left = token;
-  }
-  setLeftChild(token: TokenType): void {
-    this.left = token;
-  }
-  setRightChild(token: TokenType): void {
-    this.right = token;
-  }
-  getLeftChild(): TokenType | null {
-    return this.left;
-  }
-  getRightChild(): TokenType | null {
-    return this.right;
   }
   // Fill left, then right, then variadic tail.
   insertChild(token: TokenType): void {
@@ -1242,20 +1234,18 @@ class ControllerToken extends Token {
 
 class FunctionToken extends Token {
   kind = "functionToken";
-  func: () => void;
-  isRaw: boolean;
+  // The full table entry from Functions; solve narrows on def.isRaw.
+  readonly def: FunctionDef;
   args: TokenType[];
 
-  constructor(
-    value: string,
-    originalValue: string,
-    func: () => void,
-    isRaw: boolean,
-  ) {
+  constructor(value: string, originalValue: string, def: FunctionDef) {
     super(value, originalValue);
-    this.func = func;
-    this.isRaw = isRaw;
+    this.def = def;
     this.args = [];
+  }
+
+  get isRaw(): boolean {
+    return this.def.isRaw;
   }
 
   insertChild(token: TokenType): void {
