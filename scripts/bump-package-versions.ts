@@ -1,8 +1,15 @@
 #!/usr/bin/env bun
-import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { relative, resolve } from "node:path";
 
 type BumpType = "major" | "minor" | "patch";
+type VersionChange = { label: string; from: string; to: string };
 
 const repoRoot = resolve(import.meta.dir, "..");
 const ignoredDirs = new Set([
@@ -22,12 +29,18 @@ const bumpTypeAliases = new Map<string, BumpType>([
 ]);
 
 const requestedBumpType = process.argv[2];
-const bumpType = bumpTypeAliases.get(requestedBumpType);
 const dryRun = process.argv.includes("--dry-run");
+
+// Default to a patch bump when no type is given (e.g. `pnpm bump` or
+// `pnpm bump --dry-run`). An explicit unrecognized type still errors.
+const bumpType =
+  !requestedBumpType || requestedBumpType.startsWith("--")
+    ? "patch"
+    : bumpTypeAliases.get(requestedBumpType);
 
 if (!bumpType) {
   console.error(
-    "Usage: pnpm bump:versions <major|minor|patch|sem> [--dry-run]",
+    "Usage: pnpm bump [major|minor|patch|sem] [--dry-run] (default: patch)",
   );
   process.exit(1);
 }
@@ -74,6 +87,64 @@ function bumpVersion(version: string, type: BumpType): string {
   }
 }
 
+// Bump the `version` field on `holder` in place, returning the change (or null
+// when there is no string version to bump).
+function bumpField(
+  holder: Record<string, unknown>,
+  label: string,
+): VersionChange | null {
+  if (typeof holder.version !== "string") {
+    return null;
+  }
+
+  const from = holder.version;
+  const to = bumpVersion(from, bumpType);
+  holder.version = to;
+  return { label, from, to };
+}
+
+let updatedCount = 0;
+
+// Read a JSON manifest, let `collect` bump whichever version fields it carries,
+// then rewrite it (unless --dry-run) preserving the repo's 2-space + newline
+// formatting. Missing files are skipped.
+function bumpManifest(
+  file: string,
+  collect: (json: Record<string, unknown>) => VersionChange[],
+): void {
+  if (!existsSync(file)) {
+    return;
+  }
+
+  const json = JSON.parse(readFileSync(file, "utf8")) as Record<
+    string,
+    unknown
+  >;
+  const changes = collect(json);
+
+  if (changes.length === 0) {
+    return;
+  }
+
+  if (!dryRun) {
+    writeFileSync(file, `${JSON.stringify(json, null, 2)}\n`);
+  }
+
+  const rel = relative(repoRoot, file);
+  for (const { label, from, to } of changes) {
+    console.log(`${rel}${label ? ` ${label}` : ""}: ${from} -> ${to}`);
+  }
+  updatedCount += changes.length;
+}
+
+// package.json (and the Claude plugin manifest) carry a single top-level version.
+const bumpTopLevelVersion = (
+  json: Record<string, unknown>,
+): VersionChange[] => {
+  const change = bumpField(json, "");
+  return change ? [change] : [];
+};
+
 const packageJsonFiles = findPackageJsonFiles(repoRoot)
   .filter((file) => {
     const packageDir = resolve(file, "..");
@@ -81,29 +152,42 @@ const packageJsonFiles = findPackageJsonFiles(repoRoot)
   })
   .sort((a, b) => relative(repoRoot, a).localeCompare(relative(repoRoot, b)));
 
-let updatedCount = 0;
-
 for (const file of packageJsonFiles) {
-  const contents = readFileSync(file, "utf8");
-  const packageJson = JSON.parse(contents);
-
-  if (typeof packageJson.version !== "string") {
-    continue;
-  }
-
-  const currentVersion = packageJson.version;
-  const nextVersion = bumpVersion(currentVersion, bumpType);
-
-  if (!dryRun) {
-    packageJson.version = nextVersion;
-    writeFileSync(file, `${JSON.stringify(packageJson, null, 2)}\n`);
-  }
-
-  console.log(
-    `${relative(repoRoot, file)}: ${currentVersion} -> ${nextVersion}`,
-  );
-  updatedCount += 1;
+  bumpManifest(file, bumpTopLevelVersion);
 }
+
+// Claude Code plugin manifests under .claude-plugin/. plugin.json mirrors a
+// package.json (top-level version); marketplace.json bumps its optional
+// top-level version plus each plugins[].version so listed plugins stay in sync.
+const claudePluginDir = resolve(repoRoot, ".claude-plugin");
+
+bumpManifest(resolve(claudePluginDir, "plugin.json"), bumpTopLevelVersion);
+
+bumpManifest(resolve(claudePluginDir, "marketplace.json"), (json) => {
+  const changes: VersionChange[] = [];
+
+  const top = bumpField(json, "version");
+  if (top) {
+    changes.push(top);
+  }
+
+  if (Array.isArray(json.plugins)) {
+    for (const plugin of json.plugins) {
+      if (plugin && typeof plugin === "object") {
+        const name = (plugin as { name?: string }).name ?? "?";
+        const change = bumpField(
+          plugin as Record<string, unknown>,
+          `plugins[${name}]`,
+        );
+        if (change) {
+          changes.push(change);
+        }
+      }
+    }
+  }
+
+  return changes;
+});
 
 if (updatedCount === 0) {
   console.log("No package.json files with a version field were found.");

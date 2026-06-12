@@ -1,6 +1,6 @@
 {
   "name": "hissab",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "private": true,
   "description": "Hissab monorepo - strict, unit-aware natural-language calculator for humans and AI agents",
   "main": "index.js",

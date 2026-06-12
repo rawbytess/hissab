@@ -31,8 +31,8 @@ pnpm sync:skill-docs:check # fail if skill docs drift from source
 Per-workspace (use `pnpm -F <workspace>`):
 
 ```bash
-pnpm -F engine test                    # jest-playwright across chromium/firefox/webkit
-pnpm -F engine test-single             # same suite, chromium only (faster local loop)
+pnpm -F engine test                    # Jest engine test suite
+pnpm -F engine test-single             # same Jest suite via the alternate config
 pnpm -F app dev                        # vite PWA dev at :5173 (COOP/COEP headers set)
 pnpm -F app build:crx                  # Chrome extension build into app/dist
 pnpm -F app chrome                     # build:crx + zip via npm-build-zip
@@ -60,7 +60,7 @@ To run a single Jest test in the engine: `pnpm -F engine exec jest path/to/file.
 - **Biome** (`biome.json`) is the formatter and linter for the whole repo. Double quotes, 2-space indent, trailing commas, semicolons required, organize-imports enabled.
 - **Path-alias** `@/*` → `src/*` in `app/`.
 - **Strict TS** is on in app/ and engine/; `noUnusedLocals`/`noUnusedParameters` are deliberately off in root configs (don't re-enable without a sweep).
-- Tests in `engine/` use `jest-playwright-preset` and need browser binaries — first run after a clean install may need `pnpm exec playwright install`.
+- Tests in `engine/` use Jest with `ts-jest`.
 
 ## What not to do
 
