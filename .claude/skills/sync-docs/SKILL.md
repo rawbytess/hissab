@@ -24,7 +24,7 @@ lib/documentation/
   tags.ts                 OPERATION_TAGS[]  +  tagDescriptions{}   ← master category list
   base.ts                 base overview: basics, labels/prev, pitfalls, limits
   chunks/<tag>.ts          full grammar + examples + gotchas, one file per tag
-  system-instructions.ts  LLM/MCP system prompts (rarely a sync target)
+  system-instructions.ts  LLM system prompts (rarely a sync target)
   index.ts                getFullDocumentation(), getDocumentationChunk(tag)
 ```
 
@@ -56,8 +56,8 @@ so nothing is missed.
 
 **Out of scope — do not touch here:**
 
-- `skills/hissab-cli/documentation.md` and `skills/hissab-cloud/documentation.md`
-  are **generated**. Never hand-edit them. Run `pnpm sync:skill-docs` instead.
+- `skills/hissab-cli/documentation.md` is **generated**. Never hand-edit it.
+  Run `pnpm sync:skill-docs` instead.
 - `website/` (Astro/Starlight) is a separate doc surface with its own cadence;
   only touch it if the user asks.
 

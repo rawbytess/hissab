@@ -27,10 +27,7 @@ import { unit_conversion } from "./chunks/unit_conversion";
 import { visualization } from "./chunks/visualization";
 import { OPERATION_TAGS, type OperationTag, tagDescriptions } from "./tags";
 
-export {
-  default as systemInstructions,
-  mcpInstructions,
-} from "./system-instructions";
+export { default as systemInstructions } from "./system-instructions";
 export type { OperationTag };
 export { baseDocumentation, OPERATION_TAGS, tagDescriptions };
 

@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import { baseDocumentation } from "../lib/documentation";
 
 const repoRoot = resolve(import.meta.dir, "..");
-const skills = ["hissab-cli", "hissab-cloud"];
+const skills = ["hissab-cli"];
 const content = `${baseDocumentation.trim()}\n`;
 const check = process.argv.includes("--check");
 

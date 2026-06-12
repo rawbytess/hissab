@@ -23,7 +23,7 @@ static crawlable docs pages, sitemaps, and `robots.txt` in `app/dist`.
 Hand-authored app docs live in `src/docs/content`. The navigation manifest is
 `src/docs/registry.ts`.
 
-The canonical expression reference for the engine, CLI, MCP tools, and agent
+The canonical expression reference for the engine, CLI, and agent
 skills lives in `../lib/documentation`. Do not duplicate full syntax reference
 content in app docs when the generated docs can provide the source of truth.
 

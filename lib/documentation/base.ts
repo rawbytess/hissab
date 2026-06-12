@@ -52,9 +52,8 @@ or referenced by position — the runner does not auto-name anonymous lines.
 
 ## Multi-line scope (line<N>, total<N>)
 
-When expressions are evaluated together (CLI \`hissab run\`, MCP \`Hissab\` tool,
-the app's note editor), each expression's result is also exposed to later
-expressions:
+When expressions are evaluated together (CLI \`hissab run\`, the app's note
+editor), each expression's result is also exposed to later expressions:
 
 - \`line<N>\` / \`l<N>\` — the result of expression number N (1-indexed).
 - \`total<N>\` — the running sum of all earlier expressions before line N.
@@ -83,9 +82,6 @@ The way to fetch a chunk depends on the consumer:
   Run \`hissab docs --list\` to see every tag. For LLMs with very large context
   windows, run \`hissab docs --all\` to dump the base reference plus every chunk
   at once.
-- **Hissab MCP server (cloud)**: call the \`Hissab_docs\` tool with
-  \`{ tag: "<tag>" }\`. The MCP server's \`Hissab\` tool evaluates expressions;
-  \`Hissab_docs\` returns this base doc or a chunk.
 - **App agentic harness**: call the \`fetch_hissab_docs\` tool with
   \`{ tags: ["<tag>", ...] }\` — returns one or more chunks in a single call.
 

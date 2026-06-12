@@ -1,0 +1,22 @@
+{
+  "name": "hissab",
+  "displayName": "Hissab",
+  "version": "1.2.1",
+  "description": "Offload deterministic math — units, dates, percentages, statistics, finance, color, bitwise, IP, symbolic algebra, calculus and more — to the Hissab engine instead of doing mental math. Bundles the hissab-cli skill.",
+  "author": {
+    "name": "Mufaddal Makati",
+    "email": "mufaddal@rawbytes.com",
+    "url": "https://hissab.io"
+  },
+  "homepage": "https://hissab.io",
+  "repository": "https://github.com/rawbytess/hissab",
+  "license": "MIT",
+  "keywords": [
+    "calculator",
+    "math",
+    "units",
+    "deterministic",
+    "calculus",
+    "hissab"
+  ]
+}

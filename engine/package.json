@@ -1,6 +1,6 @@
 {
   "name": "@rawbytes/hissab",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Strict, unit-aware natural-language calculation engine for TypeScript apps and AI agent tools",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",

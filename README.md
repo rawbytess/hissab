@@ -56,7 +56,7 @@ parses and evaluates those expressions.
 - **Auditability** — every answer comes from a short, visible expression you can
   edit, re-run, copy, or put in a script.
 - **Portability** — the same engine runs in the app, CLI, TypeScript library,
-  hosted MCP server, and agent skills.
+  and agent skills.
 - **AI leverage** — AI can translate messy language and explain the result while
   Hissab remains the deterministic calculator.
 
@@ -242,37 +242,29 @@ instead, run `pnpm --filter ./cli build:bin` (output in
 
 ## Agent Skills
 
-Hissab ships two skills for AI agents:
+Hissab ships an agent skill that teaches AI agents to offload math to the engine
+instead of doing mental math:
 
 | Skill | Use when |
 | --- | --- |
 | [`hissab-cli`](./skills/hissab-cli/SKILL.md) | The local `hissab` binary is available. Best for offline work, CI, and shell-driven agents. |
-| [`hissab-cloud`](./skills/hissab-cloud/SKILL.md) | The agent can use MCP and should call the hosted Hissab server instead of installing a local binary. |
 
-Install with [Vercel's Skills CLI](https://github.com/vercel-labs/skills):
+Install with [Vercel's Skills CLI](https://github.com/vercel-labs/skills) — it works across
+Claude Code, Codex, Gemini, Cursor, and more (`-a` accepts `claude-code`, `codex`, …):
 
 ```sh
 npx skills add rawbytess/hissab --skill hissab-cli
-npx skills add rawbytess/hissab --skill hissab-cloud
+npx skills add rawbytess/hissab --skill hissab-cli -g -a claude-code
 ```
 
-You can also target a specific agent and install globally:
-
-```sh
-npx skills add rawbytess/hissab --skill hissab-cloud -g -a claude-code
-```
-
-The cloud skill uses the hosted MCP server:
+Or install it as a **Claude Code plugin** from the bundled marketplace:
 
 ```text
-https://api.hissab.io/mcp
+/plugin marketplace add rawbytess/hissab
+/plugin install hissab@rawbytes
 ```
 
-For Claude Code:
-
-```sh
-claude mcp add --transport http hissab https://api.hissab.io/mcp
-```
+See [`skills/README.md`](./skills/README.md) for OpenAI Codex and manual install paths.
 
 ## Engine Library
 

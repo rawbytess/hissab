@@ -2,7 +2,7 @@
 
 > **Audience:** This document is written for AI agents (and humans) who need to make changes to the engine. It explains *how* the pieces fit together so you can predict the blast radius of an edit. Pair it with the user-facing syntax docs in `lib/documentation/` at the repo root (base + per-category chunks).
 
-The engine takes a natural-language-ish math expression as a string (`"15 km to miles"`, `"5! + 3^2"`, `"today - 1 feb 1990 to years"`) and returns a formatted result string. It is a pure TS library with no I/O — every consumer (API MCP tool, app editor, CLI, skills) goes through the same entry points.
+The engine takes a natural-language-ish math expression as a string (`"15 km to miles"`, `"5! + 3^2"`, `"today - 1 feb 1990 to years"`) and returns a formatted result string. It is a pure TS library with no I/O — every consumer (app editor, CLI, skills) goes through the same entry points.
 
 ---
 
@@ -357,7 +357,7 @@ Both are applied in `tokenFactory`'s `buildString` stage. Adding a new alias is 
 
 The engine itself only knows about variables via the `variables` parameter to `doLex` — a `{ [name]: TokenType }` map. If a lexed identifier matches a key, `tokenFactory` returns a `VariableToken(name, originalValue, valueToken)`. The parser unwraps `VariableToken` to its `valueToken` before dispatch (`parser.ts` line ~46), so by the time states see it, it's already the resolved underlying token.
 
-**Multi-line semantics** (`total1`, `prev2`, `line3`, `l3`) are *not* in the engine. They live in `lib/calculateExpressions.ts` at the repo root. That file is the contract between the app editor, the API MCP tool, and any other multi-line consumer — if you're adding line-scoped features, do it there.
+**Multi-line semantics** (`total1`, `prev2`, `line3`, `l3`) are *not* in the engine. They live in `lib/calculateExpressions.ts` at the repo root. That file is the contract between the app editor and any other multi-line consumer — if you're adding line-scoped features, do it there.
 
 Note: `tokenFactory` does have a special case where bare `total` and `prev` get suffixed with `lineNumber` (e.g. `total` → `total3`). This lets the consumer inject only the most recent values without having to handle every line number.
 
@@ -442,7 +442,7 @@ lib/documentation/
 ├── index.ts                          # public API (baseDocumentation, chunks, getDocumentationChunk, getFullDocumentation)
 ├── tags.ts                           # OPERATION_TAGS + OperationTag + tagDescriptions
 ├── base.ts                           # base doc string (basics + catalog of categories)
-├── system-instructions.ts            # mcpInstructions + systemInstructions() factory
+├── system-instructions.ts            # systemInstructions() factory
 └── chunks/                           # one .ts per OperationTag: arithmetic, percentage, unit_conversion, compound_units, …
 ```
 
