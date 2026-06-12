@@ -43,8 +43,6 @@ jobs:
         working-directory: cli
 
       - name: Publish Engine Package
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           package_name="$(node -p "require('./package.json').name")"
           package_version="$(node -p "require('./package.json').version")"
@@ -52,7 +50,7 @@ jobs:
           if npm view "${package_name}@${package_version}" version > /dev/null 2>&1; then
             echo "${package_name}@${package_version} already exists on npm. Skipping publish."
           else
-            if publish_output="$(pnpm publish --access public --no-git-checks 2>&1)"; then
+            if publish_output="$(npm publish --access public 2>&1)"; then
               echo "$publish_output"
             else
               publish_status=$?
@@ -68,8 +66,6 @@ jobs:
         working-directory: engine
 
       - name: Publish CLI Package
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           package_name="$(node -p "require('./package.json').name")"
           package_version="$(node -p "require('./package.json').version")"
@@ -77,7 +73,7 @@ jobs:
           if npm view "${package_name}@${package_version}" version > /dev/null 2>&1; then
             echo "${package_name}@${package_version} already exists on npm. Skipping publish."
           else
-            if publish_output="$(pnpm publish --access public --no-git-checks 2>&1)"; then
+            if publish_output="$(npm publish --access public 2>&1)"; then
               echo "$publish_output"
             else
               publish_status=$?

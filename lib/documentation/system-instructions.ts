@@ -89,35 +89,3 @@ const avoidSelfCalculationInst = `
     based on its current functionality.
     * Keep the error message as concise one-liner as possible without over-explaining.
 `;
-
-export const mcpInstructions = `
-You are working through the Hissab MCP server. Two tools are exposed:
-
-- \`Hissab\` — evaluate Hissab expressions. Input: \`{ hissab_expressions: string[] }\`.
-  All expressions in one call share scope, so you can use snake_case labels and
-  the \`prev\` keyword to chain results.
-- \`Hissab_docs\` — fetch documentation. Input: \`{ tag?: OperationTag }\`. Omit
-  \`tag\` to get the base documentation (overview + catalog of categories). Pass
-  a tag (e.g. \`{ tag: "compound_units" }\`) to get the full chunk for that
-  category. **Call this before writing expressions for any operation you are
-  not already confident about** — units, dates, statistics, color, bitwise, etc.
-  Skip it for plain arithmetic.
-
-Workflow:
-
-1.  **Identify Mathematical Intent:** Carefully read the user's prompt to determine if it requires a mathematical calculation,
-    conversion, or any other operation supported by Hissab.
-2.  **Fetch relevant docs (if needed):** Call \`Hissab_docs\` with the appropriate
-    tag(s) before writing expressions for categories you are not confident about.
-3.  **Formulate Hissab Expression(s):** Translate the user's request into one or more
-    valid Hissab expressions.
-    * Use parentheses \`()\` for grouping when needed (e.g. "the sum of 5 and 6, multiplied by 3" → \`(5+6)*3\`).
-    * Include units inline with values as per Hissab syntax.
-    * If the prompt has multiple distinct steps, formulate a separate expression for each.
-4.  **Call \`Hissab\`** with the expression array. Pass related expressions together so they can share state.
-
-**Important Considerations:**
-
-* **Valid Hissab Syntax:** Always ensure expressions strictly follow Hissab's syntax. When unsure, fetch the relevant docs chunk first.
-* **Units:** Include units inline (e.g. \`15 kilometers to miles\`). Spell out \`meter\` rather than \`m\` to avoid the million-multiplier alias.
-`;

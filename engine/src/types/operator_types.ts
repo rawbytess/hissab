@@ -27,17 +27,50 @@ import {
 import ProcessConversions from "../units_processor";
 import UnitTypes from "./unit_enum";
 
-type operatorType = {
-  [op: string]: {
-    precedence: number;
-    operands: string[];
-    func: any;
-    isRaw: boolean;
-    description: string;
-  };
-};
+// ---------------------------------------------------------------------------
+// Operator definition types
+//
+// The two calling conventions are a discriminated union on `isRaw`, so a
+// definition cannot declare one convention and implement the other — the
+// solver (parsetree.ts) narrows on `def.isRaw` and the compiler checks both
+// call shapes.
+// ---------------------------------------------------------------------------
 
-const Operators: operatorType = {
+export type OperandSlot = "prenumber" | "postnumber" | "prestring" | "postunit";
+export type Associativity = "left" | "right";
+export type SetIsExplicit = (isExplicit: boolean) => void;
+export type SetConvertTo = (convertTo: string[]) => void;
+
+// Raw funcs receive the operator's token children (children[0] = left, which
+// may be absent for prefix/postfix ops; children[1] = right) plus the ambient
+// unit context. The nullable return mirrors tokenFactory's signature; the
+// solver guards against null before grafting.
+export type RawOpFunc = (
+  children: TokenType[],
+  exprUnit: expressionUnit,
+  setIsExplicit: SetIsExplicit,
+  setConvertTo: SetConvertTo,
+) => TokenType | null | Promise<TokenType | null>;
+
+// Non-raw funcs are pure number → number; the solver unwraps the operand
+// values and re-wraps the result with the ambient unit.
+export type NumericOpFunc = (...values: number[]) => number;
+
+interface OperatorDefBase {
+  precedence: number;
+  operands: OperandSlot[];
+  // Equal-precedence stacking. "left" (the default) keeps the earlier operator
+  // tighter (`2-3-4` = `(2-3)-4`); "right" nests the incoming operator under
+  // it. Enforced in CompleteState.handleOperator's precedence walk.
+  associativity?: Associativity;
+  description: string;
+}
+
+export type OperatorDef =
+  | (OperatorDefBase & { isRaw: true; func: RawOpFunc })
+  | (OperatorDefBase & { isRaw: false; func: NumericOpFunc });
+
+const Operators: Record<string, OperatorDef> = {
   "~": {
     precedence: 1,
     operands: ["postnumber"],
@@ -98,20 +131,25 @@ const Operators: operatorType = {
   "%": {
     precedence: 3,
     operands: ["prenumber"],
-    func: async ([n1]: NumberToken[]) =>
-      tokenFactory(
+    func: async ([n1]: TokenType[]) => {
+      if (!(n1 instanceof NumberToken)) throw new UserError(8651);
+      return tokenFactory(
         (n1.toNumber() / 100).toString(),
         n1.numbertype,
         [],
         {},
         true,
-      ),
+      );
+    },
     isRaw: true,
     description: "Percentage operator",
   },
   "^": {
     precedence: 4,
     operands: ["prenumber", "postnumber"],
+    // Exponentiation is right-associative by mathematical convention (and in
+    // Python, Excel, …): 2^3^2 = 2^(3^2) = 512, not (2^3)^2 = 64.
+    associativity: "right",
     func: makePowFunc(),
     isRaw: true,
     description: "Power operator",
@@ -119,6 +157,7 @@ const Operators: operatorType = {
   "**": {
     precedence: 4,
     operands: ["prenumber", "postnumber"],
+    associativity: "right",
     func: makePowFunc(),
     isRaw: true,
     description: "Power operator",
@@ -220,10 +259,10 @@ const Operators: operatorType = {
     precedence: 22,
     operands: ["prestring", "postnumber"],
     func: async (params: TokenType[], toUnit: expressionUnit) => {
-      if (!(params[0] instanceof UnitToken)) throw new UnhandledError(0);
+      if (!(params[0] instanceof UnitToken)) throw new UnhandledError(9010);
       if (params[0].unitdata.type !== UnitTypes.CURRENCY)
-        throw new UnhandledError(0);
-      if (!(params[1] instanceof DateToken)) throw new UnhandledError(0);
+        throw new UnhandledError(9011);
+      if (!(params[1] instanceof DateToken)) throw new UnhandledError(9012);
       // eslint-disable-next-line prefer-destructuring
       params[0].date = params[1];
       return params[0];
@@ -257,11 +296,11 @@ const Operators: operatorType = {
         if (params[0] instanceof NumberToken && params.length > 2) {
           const convertTo: string[] = [];
           for (let i = 1; i < params.length; i++) {
-            if (!(params[i] instanceof UnitToken)) throw new UserError(2333);
-            if (params[0].unit?.value === params[i].value) {
-              // @ts-expect-error
-              convertTo.push(params[i].prefix ? params[i].prefix.value : "_");
-            } else convertTo.push(params[i].value);
+            const target = params[i];
+            if (!(target instanceof UnitToken)) throw new UserError(2333);
+            if (params[0].unit?.value === target.value) {
+              convertTo.push(target.prefix ? target.prefix.value : "_");
+            } else convertTo.push(target.value);
           }
           setConvertTo(convertTo);
           return params[0];
@@ -269,7 +308,7 @@ const Operators: operatorType = {
         setIsExplicit(true);
         return new ProcessConversions(params[0]).to(params[1]).convert();
       }
-      throw new UnhandledError(0);
+      throw new UnhandledError(9013);
     },
     isRaw: true,
     description: "to operator, used for units and other conversions",
@@ -277,12 +316,8 @@ const Operators: operatorType = {
   "=": {
     precedence: 50,
     operands: ["prestring", "postnumber"],
-    func: async (
-      [variableName, result]: [TokenType, TokenType],
-      expUnit: expressionUnit,
-    ) => {
+    func: async ([variableName, result]: TokenType[]) => {
       result.variableName = variableName.value;
-      // if (expUnit && result instanceof NumberToken) result.unit = expUnit;
       return result;
     },
     isRaw: true,
@@ -413,10 +448,13 @@ for (const [name, fn, base] of LOGS) {
     description: `Log function with base ${base}`,
   };
 }
-type ControllerType = {
-  [controller: string]: string;
-};
-const Controllers: ControllerType = {
+// Flow-control token kinds. A literal union (not bare string) so every
+// comparison site (`basetype === "BRAC_START"`) is typo-checked, and adding a
+// bracket form means extending this union — the compiler then walks you to
+// every dispatch site that must decide how to handle it.
+export type ControllerKind = "BRAC_START" | "BRAC_END" | "COMMA";
+
+const Controllers: Record<string, ControllerKind> = {
   "(": "BRAC_START",
   ")": "BRAC_END",
   ",": "COMMA",

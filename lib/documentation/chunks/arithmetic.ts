@@ -24,6 +24,10 @@ Lower number = binds tighter. Use parentheses when in doubt.
 3. \`*\`, \`/\`, \`mod\`
 4. \`+\`, \`-\`
 
+\`^\` is right-associative, following mathematical convention: \`2^3^2\` is
+\`2^(3^2)\` = 512, not \`(2^3)^2\` = 64. All other operators of equal
+precedence evaluate left to right.
+
 ### Examples
 
 User: 5 squared plus 3 cubed

@@ -1,0 +1,21 @@
+{
+  "name": "rawbytes",
+  "owner": {
+    "name": "Mufaddal Makati",
+    "email": "mufaddal@rawbytes.com",
+    "url": "https://hissab.io"
+  },
+  "description": "Rawbytes plugins for Claude Code — starting with Hissab, a deterministic natural-language calculator and Math tool.",
+  "plugins": [
+    {
+      "name": "hissab",
+      "source": "./",
+      "description": "Deterministic and Auditable natural-language calculator skill backed by the Hissab Math engine.",
+      "version": "1.3.0",
+      "author": {
+        "name": "Mufaddal Makati",
+        "email": "mufaddal@rawbytes.com"
+      }
+    }
+  ]
+}

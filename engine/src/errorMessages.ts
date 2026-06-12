@@ -12,11 +12,32 @@ export const userErrorMessages: Record<number, string> = {
   103: "This expression contains text Hissab doesn't recognize (an unknown word, a misspelled unit, or an unsupported function). Check the spelling — unrecognized words are not ignored.",
   6235: "This expression did not resolve to a value. Check that it forms a complete calculation.",
 
+  // Parser state rejections (parser.ts, parser_states.ts)
+  201: "Unexpected token in this expression.",
+  202: "This operator needs a value before it.",
+  203: "A unit can't start an expression — put a number before it.",
+  206: "This number already has a unit attached.",
+  207: "This token isn't valid at this position in the expression.",
+  208: "This operator can't appear where a value is expected.",
+  210: "Expected a value after this operator, not a unit.",
+  211: "Expected a unit after `to`, not a value.",
+  212: "Expected a unit after `to`, not an operator.",
+  214: "Only units or coordinate-system targets (polar, vector, …) can follow `to`.",
+  215: "This operator isn't valid inside a function's arguments.",
+  217: "A unit isn't valid here inside a function's arguments.",
+  218: "A function call isn't valid at this position.",
+  219: "Two operators in a row — remove one or put a value between them.",
+  221: "A unit can't directly follow an operator — put a number before the unit.",
+  222: "A function isn't valid immediately after this operator.",
+  231: "The expression is incomplete — it ends where a value or unit is still expected.",
+  240: "A seed literal (@…) is only valid inside a function's argument list.",
+
   // Units & conversion (units_processor.ts, pro.ts)
   1908: "Unrecognized unit in the value being converted. Check the spelling — and note `m` means million, so spell out `meter`.",
   7649: "Unrecognized target unit after `to`. Check the unit spelling.",
   2334: "These units measure different things, so they can't be converted into one another (e.g. length to weight).",
   3907: "These quantities have incompatible units for this operation.",
+  9003: "This value can't be converted to that unit.",
 
   // Implicit addition / compound quantities (parser_states.ts)
   223: "Numbers written next to each other are only combined when a unit is involved (e.g. `5 feet 10 inch`). Put an operator like `+` between plain numbers.",

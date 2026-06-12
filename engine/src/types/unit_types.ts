@@ -27,6 +27,16 @@ const Constants: ConstantIF = {
 
 export type DimensionVector = Record<string, number>;
 
+// Display-time breakdown family used by humanize() when no explicit `to` was
+// requested. Two distinct shapes that used to share one untyped list:
+//   "prefixes" — POSTFIX names (`kilo`, `_`, `centi`, …) applied to the unit
+//                itself (`1 km 200 meter`); `_` is the identity prefix.
+//   "units"    — sibling unit names in the same family (`mile`, `yard`, …).
+// Display only — the underlying value is never changed.
+export type UnitDisplayFamily =
+  | { kind: "prefixes"; family: string[] }
+  | { kind: "units"; family: string[] };
+
 export interface UnitsTypeIF {
   type: UnitTypes;
   description: string;
@@ -35,7 +45,7 @@ export interface UnitsTypeIF {
   factors?: {
     [key: string]: number;
   };
-  convertTo?: string[];
+  display?: UnitDisplayFamily;
   datafactor?: number;
   kelvin?: (value: number) => number;
   fahrenheit?: (value: number) => number;
@@ -53,30 +63,71 @@ export interface UnitsTypeIF {
 export interface UnitsIF {
   [unit: string]: UnitsTypeIF;
 }
-const metricFamily = ["kilo", "_", "centi", "milli", "micro", "nano"];
-const milesFamily = ["mile", "yard", "feet", "inch"];
-const areaFamily = [
-  "acre",
-  "square mile",
-  "square yard",
-  "square feet",
-  "square inch",
-];
-const volumeFamily = ["cubic mile", "cubic yard", "cubic feet", "cubic inch"];
-const gallonFamily = ["gallon", "quart", "pint", "fluid ounce"];
-const cupFamily = ["cup", "tablespoon", "teaspoon"];
-const poundFamily = ["pound", "ounce"];
-const angleFamily = ["arcminute", "arcsecond", "degree"];
-const dataFamily = ["exa", "peta", "tera", "giga", "mega", "kilo", "_"];
-const timeFamily = [
-  "century",
-  "year",
-  "week",
-  "day",
-  "hour",
-  "minute",
-  "second",
-];
+
+// Temperature conversion is affine (not a linear factor), so each TEMPERATURE
+// unit carries one lambda per target scale. This accessor replaces the old
+// dynamic `unitdata[toUnit.value](...)` dispatch: it fails loudly (instead of
+// calling undefined) when the target isn't a temperature scale or the source
+// entry is missing a lambda.
+export const TEMP_TARGETS = [
+  "kelvin",
+  "celsius",
+  "fahrenheit",
+  "rankine",
+] as const;
+export type TempTarget = (typeof TEMP_TARGETS)[number];
+
+export function temperatureFn(
+  from: UnitsTypeIF,
+  to: string,
+): (value: number) => number {
+  if (!(TEMP_TARGETS as readonly string[]).includes(to))
+    throw new UnhandledError(9004);
+  const fn = from[to as TempTarget];
+  if (!fn) throw new UnhandledError(9005);
+  return fn;
+}
+
+const metricFamily: UnitDisplayFamily = {
+  kind: "prefixes",
+  family: ["kilo", "_", "centi", "milli", "micro", "nano"],
+};
+const milesFamily: UnitDisplayFamily = {
+  kind: "units",
+  family: ["mile", "yard", "feet", "inch"],
+};
+const areaFamily: UnitDisplayFamily = {
+  kind: "units",
+  family: ["acre", "square mile", "square yard", "square feet", "square inch"],
+};
+const volumeFamily: UnitDisplayFamily = {
+  kind: "units",
+  family: ["cubic mile", "cubic yard", "cubic feet", "cubic inch"],
+};
+const gallonFamily: UnitDisplayFamily = {
+  kind: "units",
+  family: ["gallon", "quart", "pint", "fluid ounce"],
+};
+const cupFamily: UnitDisplayFamily = {
+  kind: "units",
+  family: ["cup", "tablespoon", "teaspoon"],
+};
+const poundFamily: UnitDisplayFamily = {
+  kind: "units",
+  family: ["pound", "ounce"],
+};
+const angleFamily: UnitDisplayFamily = {
+  kind: "units",
+  family: ["arcminute", "arcsecond", "degree"],
+};
+const dataFamily: UnitDisplayFamily = {
+  kind: "prefixes",
+  family: ["exa", "peta", "tera", "giga", "mega", "kilo", "_"],
+};
+const timeFamily: UnitDisplayFamily = {
+  kind: "units",
+  family: ["century", "year", "week", "day", "hour", "minute", "second"],
+};
 
 const Units: UnitsIF = {
   meter: {
@@ -84,7 +135,7 @@ const Units: UnitsIF = {
     type: UnitTypes.LENGTH,
     description: "Unit of Length",
     factor: 1,
-    convertTo: metricFamily,
+    display: metricFamily,
     factors: {
       meter: 1,
       mile: 0.0006213712,
@@ -103,7 +154,7 @@ const Units: UnitsIF = {
     type: UnitTypes.LENGTH,
     description: "Unit of Length",
     factor: 1609.3,
-    convertTo: milesFamily,
+    display: milesFamily,
     factors: {
       meter: 1609.344,
       mile: 1,
@@ -122,7 +173,7 @@ const Units: UnitsIF = {
     type: UnitTypes.LENGTH,
     description: "Unit of Length",
     factor: 0.9144,
-    convertTo: milesFamily,
+    display: milesFamily,
     factors: {
       meter: 0.9144,
       mile: 0.0005682,
@@ -140,7 +191,7 @@ const Units: UnitsIF = {
     type: UnitTypes.LENGTH,
     description: "Unit of Length",
     factor: 0.3048,
-    convertTo: milesFamily,
+    display: milesFamily,
     factors: {
       meter: 0.3048,
       mile: 0.0001893939,
@@ -159,7 +210,7 @@ const Units: UnitsIF = {
     type: UnitTypes.LENGTH,
     description: "Unit of Length",
     factor: 0.0254,
-    convertTo: milesFamily,
+    display: milesFamily,
     factors: {
       meter: 0.0254,
       mile: 0.0000157828,
@@ -343,7 +394,7 @@ const Units: UnitsIF = {
     type: UnitTypes.AREA,
     description: "Unit of Area",
     factor: 4046.8564224,
-    convertTo: areaFamily,
+    display: areaFamily,
     factors: {
       hectare: 0.4046856422,
       acre: 1,
@@ -359,7 +410,7 @@ const Units: UnitsIF = {
     type: UnitTypes.AREA,
     description: "Unit of Area",
     factor: 2589988.110336,
-    convertTo: areaFamily,
+    display: areaFamily,
     factors: {
       hectare: 258.99881103,
       acre: 640,
@@ -374,7 +425,7 @@ const Units: UnitsIF = {
     type: UnitTypes.AREA,
     description: "Unit of Area",
     factor: 0.09290304,
-    convertTo: areaFamily,
+    display: areaFamily,
     factors: {
       hectare: 0.0000092903,
       acre: 0.0000229568,
@@ -390,7 +441,7 @@ const Units: UnitsIF = {
     type: UnitTypes.AREA,
     description: "Unit of Area",
     factor: 0.00064516,
-    convertTo: areaFamily,
+    display: areaFamily,
     factors: {
       hectare: 6.4516e-8,
       acre: 1.594225079e-7,
@@ -406,7 +457,7 @@ const Units: UnitsIF = {
     type: UnitTypes.AREA,
     description: "Unit of Area",
     factor: 0.83612736,
-    convertTo: areaFamily,
+    display: areaFamily,
     factors: {
       hectare: 0.0000836127,
       acre: 0.0002066116,
@@ -423,7 +474,7 @@ const Units: UnitsIF = {
     type: UnitTypes.AREA,
     description: "Unit of Area",
     factor: 1,
-    convertTo: metricFamily,
+    display: metricFamily,
     factors: {
       hectare: 0.0001,
       acre: 0.0002471054,
@@ -454,7 +505,7 @@ const Units: UnitsIF = {
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 1,
-    convertTo: metricFamily,
+    display: metricFamily,
     factors: {
       liter: 1,
       gallon: 0.2641720524,
@@ -478,7 +529,7 @@ const Units: UnitsIF = {
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 3.785411784,
-    convertTo: gallonFamily,
+    display: gallonFamily,
     factors: {
       liter: 3.785411784,
       gallon: 1,
@@ -502,7 +553,7 @@ const Units: UnitsIF = {
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 0.946352946,
-    convertTo: gallonFamily,
+    display: gallonFamily,
     factors: {
       liter: 0.946352946,
       gallon: 0.25,
@@ -526,7 +577,7 @@ const Units: UnitsIF = {
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 0.473176473,
-    convertTo: gallonFamily,
+    display: gallonFamily,
     factors: {
       liter: 0.473176473,
       gallon: 0.125,
@@ -550,7 +601,7 @@ const Units: UnitsIF = {
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 0.2365882365,
-    convertTo: cupFamily,
+    display: cupFamily,
     factors: {
       liter: 0.2365882365,
       gallon: 0.0625,
@@ -574,7 +625,7 @@ const Units: UnitsIF = {
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 0.0147867648,
-    convertTo: cupFamily,
+    display: cupFamily,
     factors: {
       liter: 0.0147867648,
       gallon: 0.00390625,
@@ -598,7 +649,7 @@ const Units: UnitsIF = {
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 0.0049289216,
-    convertTo: cupFamily,
+    display: cupFamily,
     factors: {
       liter: 0.0049289216,
       gallon: 0.0013020833,
@@ -645,7 +696,7 @@ const Units: UnitsIF = {
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 0.0295735296,
-    convertTo: gallonFamily,
+    display: gallonFamily,
     factors: {
       liter: 0.0295735296,
       gallon: 0.0078125,
@@ -670,7 +721,7 @@ const Units: UnitsIF = {
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 4168181825441,
-    convertTo: metricFamily,
+    display: metricFamily,
     factors: {
       liter: 4168181825441,
       gallon: 1101117147429,
@@ -694,7 +745,7 @@ const Units: UnitsIF = {
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 28.316846592,
-    convertTo: volumeFamily,
+    display: volumeFamily,
     factors: {
       liter: 28.316846592,
       gallon: 7.4805194805,
@@ -718,7 +769,7 @@ const Units: UnitsIF = {
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 28.316846592,
-    convertTo: volumeFamily,
+    display: volumeFamily,
     factors: {
       liter: 28.316846592,
       gallon: 7.4805194805,
@@ -742,7 +793,7 @@ const Units: UnitsIF = {
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 0.016387064,
-    convertTo: volumeFamily,
+    display: volumeFamily,
     factors: {
       liter: 0.016387064,
       gallon: 0.0043290043,
@@ -766,7 +817,7 @@ const Units: UnitsIF = {
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 764.55485798,
-    convertTo: volumeFamily,
+    display: volumeFamily,
     factors: {
       liter: 764.55485798,
       gallon: 201.97402597,
@@ -791,7 +842,7 @@ const Units: UnitsIF = {
     type: UnitTypes.VOLUME,
     description: "Unit of Volume",
     factor: 1000,
-    convertTo: metricFamily,
+    display: metricFamily,
     factors: {
       liter: 1000,
       gallon: 264.17205236,
@@ -886,7 +937,7 @@ const Units: UnitsIF = {
     type: UnitTypes.WEIGHT,
     description: "Unit of Weight",
     factor: 1,
-    convertTo: metricFamily,
+    display: metricFamily,
     factors: {
       gram: 1,
       ton: 1000,
@@ -915,7 +966,7 @@ const Units: UnitsIF = {
     type: UnitTypes.WEIGHT,
     description: "Unit of Weight",
     factor: 453.59237,
-    convertTo: poundFamily,
+    display: poundFamily,
     factors: {
       gram: 453.59237,
       ton: 0.0004535924,
@@ -930,7 +981,7 @@ const Units: UnitsIF = {
     type: UnitTypes.WEIGHT,
     description: "Unit of Weight",
     factor: 28.349523125,
-    convertTo: poundFamily,
+    display: poundFamily,
     factors: {
       gram: 28.349523125,
       ton: 0.0000283495,
@@ -1098,7 +1149,7 @@ const Units: UnitsIF = {
     type: UnitTypes.ANGLE,
     description: "Unit of Angle",
     factor: 0.0166666667,
-    convertTo: angleFamily,
+    display: angleFamily,
     factors: {
       degree: 0.0166666667,
       grad: 0.0185185185,
@@ -1112,7 +1163,7 @@ const Units: UnitsIF = {
     type: UnitTypes.ANGLE,
     description: "Unit of Angle",
     factor: 0.0002777778,
-    convertTo: angleFamily,
+    display: angleFamily,
     factors: {
       degree: 0.0002777778,
       grad: 0.000308642,
@@ -1174,7 +1225,7 @@ const Units: UnitsIF = {
     type: UnitTypes.DATA,
     description: "Unit of Data",
     factor: 1,
-    convertTo: dataFamily,
+    display: dataFamily,
     factors: {
       bit: 1,
       byte: 0.125,
@@ -1186,7 +1237,7 @@ const Units: UnitsIF = {
     type: UnitTypes.DATA,
     description: "Unit of Data",
     factor: 8,
-    convertTo: dataFamily,
+    display: dataFamily,
     factors: {
       bit: 8,
       byte: 1,
@@ -1210,7 +1261,7 @@ const Units: UnitsIF = {
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 1,
-    convertTo: timeFamily,
+    display: timeFamily,
     factors: {
       second: 1,
       minute: 1 / 60,
@@ -1229,7 +1280,7 @@ const Units: UnitsIF = {
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 60,
-    convertTo: timeFamily,
+    display: timeFamily,
     factors: {
       second: 60,
       minute: 1,
@@ -1248,7 +1299,7 @@ const Units: UnitsIF = {
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 3600,
-    convertTo: timeFamily,
+    display: timeFamily,
     factors: {
       second: 3600,
       minute: 60,
@@ -1267,7 +1318,7 @@ const Units: UnitsIF = {
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 86400,
-    convertTo: timeFamily,
+    display: timeFamily,
     factors: {
       second: 86400,
       minute: 1440,
@@ -1286,7 +1337,7 @@ const Units: UnitsIF = {
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 604800,
-    convertTo: timeFamily,
+    display: timeFamily,
     factors: {
       second: 604800,
       minute: 10080,
@@ -1305,7 +1356,7 @@ const Units: UnitsIF = {
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 2.628e6,
-    convertTo: timeFamily,
+    display: timeFamily,
     factors: {
       second: 2628000,
       minute: 43800,
@@ -1324,7 +1375,7 @@ const Units: UnitsIF = {
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 3.154e7,
-    convertTo: timeFamily,
+    display: timeFamily,
     factors: {
       second: 31557600,
       minute: 525960,
@@ -1343,7 +1394,7 @@ const Units: UnitsIF = {
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 3.154e8,
-    convertTo: timeFamily,
+    display: timeFamily,
     factors: {
       second: 315576000,
       minute: 5259600,
@@ -1362,7 +1413,7 @@ const Units: UnitsIF = {
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 3.154e9,
-    convertTo: timeFamily,
+    display: timeFamily,
     factors: {
       second: 3155760000,
       minute: 52596000,
@@ -1381,7 +1432,7 @@ const Units: UnitsIF = {
     type: UnitTypes.TIME,
     description: "Unit of Time",
     factor: 3.154e10,
-    convertTo: timeFamily,
+    display: timeFamily,
     factors: {
       second: 31557600000,
       minute: 525960000,
@@ -1414,7 +1465,7 @@ const Units: UnitsIF = {
     type: UnitTypes.DURATION,
     description: "Unit of Relative time",
     factor: 31536000,
-    convertTo: ["minutely"],
+    display: { kind: "units", family: ["minutely"] },
     factors: {
       secondly: 1,
       minutely: 60,
@@ -1430,7 +1481,7 @@ const Units: UnitsIF = {
     type: UnitTypes.DURATION,
     description: "Unit of Relative time",
     factor: 525600,
-    convertTo: ["hourly"],
+    display: { kind: "units", family: ["hourly"] },
     factors: {
       secondly: 1 / 60,
       minutely: 1,
@@ -1446,7 +1497,7 @@ const Units: UnitsIF = {
     type: UnitTypes.DURATION,
     description: "Unit of Relative time",
     factor: 8760,
-    convertTo: ["minutely"],
+    display: { kind: "units", family: ["minutely"] },
     factors: {
       secondly: 1 / 3600,
       minutely: 1 / 60,
@@ -1462,7 +1513,7 @@ const Units: UnitsIF = {
     type: UnitTypes.DURATION,
     description: "Unit of Relative time",
     factor: 365,
-    convertTo: ["weekly"],
+    display: { kind: "units", family: ["weekly"] },
     factors: {
       secondly: 1 / 86400,
       minutely: 1 / 1440,
@@ -1478,7 +1529,7 @@ const Units: UnitsIF = {
     type: UnitTypes.DURATION,
     description: "Unit of Relative time",
     factor: 52,
-    convertTo: ["monthly"],
+    display: { kind: "units", family: ["monthly"] },
     factors: {
       secondly: 1 / 604800,
       minutely: 1 / 10080,
@@ -1494,7 +1545,7 @@ const Units: UnitsIF = {
     type: UnitTypes.DURATION,
     description: "Unit of Relative time",
     factor: 12,
-    convertTo: ["yearly"],
+    display: { kind: "units", family: ["yearly"] },
     factors: {
       secondly: 3.805175038e-7,
       minutely: 0.0000228311,
@@ -1510,7 +1561,7 @@ const Units: UnitsIF = {
     type: UnitTypes.DURATION,
     description: "Unit of Relative time",
     factor: 4,
-    convertTo: ["yearly"],
+    display: { kind: "units", family: ["yearly"] },
     factors: {
       secondly: 9.51293759e-8,
       minutely: 0.00000570777,
@@ -1526,7 +1577,7 @@ const Units: UnitsIF = {
     type: UnitTypes.DURATION,
     description: "Unit of Relative time",
     factor: 1,
-    convertTo: ["monthly"],
+    display: { kind: "units", family: ["monthly"] },
     factors: {
       secondly: 1 / 31536000,
       minutely: 1 / 525600,
@@ -2501,6 +2552,7 @@ function negateDim(a: DimensionVector): DimensionVector {
 
 export {
   addDim,
+  BASE_UNIT_BY_TYPE,
   baseSiFactor,
   Constants,
   dimEquals,

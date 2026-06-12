@@ -1,7 +1,7 @@
+import { UnhandledError } from "../exceptions";
 import type { TokenType } from "../tokens/token_basetypes";
 import tokenFactory from "../tokens/token_factory";
 import {
-  type DateToken,
   Direction,
   type expressionUnit,
   FunctionToken,
@@ -85,28 +85,51 @@ export default class ParseTree {
       return;
     }
 
-    let result: NumberToken | DateToken;
-    if (currHead.isRaw) {
-      result = await currHead.func(
-        currHead.children,
-        this.exprUnit,
-        this.setIsExplicit,
-        this.setConvertTo,
-      );
+    // Narrow on def.isRaw per token class so each calling convention is
+    // compiler-checked: raw defs get the token children + ambient unit
+    // context; non-raw defs get unwrapped numbers and the result is
+    // re-wrapped with the ambient unit.
+    let result: TokenType | null;
+    if (currHead instanceof OperatorToken) {
+      result = currHead.def.isRaw
+        ? await currHead.def.func(
+            currHead.children,
+            this.exprUnit,
+            this.setIsExplicit,
+            this.setConvertTo,
+          )
+        : this.wrapNumericResult(
+            currHead,
+            currHead.def.func(...currHead.getChildrenValues()),
+          );
     } else {
-      result = <NumberToken | DateToken>(
-        tokenFactory(
-          currHead.func(...currHead.getChildrenValues()).toString(),
-          currHead.getNumberType(),
-        )
-      );
-      if (this.exprUnit && result instanceof NumberToken)
-        result.unit = this.exprUnit;
+      result = currHead.def.isRaw
+        ? await currHead.def.run(
+            currHead.children,
+            this.exprUnit,
+            this.setIsExplicit,
+            this.setConvertTo,
+          )
+        : this.wrapNumericResult(
+            currHead,
+            currHead.def.run(...currHead.getChildrenValues()),
+          );
     }
+    if (!result) throw new UnhandledError(9001);
     currHead.clearChildren();
 
     if (parent) parent.setChild(direction, result);
     else this._head = result;
+  }
+
+  private wrapNumericResult(
+    node: OperatorToken | FunctionToken,
+    value: number,
+  ): TokenType | null {
+    const result = tokenFactory(value.toString(), node.getNumberType());
+    if (this.exprUnit && result instanceof NumberToken)
+      result.unit = this.exprUnit;
+    return result;
   }
 }
 

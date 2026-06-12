@@ -14,14 +14,12 @@ export function matrixToLatex(literal: string): string | null {
   if (literal[0] !== "[" || literal[literal.length - 1] !== "]") return null;
   const inner = literal.slice(1, -1).trim();
   if (!inner) return null;
-  const rows = inner
-    .split(/[,;]/)
-    .map((r) =>
-      r
-        .trim()
-        .split(/\s+/)
-        .filter((c) => c.length > 0),
-    );
+  const rows = inner.split(/[,;]/).map((r) =>
+    r
+      .trim()
+      .split(/\s+/)
+      .filter((c) => c.length > 0),
+  );
   const cols = rows[0].length;
   if (cols === 0) return null;
   for (const row of rows) {

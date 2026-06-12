@@ -31,6 +31,10 @@
 3. `*`, `/`, `mod`
 4. `+`, `-`
 
+`^` is right-associative, following mathematical convention: `2^3^2` is
+`2^(3^2)` = 512, not `(2^3)^2` = 64. All other operators of equal precedence
+evaluate left to right.
+
 ```hissab
 14 + 88 / 11 * 23.56 - 17
 256 ^ (1/8)

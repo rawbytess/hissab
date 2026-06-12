@@ -152,5 +152,3 @@ Python's job.
 
 The calculator is **open-source and free.** AI features use **your own provider
 key**, so there is no markup on inference and your keys stay in your browser.
-The hosted MCP server is free with rate limits, with commercial options for
-heavier and B2B use.

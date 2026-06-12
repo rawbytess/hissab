@@ -65,7 +65,7 @@ that layer — the agent emits a short, documented expression like
    compromised host.
 
 5. **Reproducible, auditable artifacts.** `cagr(1000, 2000, 10 years)` returns the
-   identical answer in the app, the CLI, the library, and the MCP server. Ad-hoc
+   identical answer in the app, the CLI, and the library. Ad-hoc
    Python is different every run and depends on library versions and float
    handling. Hissab leaves a diffable, re-runnable record of exactly how a number
    was produced.
@@ -95,7 +95,7 @@ deterministic engine.
 - **Auditability** — every answer traces back to a short, visible, editable
   expression.
 - **Portability** — the same engine works in the web app, CLI, TypeScript
-  library, MCP server, and agent skills.
+  library, and agent skills.
 - **AI leverage** — Hissab turns AI from a risky calculator into a translator and
   explainer backed by a real math engine.
 

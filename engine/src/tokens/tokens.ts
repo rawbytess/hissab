@@ -11,6 +11,10 @@ import {
   toCartesian,
 } from "../coordinates";
 import { UnhandledError, UserError } from "../exceptions";
+// Type-only imports — erased at compile time, so they don't add runtime edges
+// to the module graph (function.ts/operator_types.ts import values from this
+// file; a value import back would create a real cycle).
+import type { FunctionDef } from "../function";
 import * as ip from "../ip";
 import {
   formatMatrix,
@@ -22,6 +26,11 @@ import {
 import { type Cx, cxAdd, cxString, cxSub } from "../symbolic/complex";
 import type { Expr } from "../symbolic/expr";
 import { exprToString } from "../symbolic/render";
+import type {
+  Associativity,
+  ControllerKind,
+  OperatorDef,
+} from "../types/operator_types";
 import UnitTypes from "../types/unit_enum";
 import {
   baseSiFactor,
@@ -168,7 +177,7 @@ class NumberToken extends Token {
       this._value = `0x${parseFloat(thisVal).toString(TokenBaseType.HEX)}`;
     else {
       const v = this.toNumber();
-      let localeOptions = null;
+      let localeOptions: Intl.NumberFormatOptions | null = null;
       if (this._unit?.unitdata.type === UnitTypes.CURRENCY) {
         localeOptions = {
           style: "currency",
@@ -180,7 +189,6 @@ class NumberToken extends Token {
           parseFloat(thisVal).toPrecision(3),
         ).toLocaleString(
           undefined,
-          // @ts-expect-error
           localeOptions ?? {
             maximumFractionDigits: 10,
             notation: Math.abs(v) < 1e-9 ? "scientific" : "standard",
@@ -190,7 +198,6 @@ class NumberToken extends Token {
       } else {
         this._value = parseFloat(parseFloat(thisVal).toFixed(4)).toLocaleString(
           undefined,
-          // @ts-expect-error
           localeOptions ?? {
             maximumFractionDigits: 10,
             notation: Math.abs(v) > 1e15 ? "scientific" : "standard",
@@ -250,7 +257,7 @@ class NumberToken extends Token {
     }
     if (token instanceof DateToken) {
       if (this.unit === null || this.unit?.unitdata.type !== UnitTypes.TIME)
-        throw new UnhandledError(0);
+        throw new UnhandledError(9028);
       return token
         .setObject(
           token.spacetime?.add(this.toNumber(), this.unit?.value as TimeUnit),
@@ -304,7 +311,7 @@ class NumberToken extends Token {
     }
     if (token instanceof DateToken) {
       if (this.unit === null || this.unit?.unitdata.type !== UnitTypes.TIME)
-        throw new UnhandledError(0);
+        throw new UnhandledError(9029);
       return token
         .setObject(
           token.spacetime!.subtract(
@@ -461,7 +468,7 @@ class DateToken extends Token {
   add(token: TokenType, expUnit: expressionUnit) {
     if (token instanceof NumberToken) {
       if (token.unit === null || token.unit?.unitdata.type !== UnitTypes.TIME)
-        throw new UnhandledError(0);
+        throw new UnhandledError(9030);
       return this.setObject(
         this.spacetime?.add(token.toNumber(), token.unit?.value as TimeUnit),
       ).formatResult();
@@ -472,7 +479,7 @@ class DateToken extends Token {
   subtract(token: TokenType, expUnit: expressionUnit) {
     if (token instanceof NumberToken) {
       if (token.unit === null || token.unit?.unitdata.type !== UnitTypes.TIME)
-        throw new UnhandledError(0);
+        throw new UnhandledError(9031);
       return this.setObject(
         this.spacetime!.subtract(
           token.toNumber(),
@@ -1147,56 +1154,43 @@ export type OpShape = {
 
 class OperatorToken extends Token {
   kind = "operatorToken";
+  // The full table entry from Operators. Solve narrows on def.isRaw to pick
+  // the calling convention; everything else (precedence, shape) is derived
+  // here once at construction.
+  readonly def: OperatorDef;
   precedence: number;
-  operands: string[];
   shape: OpShape;
-  func: any;
-  isRaw: boolean;
   left: TokenType | null;
   right: TokenType | null;
   // Variadic tail for operators like `to mile, yard`. Empty for normal
   // binary ops; only NeedUnitState's comma path pushes here.
   more: TokenType[];
 
-  constructor(
-    value: string,
-    originalValue: string,
-    precedence: number,
-    operands: string[],
-    func: any,
-    isRaw: boolean,
-  ) {
+  constructor(value: string, originalValue: string, def: OperatorDef) {
     super(value, originalValue);
-    this.precedence = precedence;
-    this.operands = operands;
+    this.def = def;
+    this.precedence = def.precedence;
     this.shape = {
-      prenumber: operands.includes("prenumber"),
-      postnumber: operands.includes("postnumber"),
-      prestring: operands.includes("prestring"),
-      postunit: operands.includes("postunit"),
+      prenumber: def.operands.includes("prenumber"),
+      postnumber: def.operands.includes("postnumber"),
+      prestring: def.operands.includes("prestring"),
+      postunit: def.operands.includes("postunit"),
     };
-    this.func = func;
-    this.isRaw = isRaw;
     this.left = null;
     this.right = null;
     this.more = [];
   }
 
+  get isRaw(): boolean {
+    return this.def.isRaw;
+  }
+  get associativity(): Associativity {
+    return this.def.associativity ?? "left";
+  }
+
   setChild(direction: Direction, token: TokenType): void {
     if (direction === Direction.RIGHT) this.right = token;
     else this.left = token;
-  }
-  setLeftChild(token: TokenType): void {
-    this.left = token;
-  }
-  setRightChild(token: TokenType): void {
-    this.right = token;
-  }
-  getLeftChild(): TokenType | null {
-    return this.left;
-  }
-  getRightChild(): TokenType | null {
-    return this.right;
   }
   // Fill left, then right, then variadic tail.
   insertChild(token: TokenType): void {
@@ -1226,15 +1220,15 @@ class OperatorToken extends Token {
   getNumberType(): TokenBaseType {
     if (this.left instanceof NumberToken) return this.left.numbertype;
     if (this.right instanceof NumberToken) return this.right.numbertype;
-    throw new UnhandledError(0);
+    throw new UnhandledError(9032);
   }
 }
 
 class ControllerToken extends Token {
   kind = "controllerToken";
-  basetype: string;
+  basetype: ControllerKind;
 
-  constructor(value: string, originalValue: string, basetype: string) {
+  constructor(value: string, originalValue: string, basetype: ControllerKind) {
     super(value, originalValue);
     this.basetype = basetype;
   }
@@ -1242,20 +1236,18 @@ class ControllerToken extends Token {
 
 class FunctionToken extends Token {
   kind = "functionToken";
-  func: () => void;
-  isRaw: boolean;
+  // The full table entry from Functions; solve narrows on def.isRaw.
+  readonly def: FunctionDef;
   args: TokenType[];
 
-  constructor(
-    value: string,
-    originalValue: string,
-    func: () => void,
-    isRaw: boolean,
-  ) {
+  constructor(value: string, originalValue: string, def: FunctionDef) {
     super(value, originalValue);
-    this.func = func;
-    this.isRaw = isRaw;
+    this.def = def;
     this.args = [];
+  }
+
+  get isRaw(): boolean {
+    return this.def.isRaw;
   }
 
   insertChild(token: TokenType): void {
@@ -1274,7 +1266,7 @@ class FunctionToken extends Token {
     for (const a of this.args) {
       if (a instanceof NumberToken) return a.numbertype;
     }
-    throw new UnhandledError(0);
+    throw new UnhandledError(9033);
   }
 }
 
@@ -1365,19 +1357,6 @@ class TextToken extends Token {
   }
 }
 
-function isMultiSymbol(symbol: string) {
-  const multisymbol = {
-    "*": true,
-    "**": true,
-    ">": true,
-    "<": true,
-    ">>": true,
-    "<<": true,
-  };
-
-  return symbol in multisymbol;
-}
-
 export type { Variables };
 export {
   BooleanToken,
@@ -1391,7 +1370,6 @@ export {
   FractionToken,
   FunctionToken,
   IpToken,
-  isMultiSymbol,
   ListToken,
   MatrixToken,
   NumberToken,

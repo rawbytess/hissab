@@ -18,5 +18,5 @@
     "types": ["jest", "node"]
   },
   "include": ["./**/*", "./tests/expression/expressions.test.ts"],
-  "exclude": ["./dist/**/*", "./tests"]
+  "exclude": ["./dist/**/*", "./tests", "./tsup.config.ts", "./scripts"]
 }

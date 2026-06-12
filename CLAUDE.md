@@ -10,7 +10,7 @@ This is a pnpm monorepo (`pnpm-workspace.yaml`) for **Hissab** — a natural-lan
 - `app/` — Vite + React 19 client. Builds as a PWA (default) **and** as a Chrome extension from the same source via `vite.config.crx.ts` (gated on `VITE_CHROME=true`).
 - `cli/` — Bun-compiled standalone binary (`hissab`) wrapping the engine. `bun build --compile` produces self-contained per-platform binaries.
 - `website/` — Astro + Starlight marketing/docs site.
-- `skills/` — Anthropic Agent Skills (`hissab-cli`, `hissab-cloud`) that teach LLMs to delegate math to Hissab. The bundled `documentation.md` files are **generated** from `lib/documentation/base.ts` by `scripts/sync-skill-docs.ts` — don't hand-edit them.
+- `skills/` — Anthropic Agent Skill (`hissab-cli`) that teaches LLMs to delegate math to Hissab. The bundled `documentation.md` file is **generated** from `lib/documentation/base.ts` by `scripts/sync-skill-docs.ts` — don't hand-edit it.
 - `lib/` (root) — shared TS used by `app` and `cli` (e.g. `calculateExpressions.ts`, `documentation/`). Reached from `app` and `cli` via relative imports.
 
 ## Common commands
@@ -31,8 +31,8 @@ pnpm sync:skill-docs:check # fail if skill docs drift from source
 Per-workspace (use `pnpm -F <workspace>`):
 
 ```bash
-pnpm -F engine test                    # jest-playwright across chromium/firefox/webkit
-pnpm -F engine test-single             # same suite, chromium only (faster local loop)
+pnpm -F engine test                    # Jest engine test suite
+pnpm -F engine test-single             # same Jest suite via the alternate config
 pnpm -F app dev                        # vite PWA dev at :5173 (COOP/COEP headers set)
 pnpm -F app build:crx                  # Chrome extension build into app/dist
 pnpm -F app chrome                     # build:crx + zip via npm-build-zip
@@ -60,7 +60,7 @@ To run a single Jest test in the engine: `pnpm -F engine exec jest path/to/file.
 - **Biome** (`biome.json`) is the formatter and linter for the whole repo. Double quotes, 2-space indent, trailing commas, semicolons required, organize-imports enabled.
 - **Path-alias** `@/*` → `src/*` in `app/`.
 - **Strict TS** is on in app/ and engine/; `noUnusedLocals`/`noUnusedParameters` are deliberately off in root configs (don't re-enable without a sweep).
-- Tests in `engine/` use `jest-playwright-preset` and need browser binaries — first run after a clean install may need `pnpm exec playwright install`.
+- Tests in `engine/` use Jest with `ts-jest`.
 
 ## What not to do
 
