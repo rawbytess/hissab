@@ -9,10 +9,10 @@ import type {
 import { asyncNotebooksAtom, notebooksAtom } from "@/lib/atoms/notebooks.ts";
 import {
   type ArtifactsDetail,
+  appendDrawArg,
   CELL_ARTIFACTS_EVENT,
   type CellArtifact,
-  type OverlayCandidate,
-  plotDomain,
+  overlayCandidatesFor,
 } from "@/lib/editor/cellArtifacts.ts";
 import HissabEditor, { type HissabEditorType } from "@/lib/editor/editor.ts";
 import {
@@ -85,6 +85,9 @@ export function ExpressionsCell({
       },
       isWritable: true,
       isDark: true,
+      // Inherit the cell's surface so lines don't paint a different colour
+      // than the space around them.
+      editorBackground: "transparent",
     });
 
     he.init().then(() => {
@@ -135,12 +138,14 @@ export function ExpressionsCell({
       el.removeEventListener(CELL_ARTIFACTS_EVENT, handler as EventListener);
   }, []);
 
+  const isPlayground = variant === "playground";
+  // The playground gets no header bar: it fills the canvas, so the `CALC ·
+  // Playground` label was 30px of chrome saying nothing. AI-sourced cells keep
+  // theirs — there the title identifies which step produced the cell.
   const headerTitle =
-    variant === "playground"
-      ? "Playground"
-      : cell.source === "ai"
-        ? (cell.title ?? deriveExpressionTitle(cell.content))
-        : null;
+    !isPlayground && cell.source === "ai"
+      ? (cell.title ?? deriveExpressionTitle(cell.content))
+      : null;
 
   const handleCopy = () => {
     void navigator.clipboard?.writeText(cell.content ?? "");
@@ -181,6 +186,21 @@ export function ExpressionsCell({
         </div>
       )}
       <div ref={containerRef} className="nb2-editor-mount" />
+      {isPlayground && (
+        // Clicking the empty space under the last line should put the caret in
+        // the editor, the way any full-page editor behaves. Purely a pointer
+        // affordance — the editor itself is the real (and keyboard-reachable)
+        // target, so this is hidden from assistive tech.
+        <div
+          className="nb2-editor-filler"
+          aria-hidden="true"
+          role="presentation"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            editorRef.current?.focusEditor();
+          }}
+        />
+      )}
       {artifacts.length > 0 && (
         <Suspense fallback={null}>
           <div className="nb2-graphs">
@@ -212,41 +232,6 @@ export function ExpressionsCell({
       />
     </div>
   );
-}
-
-// Lines whose result can be overlaid onto `target`: graphable *value* lines
-// (suggested artifacts) above the target — references only resolve to earlier
-// lines — and of the same domain, since a draw() can't mix curves with
-// complex/point series (v1).
-function overlayCandidatesFor(
-  target: CellArtifact,
-  all: CellArtifact[],
-): OverlayCandidate[] {
-  const domain = plotDomain(target.series);
-  return all
-    .filter(
-      (a) =>
-        a.source === "suggested" &&
-        a.lineNumber < target.lineNumber &&
-        plotDomain(a.series) === domain,
-    )
-    .map((a) => ({
-      ref: `l${a.lineNumber + 1}`,
-      label: a.series.map((s) => s.label).join(", "),
-    }));
-}
-
-// Splice `exprText` in as the final argument of the draw()/plot() call on
-// `lineText`, preserving any trailing `// comment`. Insertion happens before
-// the expression's last `)` — the call's closing paren even when an argument is
-// itself a call, e.g. `draw(point(1,2))`.
-function appendDrawArg(lineText: string, exprText: string): string {
-  const commentIdx = lineText.indexOf("//");
-  const exprPart = commentIdx === -1 ? lineText : lineText.slice(0, commentIdx);
-  const comment = commentIdx === -1 ? "" : lineText.slice(commentIdx);
-  const close = exprPart.lastIndexOf(")");
-  if (close === -1) return lineText;
-  return `${exprPart.slice(0, close)}, ${exprText}${exprPart.slice(close)}${comment}`;
 }
 
 function deriveExpressionTitle(content: string): string {

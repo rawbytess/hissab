@@ -7,7 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a pnpm monorepo (`pnpm-workspace.yaml`) for **Hissab** — a natural-language calculator. Workspaces:
 
 - `engine/` — the core expression evaluator (lexer → parser → token tree). Pure TS library, published as the `engine` workspace package. Every other workspace depends on it.
-- `app/` — Vite + React 19 client. Builds as a PWA (default) **and** as a Chrome extension from the same source via `vite.config.crx.ts` (gated on `VITE_CHROME=true`).
+- `app/` — Vite + React 19 client, built as a PWA (`vite.config.pwa.ts`).
+- `extension/` — minimal Chrome extension (MV3 popup, one editor, no AI) built with `@crxjs/vite-plugin`. The manifest is `manifest.config.ts` and takes its version from `extension/package.json`. It has no editor code of its own: it imports `@/lib/editor/*`, `@/components/editor/TokenPopovers.tsx`, `@/components/notebook/GraphArtifact.tsx` and `@/styles/{tokens,graph-artifact,token-popovers}.css` straight from `app/src` (its `@/` alias points there), so keep those modules free of app-only dependencies (atoms, router, AI, analytics, Tailwind). Needs a full workspace install, since the shared files resolve their packages from `app/node_modules`.
 - `cli/` — Bun-compiled standalone binary (`hissab`) wrapping the engine. `bun build --compile` produces self-contained per-platform binaries.
 - `website/` — Astro + Starlight marketing/docs site.
 - `skills/` — Anthropic Agent Skill (`hissab-cli`) that teaches LLMs to delegate math to Hissab. The bundled `documentation.md` file is **generated** from `lib/documentation/base.ts` by `scripts/sync-skill-docs.ts` — don't hand-edit it.
@@ -34,8 +35,9 @@ Per-workspace (use `pnpm -F <workspace>`):
 pnpm -F engine test                    # Jest engine test suite
 pnpm -F engine test-single             # same Jest suite via the alternate config
 pnpm -F app dev                        # vite PWA dev at :5173 (COOP/COEP headers set)
-pnpm -F app build:crx                  # Chrome extension build into app/dist
-pnpm -F app chrome                     # build:crx + zip via npm-build-zip
+pnpm -F ./extension dev                # extension popup dev server at :5174
+pnpm -F ./extension build              # Chrome extension build into extension/dist (load unpacked)
+pnpm -F ./extension package            # build + zip for the Chrome Web Store
 pnpm -F cli dev eval "1 + 2"           # run CLI without compiling
 pnpm -F cli build:darwin-arm64         # one-platform compile (skip the full matrix)
 pnpm -F website dev                    # astro dev server
@@ -53,7 +55,7 @@ To run a single Jest test in the engine: `pnpm -F engine exec jest path/to/file.
 
 **Multi-line evaluation semantics** live in `lib/calculateExpressions.ts` (not in the engine). Each line gets implicit `total<N>` (sum of all prior lines) and `prev<N>` variables injected before lex, plus the line's own result is exposed as `line<N>` / `l<N>` to later lines. This file is the contract between the app's editor and any other multi-line consumer — modify with care.
 
-**App build modes.** PWA build (`vite.config.pwa.ts`) is the default and serves with cross-origin isolation headers (COOP/COEP — required for some WASM/SharedArrayBuffer features). The Chrome extension build uses `@crxjs/vite-plugin` and is gated on the `VITE_CHROME=true` env var being set for *both* `tsc` and `vite build` (see `build:crx` script).
+**App build modes.** PWA build (`vite.config.pwa.ts`) is the default and serves with cross-origin isolation headers (COOP/COEP — required for some WASM/SharedArrayBuffer features). The Chrome extension is a separate workspace (`extension/`), not a build mode of the app.
 
 ## Tooling conventions
 

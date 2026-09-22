@@ -1,0 +1,213 @@
+/* ====== Hissab Web Store mockups ======
+   Shared by every page in this folder. Each page is a fixed-size canvas
+   (set with --w / --h on <body>) that scripts/render.mjs screenshots at its
+   exact store size. The popup UI is never redrawn here: pages show real
+   captures of the built popup from captures/. */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=block");
+
+/* Chillax is the editor's expression font; the headlines share it. Same CDN
+   files the app and the extension load. */
+@font-face {
+  font-family: "Chillax";
+  font-weight: 400;
+  font-display: block;
+  src: url("https://fonts.cdnfonts.com/s/85273/Chillax-Regular.woff")
+    format("woff");
+}
+@font-face {
+  font-family: "Chillax";
+  font-weight: 600;
+  font-display: block;
+  src: url("https://fonts.cdnfonts.com/s/85273/Chillax-Semibold.woff")
+    format("woff");
+}
+@font-face {
+  font-family: "Chillax";
+  font-weight: 700;
+  font-display: block;
+  src: url("https://fonts.cdnfonts.com/s/85273/Chillax-Bold.woff")
+    format("woff");
+}
+
+:root {
+  /* Sampled from the extension icon: its ink and its three-colour wash. */
+  --ink: #1e1b22;
+  --ink-soft: #4a3f55;
+  --pink: #f7c2df;
+  --coral: #f4a687;
+  --lilac: #c69df3;
+  --plum: 58, 22, 84;
+
+  /* Chrome's dark theme, for the toolbar on the overview shot. */
+  --chrome-frame: #1f1f22;
+  --chrome-tab: #36363b;
+  --chrome-omnibox: #232326;
+  --chrome-icon: #c4c4c9;
+  --chrome-text: #e6e6ea;
+  --chrome-text-dim: #9d9da4;
+
+  --font-head: "Chillax", "Inter Tight", system-ui, sans-serif;
+  --font-body: "Inter Tight", system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+body {
+  position: relative;
+  width: var(--w);
+  height: var(--h);
+  overflow: hidden;
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  /* The icon's wash: pink from the top left, coral top right, lilac below. */
+  background:
+    radial-gradient(
+      70% 90% at 100% 0%,
+      rgba(244, 166, 135, 0.95),
+      rgba(244, 166, 135, 0) 62%
+    ),
+    radial-gradient(
+      85% 110% at 0% 100%,
+      rgba(190, 148, 244, 1),
+      rgba(190, 148, 244, 0) 66%
+    ),
+    linear-gradient(135deg, #f8c6e2 0%, #eeb6e4 45%, #d9a8f1 100%);
+}
+
+/* Fine grain, like the icon's surface. */
+body::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ====== Headline + supporting line ====== */
+
+.copy {
+  position: absolute;
+  left: var(--copy-x, 88px);
+  top: 50%;
+  width: var(--copy-w, 420px);
+  transform: translateY(-50%);
+}
+
+.copy h1 {
+  margin: 0;
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: var(--h1-size, 58px);
+  line-height: 1.04;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+.copy p {
+  margin: 24px 0 0;
+  max-width: 25em;
+  font-size: 21px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  text-wrap: pretty;
+}
+
+.copy code {
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 0.95em;
+  color: var(--ink);
+}
+
+/* ====== Brand lockup ====== */
+
+.lockup {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--mark) * 0.28);
+}
+
+.lockup img {
+  display: block;
+  width: var(--mark);
+  height: var(--mark);
+  border-radius: 22.5%;
+  box-shadow: 0 6px 18px -8px rgba(var(--plum), 0.55);
+}
+
+.lockup span {
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: calc(var(--mark) * 0.72);
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+/* ====== The popup ======
+   A real 2x capture shown at --scale. Chrome draws popups with a small
+   radius and a soft drop shadow. */
+
+.popup {
+  --pw: calc(520px * var(--scale, 1));
+  --ph: calc(580px * var(--scale, 1));
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--pw);
+  height: var(--ph);
+  margin: 0;
+}
+
+.popup img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  outline: 1px solid rgba(255, 255, 255, 0.07);
+  outline-offset: -1px;
+  box-shadow:
+    0 2px 4px rgba(var(--plum), 0.16),
+    0 24px 60px -18px rgba(var(--plum), 0.55);
+}
+
+/* The icon's long 45° shadow, cast toward the bottom right. The element
+   sets --pw / --ph (its own size); the shadow is that box swept along the
+   diagonal. */
+.long-shadow::before {
+  --L: 900px;
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  top: 0;
+  width: calc(var(--pw) + var(--L));
+  height: calc(var(--ph) + var(--L));
+  clip-path: polygon(
+    0 0,
+    var(--pw) 0,
+    calc(var(--pw) + var(--L)) var(--L),
+    calc(var(--pw) + var(--L)) calc(var(--ph) + var(--L)),
+    var(--L) calc(var(--ph) + var(--L)),
+    0 var(--ph)
+  );
+  background: linear-gradient(
+    135deg,
+    rgba(var(--plum), 0.2) 0%,
+    rgba(var(--plum), 0.07) 42%,
+    rgba(var(--plum), 0) 70%
+  );
+}

@@ -1,0 +1,127 @@
+/* Graphs rendered below the editor (one per draw() / graphable result). The
+   editor pushes them up through the CELL_ARTIFACTS_EVENT channel; each one is
+   scoped to the editor it came from. */
+.nb2-graphs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 10px 10px;
+  border-top: 1px solid var(--line-1);
+}
+.nb2-graph {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.nb2-graph-toggle {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+.nb2-graph-toggle:hover {
+  color: var(--text-0);
+  border-color: var(--line-3);
+  background: var(--bg-3);
+}
+.nb2-graph-host {
+  width: 100%;
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-sm);
+  background: var(--bg-1);
+  overflow: hidden;
+}
+.nb2-graph-empty {
+  padding: 16px;
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+/* "＋ overlay" control on explicit graphs: add another series to this draw(). */
+.nb2-graph-overlay {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.nb2-graph-overlay-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+.nb2-graph-overlay-btn:hover {
+  color: var(--text-0);
+  border-color: var(--line-3);
+  background: var(--bg-3);
+}
+.nb2-graph-overlay-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.nb2-graph-chip {
+  padding: 3px 8px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-pill, 999px);
+  background: var(--bg-1);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+.nb2-graph-chip:hover {
+  color: var(--text-0);
+  border-color: var(--line-3);
+  background: var(--bg-3);
+}
+.nb2-graph-overlay-input {
+  padding: 3px 8px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  background: var(--bg-1);
+  color: var(--text-0);
+  font: inherit;
+  font-size: 11px;
+  min-width: 150px;
+}
+.nb2-graph-overlay-input:focus {
+  outline: none;
+  border-color: var(--line-3);
+}
+
+/* function-plot ships light-theme SVG colours; recolour for the dark UI. */
+.nb2-graph-host .function-plot {
+  font-family: var(--font-ui);
+}
+.nb2-graph-host .function-plot .top-right-legend,
+.nb2-graph-host .function-plot text {
+  fill: var(--text-2);
+}
+.nb2-graph-host .function-plot .x.axis path,
+.nb2-graph-host .function-plot .y.axis path,
+.nb2-graph-host .function-plot .tick line {
+  stroke: var(--line-2);
+}
+.nb2-graph-host .function-plot .tick text {
+  fill: var(--text-3);
+}
+.nb2-graph-host .function-plot .origin {
+  stroke: var(--line-3);
+}

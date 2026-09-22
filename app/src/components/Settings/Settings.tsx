@@ -295,7 +295,7 @@ function PrivacyPane() {
       </div>
       <a
         className="privacy-link-row"
-        href="https://hissab.io/privacy-app"
+        href="https://hissab.io/privacy/"
         target="_blank"
         rel="noopener noreferrer"
       >

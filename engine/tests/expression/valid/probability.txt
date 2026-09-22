@@ -1,5 +1,5 @@
 # Probability — P() literal, complement/AND/OR/xor via ~ & | xor, and helpers.
-# Values < 1 render to 3 significant figures (see NumberToken.formatResult).
+# Values < 1 render to 3 significant figures (see NumberToken.formatValue).
 
 # P() defines a probability; accepts a fraction or a percent.
 ["p(0.1)", "0.1"]

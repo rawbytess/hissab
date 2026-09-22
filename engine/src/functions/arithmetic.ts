@@ -10,6 +10,13 @@ import {
   isPrime,
 } from "../arithmetic_functions";
 import {
+  gcdExact,
+  isPrimeExact,
+  isSafe,
+  lcmExact,
+  powmodExact,
+} from "../exact";
+import {
   angleBetween,
   angularAxes,
   type CoordSystem,
@@ -94,23 +101,57 @@ import {
   waterIntakeLiters,
 } from "../health_functions";
 import { scaleUnit } from "../tokens/compound";
-import type { FunctionDef } from "./types";
+import type { FunctionDef, RawFn } from "./types";
 import { money, need, pct, plain, type SetExplicit } from "./util";
 
 export const arithmeticFunctions: Record<string, FunctionDef> = {
   abs: {
     run: absolute,
+    exact: (...v) => (v.length === 1 ? (v[0] < 0n ? -v[0] : v[0]) : null),
     description: "Absolute value",
     isRaw: false,
   },
   lcm: {
     run: getLCM,
+    exact: (...v) => (v.length < 2 ? null : lcmExact(...v)),
     description: "Find least common multiple from a range of numbers",
     isRaw: false,
   },
   gcd: {
     run: getGCD,
+    exact: (...v) => (v.length < 2 ? null : gcdExact(...v)),
     description: "Find greatest common divisor from a range of numbers",
+    isRaw: false,
+  },
+
+  // ---- Rounding -----------------------------------------------------------
+  floor: {
+    run: roundingFn("floor"),
+    description: "Round down, to an integer or n decimal places: floor(x, [n])",
+    isRaw: true,
+  },
+  ceil: {
+    run: roundingFn("ceil"),
+    description: "Round up, to an integer or n decimal places: ceil(x, [n])",
+    isRaw: true,
+  },
+  round: {
+    run: roundingFn("round"),
+    description:
+      "Round half away from zero, to an integer or n decimal places: round(x, [n])",
+    isRaw: true,
+  },
+
+  // Modular exponentiation, exact at any size: powmod(7, 222, 1000) → 49.
+  powmod: {
+    run: () => {
+      throw new UserError(7812);
+    },
+    exact: (base, exp, mod) =>
+      exp === undefined || mod === undefined || exp < 0n || mod === 0n
+        ? null
+        : powmodExact(base, exp, mod),
+    description: "Modular exponentiation: powmod(base, exponent, modulus)",
     isRaw: false,
   },
 
@@ -140,6 +181,70 @@ export const arithmeticFunctions: Record<string, FunctionDef> = {
     isRaw: true,
   },
 };
+
+// floor / ceil / round to an integer, or to `digits` decimal places (negative
+// digits round to tens, hundreds, …). The unit is kept. `round` goes half away
+// from zero (2.5 → 3, -2.5 → -3); an exact integer stays exact.
+function roundingFn(mode: "floor" | "ceil" | "round"): RawFn {
+  return (args) => {
+    const [x, d] = args;
+    if (args.length > 2 || !(x instanceof NumberToken))
+      throw new UserError(7810);
+    let digits = 0;
+    if (d !== undefined) {
+      if (!(d instanceof NumberToken) || d.unit) throw new UserError(7811);
+      digits = d.toNumber();
+      if (!Number.isInteger(digits)) throw new UserError(7811);
+    }
+    const exact = x.exactValue();
+    if (exact !== null) {
+      if (digits >= 0) return x;
+      const result = NumberToken.fromExact(roundExact(exact, -digits, mode));
+      result.unit = x.unit;
+      return result;
+    }
+    const v = x.toNumber();
+    // Shift the decimal point in the digit string (`1.005e2`), not by
+    // multiplying — 1.005 * 100 is 100.49999999999999 in floating point.
+    const text = String(Math.abs(v));
+    const scaled = text.includes("e")
+      ? Math.abs(v) * 10 ** digits
+      : Number(`${text}e${digits}`);
+    const signed = v < 0 ? -scaled : scaled;
+    const whole =
+      mode === "floor"
+        ? Math.floor(signed)
+        : mode === "ceil"
+          ? Math.ceil(signed)
+          : Math.sign(signed) * Math.round(Math.abs(signed));
+    const shifted = String(Math.abs(whole));
+    const value = shifted.includes("e")
+      ? whole / 10 ** digits
+      : Math.sign(whole) * Number(`${shifted}e${-digits}`);
+    const result = tokenFactory(
+      (Object.is(value, -0) ? 0 : value).toString(),
+      x.numbertype,
+    ) as NumberToken;
+    result.unit = x.unit;
+    return result;
+  };
+}
+
+// Round an exact integer to a multiple of 10^places.
+function roundExact(
+  n: bigint,
+  places: number,
+  mode: "floor" | "ceil" | "round",
+): bigint {
+  const step = 10n ** BigInt(places);
+  let q = n / step;
+  const r = n % step;
+  if (mode === "floor" && r < 0n) q -= 1n;
+  if (mode === "ceil" && r > 0n) q += 1n;
+  if (mode === "round" && 2n * (r < 0n ? -r : r) >= step)
+    q += r < 0n ? -1n : 1n;
+  return q * step;
+}
 
 function absolute(...params: number[]) {
   if (params.length > 1) throw new UserError(12343);
@@ -187,8 +292,15 @@ function singleNumber(args: TokenType[], code: number): number {
   return a.toNumber();
 }
 
+// Exact integers of any size get a Miller–Rabin test; a float past 2^53 has
+// already lost digits, so there is no honest answer for it.
 function isPrimeFn(args: TokenType[]): BooleanToken {
-  return new BooleanToken(isPrime(singleNumber(args, 7801)));
+  const n = singleNumber(args, 7801);
+  const exact = (args[0] as NumberToken).exactValue();
+  if (exact !== null) return new BooleanToken(isPrimeExact(exact));
+  if (Number.isInteger(n) && Math.abs(n) > Number.MAX_SAFE_INTEGER)
+    throw new UserError(7806);
+  return new BooleanToken(isPrime(n));
 }
 
 function fractionFn(args: TokenType[]): FractionToken {
@@ -206,5 +318,12 @@ function mixedFractionFn(args: TokenType[]): FractionToken {
 }
 
 function factorsFn(args: TokenType[]): ListToken {
-  return new ListToken(divisors(singleNumber(args, 7803)));
+  const n = singleNumber(args, 7803);
+  const exact = (args[0] as NumberToken).exactValue();
+  if (
+    Math.abs(n) > Number.MAX_SAFE_INTEGER ||
+    (exact !== null && !isSafe(exact))
+  )
+    throw new UserError(7807);
+  return new ListToken(divisors(n));
 }

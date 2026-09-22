@@ -1,12 +1,36 @@
 import { lstatSync, readdirSync, readFileSync } from "fs";
 import { resolve } from "path";
 import spacetime from "spacetime";
-import { doLex, doParse } from "../../src";
+import { doLex, doParse, type ParseResult, type Variables } from "../../src";
 import { UserError } from "../../src/exceptions";
+
+// Every fake-able API except `Date`, so only the clock is frozen.
+const REAL_TIMERS = [
+  "hrtime",
+  "nextTick",
+  "performance",
+  "queueMicrotask",
+  "requestAnimationFrame",
+  "cancelAnimationFrame",
+  "requestIdleCallback",
+  "cancelIdleCallback",
+  "setImmediate",
+  "clearImmediate",
+  "setInterval",
+  "clearInterval",
+  "setTimeout",
+  "clearTimeout",
+] as const;
 
 describe("Valid Expressions", () => {
   const validTestDir = "./tests/expression/valid/";
   beforeEach(() => {
+    // Fixed "now", so `today` and year-less dates (`25 dec` = this year) are
+    // deterministic. Live-clock checks stay in datetime_live.txt.
+    jest.useFakeTimers({
+      now: new Date("2026-09-22T12:00:00Z"),
+      doNotFake: [...REAL_TIMERS],
+    });
     const mockTimezone = "America/Toronto";
 
     // @ts-expect-error
@@ -18,6 +42,7 @@ describe("Valid Expressions", () => {
   });
 
   afterEach(() => {
+    jest.useRealTimers();
     jest.restoreAllMocks();
   });
 
@@ -31,12 +56,27 @@ describe("Valid Expressions", () => {
 
     exps.forEach((exp, i) => {
       if (exp === "" || exp[0] === "#") return;
-      const [expr, result] = JSON.parse(exp);
+      // `[expr, result]`, or `[line1, line2, …, result]` for a multi-line case:
+      // the lines share one scope — labels, `line<N>`/`l<N>` and `prev`, wired
+      // the way lib/calculateExpressions.ts does — and the last line's result
+      // is checked.
+      const lines: string[] = JSON.parse(exp);
+      const result = lines.pop();
 
       test(`Valid Expression: ${filename}:${i + 1}`, async () => {
-        const tokens = doLex(expr, {}, 1);
-        const res = await doParse(tokens);
-        expect(res.result).toStrictEqual(result);
+        const variables: Variables = {};
+        let res: ParseResult | undefined;
+        for (const [l, line] of lines.entries()) {
+          const n = l + 1;
+          if (variables[`line${n - 1}`])
+            variables[`prev${n}`] = variables[`line${n - 1}`];
+          res = await doParse(doLex(line, variables, n));
+          if (res.meta.variableName)
+            variables[res.meta.variableName] = res.resultToken;
+          variables[`line${n}`] = res.resultToken;
+          variables[`l${n}`] = res.resultToken;
+        }
+        expect(res?.result).toStrictEqual(result);
       });
     });
   });

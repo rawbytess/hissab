@@ -5,3 +5,12 @@ factors(12.5)
 fraction(i)
 5 comb 6
 5 perm 6
+# Past 2^53 a float has lost digits, so primality/divisors can't be answered.
+isprime(2.0^70)
+factors(2^60)
+# powmod needs whole numbers, a non-negative exponent and a non-zero modulus.
+powmod(2, -1, 5)
+powmod(2, 3, 0)
+powmod(2.5, 3, 7)
+# Decimal places must be a whole number.
+round(3.14159, 1.5)

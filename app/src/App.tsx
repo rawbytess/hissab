@@ -1,19 +1,20 @@
 import { Provider, useAtom, useSetAtom, useStore } from "jotai";
 import { parseAsString, useQueryState } from "nuqs";
 import { NuqsAdapter } from "nuqs/adapters/react";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Router, useLocation } from "wouter";
 import { NotFound } from "@/components/NotFound.tsx";
-import { EmptyCanvas } from "@/components/notebook/EmptyCanvas.tsx";
 import { Notebook } from "@/components/notebook/Notebook.tsx";
 import { Topbar } from "@/components/notebook/Topbar.tsx";
 import { AppSidebar } from "@/components/sidebar/AppSidebar.tsx";
 import { Toaster } from "@/components/ui/sonner.tsx";
 import {
   asyncNotebooksAtom,
+  createNotebook,
   notebookProgressAtom,
   notebooksAtom,
 } from "@/lib/atoms/notebooks.ts";
+import { getRandomPlaceholderName } from "@/lib/placeholder.ts";
 import { cn } from "@/lib/utils.ts";
 
 // Lazy-loaded: the Settings modal pulls in the provider forms + model
@@ -122,6 +123,10 @@ function AppShell() {
   );
   const [settingsOpen, setSettingsOpen] = useState(false);
   const showProductHuntBanner = useProductHuntLaunchBanner();
+  // Guards the first-run bootstrap below: StrictMode double-invokes effects in
+  // dev and the async atom write does not settle synchronously, so without this
+  // a cold start would seed two notebooks.
+  const didBootstrapRef = useRef(false);
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     if (typeof window === "undefined") return true;
     return !window.matchMedia(SIDEBAR_COLLAPSE_QUERY).matches;
@@ -154,9 +159,17 @@ function AppShell() {
   useEffect(() => {
     if (notebooksValue.state !== "hasData") return;
 
+    // First run (or the user deleted everything): drop straight into a real
+    // notebook instead of an empty canvas — the seeded `expressions` cell
+    // becomes the playground.
     if (notebooks.length === 0) {
-      localStorage.removeItem(LAST_NOTEBOOK_KEY);
-      if (pageId) void setPageId(null, { history: "replace" });
+      if (didBootstrapRef.current) return;
+      didBootstrapRef.current = true;
+
+      const notebook = createNotebook(getRandomPlaceholderName());
+      setNotebooks([notebook]);
+      localStorage.setItem(LAST_NOTEBOOK_KEY, notebook.id);
+      void setPageId(notebook.id, { history: "replace" });
       return;
     }
 
@@ -175,7 +188,7 @@ function AppShell() {
 
     localStorage.setItem(LAST_NOTEBOOK_KEY, fallbackNotebook.id);
     void setPageId(fallbackNotebook.id, { history: "replace" });
-  }, [notebooks, notebooksValue.state, pageId, setPageId]);
+  }, [notebooks, notebooksValue.state, pageId, setPageId, setNotebooks]);
 
   const handleSelectNotebook = (id: string) => {
     localStorage.setItem(LAST_NOTEBOOK_KEY, id);
@@ -231,11 +244,9 @@ function AppShell() {
           )}
         />
         {showProductHuntBanner && <ProductHuntLaunchBanner />}
-        <div className="wb-body layout-inline">
-          {currentNotebookId ? (
+        <div className="wb-body">
+          {currentNotebookId && (
             <Notebook notebookId={currentNotebookId} onAskAI={handleAskAI} />
-          ) : (
-            <EmptyCanvas onPick={() => {}} />
           )}
         </div>
       </div>
@@ -255,12 +266,9 @@ function AppShell() {
 // Top-level view switch using browser (History-API) path routing, so docs get
 // clean, shareable URLs (`/docs/...`) instead of hash fragments. The notebook's
 // `?page=` query state lives in the search string, independent of the path.
-// `/index.html` is treated as home for the Chrome extension popup, whose URL is
-// `chrome-extension://…/index.html` rather than `/`.
 function Root() {
   const [location] = useLocation();
-  const isHome =
-    location === "/" || location === "" || location === "/index.html";
+  const isHome = location === "/" || location === "";
   const inDocs = location === "/docs" || location.startsWith("/docs/");
 
   if (inDocs) {
@@ -285,20 +293,14 @@ function Root() {
 
 function App() {
   return (
-    <div
-      className={cn(
-        `${import.meta.env.VITE_CHROME === "true" ? "min-h-[550px] min-w-[500px]" : ""}`,
-      )}
-    >
-      <Provider>
-        <Router>
-          <NuqsAdapter>
-            <Toaster richColors position="top-center" />
-            <Root />
-          </NuqsAdapter>
-        </Router>
-      </Provider>
-    </div>
+    <Provider>
+      <Router>
+        <NuqsAdapter>
+          <Toaster richColors position="top-center" />
+          <Root />
+        </NuqsAdapter>
+      </Router>
+    </Provider>
   );
 }
 

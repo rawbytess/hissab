@@ -5,7 +5,11 @@
 // engine's init-order-sensitive runtime graph.
 import type { TokenType } from "../tokens/token_basetypes";
 import type { expressionUnit } from "../tokens/tokens";
-import type { SetConvertTo, SetIsExplicit } from "../types/operator_types";
+import type {
+  ExactFunc,
+  SetConvertTo,
+  SetIsExplicit,
+} from "../types/operator_types";
 
 // Raw functions receive the call's token args plus the ambient unit context.
 // The nullable return mirrors tokenFactory; the solver guards before grafting.
@@ -31,4 +35,4 @@ interface FunctionDefBase {
 
 export type FunctionDef =
   | (FunctionDefBase & { isRaw: true; run: RawFn })
-  | (FunctionDefBase & { isRaw: false; run: NumericFn });
+  | (FunctionDefBase & { isRaw: false; run: NumericFn; exact?: ExactFunc });

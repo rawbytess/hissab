@@ -10,6 +10,7 @@ terms, and returns a simplified expression.
 derivative(2x^2, x)
 integrate(2x^2 + 3x + 10, x)
 limit(sin(x)/x, x, 0)
+solve(x^2 - 5x + 6, x)
 ```
 
 ## Symbols
@@ -78,13 +79,46 @@ When a derivative, integral, or limit has no closed form, Hissab may return a
 numeric estimate for limits and definite integrals. An indefinite integral with
 no elementary antiderivative is left in integral form.
 
+`sqrt(x)` is treated as `x^(1/2)`, so the power rules apply to it.
+
+```hissab
+derivative(sqrt(x), x)
+integrate(sqrt(x), x)
+```
+
+## Solving equations
+
+`solve(expr, x)` finds the values of `x` where `expr = 0`. Write an equation
+directly (`solve(x^2 = 4, x)`) or as two sides (`solve(x^2, 4, x)`). You can leave
+out the variable when there is only one.
+
+- **Polynomials** get every root — exact where they are rational, and complex
+  roots in `a + bi` form.
+- **Linear equations with other variables** are solved symbolically.
+- **Anything else in one variable** gets a numeric search for real roots. Trig
+  inside `solve` (and calculus) uses **radians**.
+
+```hissab
+solve(x^2 - 5x + 6, x)
+solve(3x + 4 = 19, x)
+solve(x^2, 4, x)
+solve(x^3 - 6x^2 + 11x - 6, x)
+solve(x^2 + 1, x)
+solve(2x + 3y - 8, x)
+solve(2^x - 10, x)
+```
+
+The answer (`x = 2, x = 3`) is a list, so `solve(...)` must be the whole line.
+
 ## Common mistakes
 
 :::caution
 
 - **`xy`** is one unknown word, not `x*y`. Write `x*y` or `x y`.
-- **Equation solving is not available yet.** Hissab can simplify and do
-  calculus, but it does not solve equations for a variable.
+- **`solve(2x + 3y = 8, x)`** is invalid — a letter right before `=` reads as a
+  label assignment. Write `solve(2x + 3y, 8, x)` or `solve(2x + 3y - 8, x)`.
+- **`solve(x^2 - 4, x) + 1`** is invalid — a `solve` answer is a list of values,
+  not a number.
 - **`x = 5`** is still label assignment, not an algebra equation.
 - Symbolic results cannot be converted with `to <unit>` or used in unit math.
 

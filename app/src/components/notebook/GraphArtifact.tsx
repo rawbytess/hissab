@@ -9,6 +9,7 @@ import {
   type OverlayCandidate,
   plotDomain,
 } from "@/lib/editor/cellArtifacts.ts";
+import "@/styles/graph-artifact.css";
 
 // function-plot ships CommonJS (no ESM build); depending on the bundler's
 // interop the callable is either the default import itself or nested under

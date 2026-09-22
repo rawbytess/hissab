@@ -45,9 +45,30 @@ expressions. The variable to operate on is given as the second argument.
 - **Limit**: \`limit(4x^2 - 3x + 10, x, 0)\` → \`10\`. Indeterminate \`0/0\` forms are
   handled too: \`limit(sin(x)/x, x, 0)\` → \`1\`.
 
+\`sqrt(x)\` is treated as \`x^(1/2)\`: \`derivative(sqrt(x), x)\` → \`1/2 x^(-1/2)\`.
+
 When a derivative/integral/limit has no closed form, Hissab falls back to a
 **numeric estimate** for limits and definite integrals; an indefinite integral
 with no elementary antiderivative is left in \`∫ … dx\` form unchanged.
+
+### Solving equations
+
+\`solve(expr, x)\` finds the values of \`x\` where \`expr = 0\`. An equation can be
+written directly (\`solve(x^2 = 4, x)\`) or as two sides (\`solve(x^2, 4, x)\`). The
+variable can be left out when there is only one.
+
+- Polynomials get **every** root, exact where rational and complex ones as
+  \`a + bi\`: \`solve(x^2 - 5x + 6, x)\` → \`x = 2, x = 3\`;
+  \`solve(x^2 + 1, x)\` → \`x = i, x = -i\`; \`solve(2x + 1, 7, x)\` → \`x = 3\`.
+- A linear equation with other variables solves symbolically:
+  \`solve(2x + 3y - 8, x)\` → \`x = -3/2 y + 4\`.
+- Anything else in one variable gets a numeric search for **real** roots:
+  \`solve(2^x - 10, x)\` → \`x = 3.3219\`. Trig inside \`solve\` and calculus uses
+  **radians** (\`solve(sin(x) - 0.5, x)\` lists 0.5236, 2.618, …).
+- The answer (\`x = 2, x = 3\`) is a list, so \`solve(...)\` must be the whole
+  expression.
+- A letter right before \`=\` reads as a label assignment, so \`solve(2x + 3y = 8, x)\`
+  errors — write \`solve(2x + 3y, 8, x)\` or \`solve(2x + 3y - 8, x)\`.
 
 ### Examples
 
@@ -60,12 +81,16 @@ Expression: \`(x + 1)*(x + 1)\` → x^2 + 2x + 1
 User: differentiate 2x^2 with respect to x
 Expression: \`derivative(2x^2, x)\` → 4x
 
+User: solve x^3 - 6x^2 + 11x - 6 = 0
+Expression: \`solve(x^3 - 6x^2 + 11x - 6, x)\` → x = 1, x = 2, x = 3
+
+User: solve 3x + 4 = 19
+Expression: \`solve(3x + 4 = 19, x)\` → x = 5
+
 ### Notes
 
 - A symbolic result is an algebraic expression, not a plain number, so it can't be
   converted with \`to <unit>\` or fed into unit math.
-- **Equation solving** (solving for a variable) is not available yet; calculus
-  (derivatives, integrals, limits) is.
 - Assignment is unchanged: \`x = 5\` still defines a label named \`x\` (the \`=\` on a
   bare name is assignment, not an equation).
 `;

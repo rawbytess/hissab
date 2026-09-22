@@ -1,8 +1,14 @@
+import { PostHogProvider } from "posthog-js/react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import "@docsearch/css/dist/style.css";
 import "./styles/workbook.css";
+
+const posthogOptions = {
+  api_host: import.meta.env.VITE_POSTHOG_HOST,
+  defaults: "2026-05-30",
+} as const;
 
 const LOCAL_LLM_CLEANUP_KEY = "hissab-local-llm-cleanup-v1";
 
@@ -11,7 +17,14 @@ void cleanupRemovedLocalLLMArtifacts();
 const root = document.getElementById("root");
 if (!root) throw new Error("Root element not found");
 
-createRoot(root).render(<App />);
+createRoot(root).render(
+  <PostHogProvider
+    apiKey={import.meta.env.VITE_POSTHOG_PROJECT_TOKEN}
+    options={posthogOptions}
+  >
+    <App />
+  </PostHogProvider>,
+);
 
 async function cleanupRemovedLocalLLMArtifacts() {
   if (typeof window === "undefined") return;

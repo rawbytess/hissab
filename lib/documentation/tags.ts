@@ -30,7 +30,8 @@ export const OPERATION_TAGS = [
 export type OperationTag = (typeof OPERATION_TAGS)[number];
 
 export const tagDescriptions: Record<OperationTag, string> = {
-  arithmetic: "Plain math: +, -, *, /, ^, root, !, abs, mod",
+  arithmetic:
+    "Plain math: +, -, *, /, ^, sqrt, !, abs, mod, powmod, floor/ceil/round; whole numbers stay exact at any size",
   percentage: "% of value, discounts, percent add/subtract, reverse percent",
   unit_conversion:
     "`<value> <unit> to <unit>`, mixed-unit math, SI/binary prefixes, multi-target breakdown",
@@ -39,7 +40,7 @@ export const tagDescriptions: Record<OperationTag, string> = {
   set_operations: "max, min, lcm, gcd, permutation (perm), combination (comb)",
   number_theory:
     "Reduce decimals to fractions / mixed numbers, test primality, list divisors",
-  logarithm: "Natural log, log10, log2",
+  logarithm: "Natural log (log / ln), log10, log2",
   statistics:
     "avg, median, range, variance, standard / harmonic / geometric mean",
   probability:
@@ -62,7 +63,7 @@ export const tagDescriptions: Record<OperationTag, string> = {
   ip_address:
     "IPv4 & IPv6 addresses and CIDR: format conversion, address arithmetic, bitwise masking, subnet/network/broadcast/host math, classification",
   symbolic:
-    "Free variables (x, y, z), implicit multiplication, simplify / collect like terms; derivative/integral/limit structure captured",
+    "Free variables (x, y, z), implicit multiplication, simplify / collect like terms; derivative, integral, limit; solve equations",
   complex_numbers:
     "Imaginary unit i and complex arithmetic (+, -, *, /, ^) in a + bi form",
   coordinate_systems:

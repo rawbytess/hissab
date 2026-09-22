@@ -1,26 +1,18 @@
-import {
-  doLex,
-  doParse,
-  TokenBaseType,
-  type TokenType,
-  tokenFactory,
-  type Variables,
-} from "@rawbytes/hissab";
+import { doLex, doParse, type Variables } from "@rawbytes/hissab";
 import { run } from "./errors";
 import type { ExpWithResult } from "./types/AITypes";
 
 export async function calculateTotal(index: number, variables: Variables) {
-  const tokens: TokenType[] = [];
+  // Sum by reference (`line1 + line2 + …`) instead of handing the stored
+  // result tokens to the parser: references are copied on use, so aligning
+  // units while summing can't rewrite an earlier line's result in place.
+  const refs: string[] = [];
+  for (let i = 1; i < index; i++) {
+    if (variables[`line${i}`]) refs.push(`line${i}`);
+  }
+  if (refs.length === 0) return;
   try {
-    for (let i = 1; i < index; i++) {
-      if (variables[`line${i}`]) {
-        tokens.push(variables[`line${i}`]);
-        tokens.push(tokenFactory("+", TokenBaseType.SYMBOL) as TokenType);
-      }
-    }
-    tokens.pop();
-    if (tokens.length === 0) return;
-    const { resultToken } = await doParse(tokens);
+    const { resultToken } = await doParse(doLex(refs.join(" + "), variables));
     variables[`total${index}`] = resultToken;
   } catch {}
 }

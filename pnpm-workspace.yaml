@@ -2,6 +2,7 @@ packages:
   - "engine/**"
   - "cli/**"
   - "app/**"
+  - "extension/**"
   - "website/**"
 minimumReleaseAge: 10080
 minimumReleaseAgeStrict: false
@@ -16,6 +17,7 @@ overrides:
 allowBuilds:
   '@google/genai': true
   '@swc/core': true
+  core-js: true
   esbuild: true
   onnxruntime-node: true
   protobufjs: true

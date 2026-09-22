@@ -1,0 +1,4 @@
+# Parsed by Cloudflare Workers static assets at deploy time (never served).
+# The Settings link to the privacy policy used to point here.
+/privacy-app /privacy/ 301
+/privacy-app/ /privacy/ 301

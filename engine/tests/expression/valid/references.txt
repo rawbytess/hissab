@@ -1,0 +1,19 @@
+# Multi-line cases (`[line1, line2, …, result]`): later lines reference earlier
+# results through `prev`, `line<N>` / `l<N>` and labels.
+# A reference computes on the full-precision value, not the rounded display.
+["5 km to miles", "prev to meters", "5,000 meters"]
+["100 / 7", "prev * 7000000", "100,000,000"]
+["1 / 7", "line1 * 7000000", "1,000,000"]
+["r = 2 / 3", "r * 3000000", "2,000,000"]
+["10 miles to km", "l1 to miles", "10 miles"]
+["0b101", "prev + 1", "0b110"]
+# A reference never rewrites the line it points at (unary minus, postfix
+# multipliers, unit attachment/alignment and date arithmetic all used to).
+["5", "-prev", "line1", "5"]
+["5", "prev k", "line1", "5"]
+["2", "prev meters", "line1", "2"]
+["5 km", "1 mile + prev", "line1", "5 kilometer"]
+["1 jan 2024", "prev + 1 day", "line1", "Mon 1 Jan 2024"]
+["d = 1 jan 2024", "d - 1 day", "d", "Mon 1 Jan 2024"]
+["a = 5", "-a", "a", "5"]
+["a = 5", "b = a", "-b", "a", "5"]

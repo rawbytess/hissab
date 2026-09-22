@@ -17,3 +17,7 @@
 ["log10 1000 + log2 8", "6"]
 ["2 / (log 7)", "1.0278"]
 ["log (e^2)", "2"]
+
+# `ln` is the natural log, like `log` / `loge`.
+["ln 100", "4.6052"]
+["ln(e)", "1"]

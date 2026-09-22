@@ -9,3 +9,5 @@ what is 10+10?
 10 blah
 10 20 30
 10 20
+# sqrt takes a plain number (no unit).
+sqrt(16 meter)

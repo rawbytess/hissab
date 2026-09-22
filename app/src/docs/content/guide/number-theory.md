@@ -54,13 +54,15 @@ denominator up to 1,000,000.
 ## Primes and divisors
 
 `isprime` returns `true` only for prime integers. It returns `false` for
-non-integers and numbers below 2.
+non-integers and numbers below 2. Whole numbers of any size work when you type
+them out or build them from exact integer arithmetic.
 
 ```hissab
 isprime(7)
 isprime(91)
 isprime(1)
 isprime(7.5)
+isprime(2^61 - 1)
 ```
 
 `factors` lists every positive divisor in ascending order, including 1 and the
@@ -76,7 +78,8 @@ factors(28)
 :::caution
 
 - **`factors(12)`** lists every divisor, not the prime factorization.
-- **`factors(-12)`** is invalid because `factors` needs a positive integer.
+- **`factors(-12)`** is invalid because `factors` needs a positive integer (up
+  to 9,007,199,254,740,991).
 - Fraction, list, and boolean results are display values. They cannot be fed
   back into further arithmetic in the same expression.
 

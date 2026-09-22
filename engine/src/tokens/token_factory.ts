@@ -557,6 +557,22 @@ function buildUnit(
     const n = parseFloat(prevToken.value);
     if (Number.isInteger(n) && n <= 12) {
       absorbPrev(tokens, prevToken);
+      // `25 dec 2026 3 pm` — the hour belongs to a preceding calendar date
+      // that has no time yet (the way `25 dec 2026 15:00` merges in buildTime).
+      const before = tokens[tokens.length - 1];
+      if (
+        before instanceof DateToken &&
+        (before.date || before.month || before.year) &&
+        !before.hour &&
+        !before.minute &&
+        !before.meridian
+      ) {
+        absorbPrev(tokens, before);
+        return before
+          .set({ hour: n, meridian: value })
+          .appendOriginalValue(`${prevToken.originalValue} ${originalValue}`)
+          .setObject();
+      }
       return new DateToken(`${prevToken.value}:00`, prevToken.originalValue, "")
         .set({ hour: n, meridian: value })
         .appendOriginalValue(originalValue)

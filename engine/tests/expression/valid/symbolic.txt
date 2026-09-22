@@ -54,3 +54,34 @@
 ["limit((x^2 - 4)/(x - 2), x, 2)", "4"]
 ["limit((1 - cos(x))/(x^2), x, 0)", "1/2"]
 ["simplify((x + 2)*(x - 2))", "x^2 - 4"]
+
+# solve: solve(expr, [var]) finds where expr = 0; solve(lhs, rhs, [var]) where
+# lhs = rhs. Polynomials get every root (rational ones exactly, complex ones in
+# a + bi form); linear equations with other symbols solve symbolically; other
+# single-variable equations get a numeric search for real roots.
+["solve(x^2 - 5x + 6, x)", "x = 2, x = 3"]
+["solve(x^2 - 5*x + 6)", "x = 2, x = 3"]
+["solve(2x + 1, 7, x)", "x = 3"]
+["solve(2x + 1 = 7, x)", "x = 3"]
+["solve(x^2 = 4, x)", "x = -2, x = 2"]
+["solve(4 = x^2)", "x = -2, x = 2"]
+["solve(x = 4, x)", "x = 4"]
+["solve(x^2, x)", "x = 0"]
+["solve(x^2, -4)", "x = 2i, x = -2i"]
+["solve(x^2 + 1, x)", "x = i, x = -i"]
+["solve(x^2 - 2, x)", "x = -1.4142, x = 1.4142"]
+["solve(3x^2 - 12, x)", "x = -2, x = 2"]
+["solve(x^3 - 6x^2 + 11x - 6, x)", "x = 1, x = 2, x = 3"]
+["solve(2x^3 - 3x^2 - 11x + 6, x)", "x = -2, x = 1/2, x = 3"]
+["solve(x^4 - 1, x)", "x = -1, x = 1, x = i, x = -i"]
+["solve((x - 2)^2, x)", "x = 2"]
+["solve(x^5 - x - 1, x)", "x = 1.1673, x = -0.7649 + 0.3525i, x = -0.7649 - 0.3525i, x = 0.1812 + 1.084i, x = 0.1812 - 1.084i"]
+["solve(x + 1/x - 2.5, x)", "x = 1/2, x = 2"]
+["solve(2x + 3y - 8, x)", "x = -3/2 y + 4"]
+["solve(2^x - 10, x)", "x = 3.3219"]
+["solve(sqrt(x) - 3, x)", "x = 9"]
+["solve(4, x)", "no solution"]
+["solve(x - x, x)", "x = any value"]
+# sqrt is x^(1/2) symbolically, so the power rules apply.
+["derivative(sqrt(x), x)", "1/2 x^(-1/2)"]
+["integrate(sqrt(x), x)", "2/3 x^(3/2)"]

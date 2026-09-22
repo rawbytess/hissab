@@ -37,7 +37,9 @@ Expression: \`factors(28)\` → 1, 2, 4, 7, 14, 28
 - \`fraction\` approximates repeating decimals to the nearest simple fraction
   (denominator up to 1,000,000), so \`fraction(1/3)\` → \`1/3\`.
 - \`factors\` lists **every** divisor (1 and the number itself included), not the
-  prime factorization. It requires a positive integer.
+  prime factorization. It requires a positive integer up to 9,007,199,254,740,991.
+- \`isprime\` works on whole numbers of any size when they are written out or built
+  from exact integer arithmetic: \`isprime(2^61 - 1)\` → \`true\`.
 - These results are fractions / lists / booleans, not plain numbers, so they
   can't be fed back into further arithmetic in the same expression.
 `;

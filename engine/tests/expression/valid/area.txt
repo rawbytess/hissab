@@ -1,4 +1,4 @@
-["1 square mile + 100 square kilometers + 500 square decameters to square decimeter", "10,263,998,809.791 square decimeter"]
+["1 square mile + 100 square kilometers + 500 square decameters to square decimeter", "10,263,998,811.03 square decimeter"]
 ["10 square hectometer - 20 square feet to square centimeter", "999,981,419.392 square centimeter"]
 ["1 square megameter to square nanometer", "1E30 square nanometer"]
 ["50 SQuare Yard - 2 square inch + 1000 square decimeter to square decameter", "0.518 square decameter"]

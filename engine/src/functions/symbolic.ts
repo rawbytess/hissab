@@ -135,6 +135,12 @@ export const symbolicFunctions: Record<string, FunctionDef> = {
     description: "Limit: limit(2x^2, x, 0)",
     isRaw: true,
   },
+  solve: {
+    run: requiresSymbol,
+    description:
+      "Solve an equation: solve(x^2 - 5x + 6, x) (expr = 0) or solve(lhs, rhs, x)",
+    isRaw: true,
+  },
 };
 
 // `simplify(<numeric>)` is the identity (a symbolic argument is intercepted

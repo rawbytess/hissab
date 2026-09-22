@@ -11,7 +11,6 @@ import {
   CoordTargetToken,
   type DateToken,
   ExprToken,
-  type expressionUnit,
   FunctionToken,
   type IpToken,
   MatrixToken,
@@ -476,11 +475,12 @@ const FreshParseState = defineState(
       return CompleteState;
     },
 
+    // A date does not set the ambient unit: durations must reach it in their
+    // own unit (`+ 1 month`, `+ 280 days`) so DateToken.shift can step the
+    // calendar — pre-converting them to seconds lost month/year lengths and
+    // shifted the clock across DST changes.
     handleDate(parseTree, dateToken) {
       parseTree.head = dateToken;
-      parseTree.exprUnit = <expressionUnit>(
-        tokenFactory("second", TokenBaseType.STRING)
-      );
       return CompleteState;
     },
 
@@ -683,12 +683,6 @@ const NeedNumberState = defineState(
     },
 
     handleDate(parseTree, dateToken) {
-      if (!parseTree.exprUnit) {
-        parseTree.exprUnit = tokenFactory(
-          "second",
-          TokenBaseType.STRING,
-        ) as UnitToken;
-      }
       expectOperator(parseTree).right = dateToken;
       return CompleteState;
     },
@@ -830,10 +824,7 @@ const PreNumberState = defineState(
       // Apply unary minus to the operand. Numbers negate in place; complex
       // negates both parts; a symbol/sub-expression becomes `(-1) * operand`.
       const negate = (): TokenType => {
-        if (operand instanceof NumberToken) {
-          operand.value = (operand.toNumber() * -1).toString();
-          return operand;
-        }
+        if (operand instanceof NumberToken) return operand.negate();
         if (operand instanceof ComplexToken) {
           return new ComplexToken(-operand.re, -operand.im);
         }
@@ -882,6 +873,9 @@ const CombineNumberState = defineState(
           `${tempPt.value}${operand.value}`,
           tempPt.numbertype,
         ) as NumberToken;
+        // `12,345,678,901,234,567` stays exact when every group is.
+        if (tempPt.exactValue() !== null && operand.exactValue() !== null)
+          newValue.markExact();
 
         if (parentPt === tempPt) parseTree.head = newValue;
         else if (parentPt instanceof OperatorToken) parentPt.right = newValue;

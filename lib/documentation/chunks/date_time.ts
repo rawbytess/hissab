@@ -17,17 +17,24 @@ Numeric dot-separated dates also parse, but **first field is the month**
 - \`2020.08.07\` → \`Fri 7 Aug 2020\` (yyyy.mm.dd)
 - \`25.08.2020\` → \`Tue 25 Aug 2020\` (when the first field can't be a month, it's the day)
 
+A date written without a year means that day **in the current year**, so
+\`25 dec - today to days\` counts the days until this Christmas. \`29 feb\` rolls
+forward to the next leap year. Add the year for any other year.
+
 ### Time formats
 
 - \`hh:mm:ss:ms\`: \`3:30:15:500\`
 - \`hh:mm am/pm\`: \`3:30 pm\`
 - \`hh:mm\` (24-hour): \`13:30\`
-- Date with time (time always **after** date): \`2020.08.07 3:30 pm\`
+- Date with time (time always **after** date): \`2020.08.07 3:30 pm\`, \`25 dec 2026 3 pm\`
 - Time with timezone (IANA name or common abbreviation): \`3:30 pm pst\`
 
 ### Operations
 
-- Add a duration: \`2020.08.07 + 5 days\` → \`Wed 12 Aug 2020\`
+- Add a duration: \`2020.08.07 + 5 days\` → \`Wed 12 Aug 2020\`. Days, weeks,
+  months and years step the calendar (\`31 jan 2026 + 1 month\` → \`Sat 28 Feb 2026\`,
+  and midnight stays midnight across a daylight-saving change); hours and minutes
+  are elapsed time.
 - Subtract a duration: \`2020.08.07 - 5 days\`
 - Duration between two dates: \`2020.08.07 - 9 sep 2020 to minutes\` → \`47,520 minutes\`
 - Age calculation: \`today - 1 feb 1990 to years\`

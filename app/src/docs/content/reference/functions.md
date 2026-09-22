@@ -15,6 +15,10 @@ derivative(2x^2, x)
 | Function | Description | Example |
 | ---------------------- | --------------------------------------- | --------------------- |
 | `abs(x)` | Absolute value | `abs(-234)` |
+| `floor(x, [n])` | Round down (to n decimal places) | `floor(7.5)` |
+| `ceil(x, [n])` | Round up (to n decimal places) | `ceil(3.14159, 1)` |
+| `round(x, [n])` | Round half away from zero | `round(3.14159, 2)` |
+| `powmod(b, e, m)` | b^e mod m, exact for any exponent | `powmod(7, 222, 1000)` |
 | `sum(...)` | Add all arguments, unit-aware | `sum(12, 23, 52)` |
 | `fraction(x)` | Reduced fraction | `fraction(0.625)` |
 | `mixed fraction(x)` | Mixed-number fraction | `mixed fraction(7/3)` |
@@ -115,6 +119,8 @@ Body-composition and fitness metrics. Inputs accept weight/height units. See
 | `integral(expr, variable)` | Alias for `integrate` | `integral(2x^2 + 3x, x)` |
 | `integrate(expr, variable, a, b)` | Definite integral | `integrate(2x^2, x, 0, 5)` |
 | `limit(expr, variable, point)` | Limit | `limit(sin(x)/x, x, 0)` |
+| `solve(expr, [variable])` | Roots of expr = 0 | `solve(x^2 - 5x + 6, x)` |
+| `solve(lhs, rhs, [variable])` | Solve lhs = rhs | `solve(3x + 4, 19, x)` |
 
 ## IP addresses
 
@@ -150,7 +156,8 @@ numeric arguments. See **Trigonometry** and **Logarithms** for details.
 | Inverse | `asin`, `acos`, `atan`, `asec`, `acsc`, `acot` |
 | Hyperbolic | `sinh`, `cosh`, `tanh`, `sech`, `csch`, `coth` |
 | Inverse hyperbolic | `asinh`, `acosh`, `atanh`, `asech`, `acsch`, `acoth` |
-| Logarithms | `log` / `loge` (natural), `log10`, `log2` |
+| Logarithms | `log` / `ln` / `loge` (natural), `log10`, `log2` |
+| Roots | `sqrt` (square root) |
 
 ## Geometry
 

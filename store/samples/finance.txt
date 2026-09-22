@@ -1,0 +1,13 @@
+// Mortgage
+home = 450000
+down = 20% of home
+loan = home - down
+emi(loan, 6.5%, 30 years)
+// Shopping
+price = 1299
+discount(price, 25%)
+price with tax(price, 8%)
+tip(86.40, 18%)
+// Investing
+compound interest(10000, 7%, 10 years)
+cagr(1000, 2000, 10 years)

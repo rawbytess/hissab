@@ -53,3 +53,38 @@ export const CELL_ARTIFACTS_EVENT = "hissab-cell-artifacts";
 export interface ArtifactsDetail {
   artifacts: CellArtifact[];
 }
+
+// Lines whose result can be overlaid onto `target`: graphable *value* lines
+// (suggested artifacts) above the target — references only resolve to earlier
+// lines — and of the same domain, since a draw() can't mix curves with
+// complex/point series (v1).
+export function overlayCandidatesFor(
+  target: CellArtifact,
+  all: CellArtifact[],
+): OverlayCandidate[] {
+  const domain = plotDomain(target.series);
+  return all
+    .filter(
+      (a) =>
+        a.source === "suggested" &&
+        a.lineNumber < target.lineNumber &&
+        plotDomain(a.series) === domain,
+    )
+    .map((a) => ({
+      ref: `l${a.lineNumber + 1}`,
+      label: a.series.map((s) => s.label).join(", "),
+    }));
+}
+
+// Splice `exprText` in as the final argument of the draw()/plot() call on
+// `lineText`, preserving any trailing `// comment`. Insertion happens before
+// the expression's last `)` — the call's closing paren even when an argument is
+// itself a call, e.g. `draw(point(1,2))`.
+export function appendDrawArg(lineText: string, exprText: string): string {
+  const commentIdx = lineText.indexOf("//");
+  const exprPart = commentIdx === -1 ? lineText : lineText.slice(0, commentIdx);
+  const comment = commentIdx === -1 ? "" : lineText.slice(commentIdx);
+  const close = exprPart.lastIndexOf(")");
+  if (close === -1) return lineText;
+  return `${exprPart.slice(0, close)}, ${exprText}${exprPart.slice(close)}${comment}`;
+}

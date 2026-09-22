@@ -61,8 +61,12 @@ export function parseTreeToExpr(token: TokenType): Expr {
     const right = token.right ? parseTreeToExpr(token.right) : null;
     if (right === null) throw new UserError(8802);
     // Unary prefix operators (trig, log, …) carry only a right child; capture
-    // them as function applications (`sin(x)`).
-    if (token.left === null) return func(token.value, right);
+    // them as function applications (`sin(x)`). `sqrt` becomes `u^(1/2)` so
+    // the power rules differentiate, integrate and simplify it.
+    if (token.left === null)
+      return token.value === "sqrt"
+        ? pow(right, cst(0.5))
+        : func(token.value, right);
     return binary(token.value, parseTreeToExpr(token.left), right);
   }
   if (token instanceof FunctionToken) {
@@ -97,11 +101,45 @@ export function parseTreeToExpr(token: TokenType): Expr {
           variable: symName(args[1]),
           point: args[2] ?? cst(0),
         };
+      case "solve":
+        return solveNode(token.args.map(solveArg));
       default:
         return func(token.value, ...args);
     }
   }
   throw new UserError(8803); // unconvertible token in symbolic expression
+}
+
+// solve(expr, [var]) → expr = 0; solve(lhs, rhs, [var]) → lhs = rhs; an
+// equation argument (`x^2 = 4`) works too. A trailing bare symbol (after the
+// first argument) names the variable to solve for.
+function solveNode(args: Expr[]): Expr {
+  const last = args[args.length - 1];
+  const named = args.length >= 2 && last.kind === "sym" ? last.name : null;
+  const sides = named ? args.slice(0, -1) : args;
+  if (sides.length === 1) {
+    const [side] = sides;
+    const body = side.kind === "equation" ? add(side.lhs, neg(side.rhs)) : side;
+    return { kind: "solve", body, variable: named };
+  }
+  if (sides.length === 2)
+    return {
+      kind: "solve",
+      body: add(sides[0], neg(sides[1])),
+      variable: named,
+    };
+  throw new UserError(8820);
+}
+
+// A `solve` argument. `x = 4` written inside it was evaluated as a label
+// assignment (the arg arrives as the value 4, labelled `x`); read it back as the
+// equation x = 4 rather than silently solving `4 = 0`. Only the free symbols
+// (x, y, z — the `Symbols` set in token_factory.ts) can be solved for.
+function solveArg(arg: TokenType): Expr {
+  const e = parseTreeToExpr(arg);
+  if (!arg.variableName) return e;
+  if (!/^[xyz]$/.test(arg.variableName)) throw new UserError(8824);
+  return equation(sym(arg.variableName), e);
 }
 
 // The variable argument of a calculus operation must be a bare symbol (`x`).

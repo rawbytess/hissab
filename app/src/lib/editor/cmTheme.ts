@@ -3,12 +3,16 @@ function themeConfig(isDark: boolean, editorBackground: string) {
     editorText: isDark ? "#c9c9c9" : "#525252",
     editorBackground: isDark ? editorBackground : "#efefef",
     gutterText: isDark ? "#575757" : "#b7b7b7",
-    gutterBackground: isDark ? "#ffffff" : "#ffffff",
-    bottomLine: isDark ? "1px solid #171717" : "1px solid #fafafa",
+    gutterBackground: "transparent",
+    bottomLine: isDark
+      ? "1px solid rgba(255, 255, 255, 0.06)"
+      : "1px solid rgba(0, 0, 0, 0.06)",
     resultText: isDark ? "#ffffff" : "#000000",
     resultStaleText: isDark ? "#d3d3d3" : "#444444",
     selectionBackground: isDark ? "#b3d4fc" : "#b3d4fc",
-    font: "chillax",
+    // Fallbacks keep an unloaded Chillax (offline, slow network) from
+    // dropping to the UA serif; mirrors `--font-expr` in tokens.css.
+    font: '"chillax", "Inter Tight", "Inter", system-ui, sans-serif',
     fontSmooth: "always",
   };
 }
@@ -219,13 +223,10 @@ export function hissabTheme(
       borderRadius,
       padding: innerPadding,
     },
-    ".cm-line:first-child": {
-      borderTop: "none",
-    },
     ".cm-line": {
       color: themeColors.editorText,
       padding: "0 2px 0 6px",
-      borderTop: themeColors.bottomLine,
+      borderBottom: themeColors.bottomLine,
     },
     ".cm-activeLine, .cm-editor": {
       backgroundColor: themeColors.editorBackground,
@@ -238,7 +239,7 @@ export function hissabTheme(
       color: themeColors.gutterText,
     },
     ".cm-gutterElement": {
-      borderTop: themeColors.bottomLine,
+      borderBottom: themeColors.bottomLine,
     },
     "&.cm-editor.cm-focused": {
       outline: 0,
@@ -260,7 +261,7 @@ export function hissabTheme(
     },
     ".cm-tooltip.cm-tooltip-autocomplete > ul > li": {
       padding: "5px",
-      fontFamily: "chillax",
+      fontFamily: themeColors.font,
       display: "flex",
       flexDirection: "row",
       flexWrap: "nowrap",

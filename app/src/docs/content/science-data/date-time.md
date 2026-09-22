@@ -30,6 +30,10 @@ aug 7 2020
 2020.08.07
 ```
 
+A date without a year means that day **in the current year**, so `25 dec - today`
+counts the days until this Christmas. `29 feb` rolls forward to the next leap
+year.
+
 ## Time formats
 
 | Format | Pattern | Example |
@@ -37,19 +41,26 @@ aug 7 2020
 | Hour:min:sec:ms | `hh:mm:ss:ms` | `3:30:15:500` |
 | 12-hour clock | `hh:mm am/pm` | `3:30 pm` |
 | 24-hour clock | `hh:mm` | `13:30` |
-| Date with time | — | `2020.08.07 3:30 pm` |
+| Date with time | — | `2020.08.07 3:30 pm`, `25 dec 2026 3 pm` |
 | Time with timezone | — | `3:30 pm pst` |
 
 ```hissab
 2020.08.07 3:30 pm
+25 dec 2026 3 pm
 3:42 am pst in beijing
 ```
 
 ## Operations
 
+Days, weeks, months and years step the **calendar**: `31 jan + 1 month` lands on
+the last day of February, and midnight stays midnight across a daylight-saving
+change. Hours and minutes are elapsed time.
+
 ```hissab
 2020.08.07 + 5 days
 2020.08.07 - 5 days
+31 jan 2026 + 1 month
+1 jan 2026 + 280 days
 2020.08.07 - 9 sep 2020 to minutes
 today - 1 feb 1990 to years
 12 mar 2020 utc to epoch

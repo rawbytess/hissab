@@ -6,5 +6,10 @@ apples
 2 apples
 diff(x^2, a)
 limit(x, a, 0)
-solve(x^2, x)
 x to meter
+solve(x^2 + y, x)
+solve(2x + 3y - 8)
+solve(x^2 - 4, x) + 1
+solve(4, 2)
+solve(a = 4, x)
+solve(2x + 3y = 8, x)

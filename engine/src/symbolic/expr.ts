@@ -20,7 +20,9 @@ export type Expr =
   | EquationExpr
   | DerivativeExpr
   | IntegralExpr
-  | LimitExpr;
+  | LimitExpr
+  | SolveExpr
+  | SolutionsExpr;
 
 // A numeric literal. Complex literals are represented structurally (see
 // fromTree.ts: `i` → Sym("i")), so `value` is always a real number here.
@@ -93,6 +95,27 @@ export interface LimitExpr {
   body: Expr;
   variable: string;
   point: Expr;
+}
+
+// solve(body, variable): the values of `variable` that make body = 0. An
+// equation `lhs = rhs` is captured as lhs - rhs. A null variable is inferred
+// from the body's single free symbol. Evaluated into a SolutionsExpr.
+export interface SolveExpr {
+  kind: "solve";
+  body: Expr;
+  variable: string | null;
+}
+
+// The answer to a solve: `variable = v` for each value. `all` marks an identity
+// (every value works); `exhaustive` is false for a numeric search, which may
+// miss roots; `more` means the list was cut short.
+export interface SolutionsExpr {
+  kind: "solutions";
+  variable: string;
+  values: Expr[];
+  exhaustive: boolean;
+  all?: boolean;
+  more?: boolean;
 }
 
 // ---------------------------------------------------------------------------

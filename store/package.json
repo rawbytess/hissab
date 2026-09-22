@@ -1,0 +1,14 @@
+{
+  "name": "hissab-store-assets",
+  "private": true,
+  "description": "Chrome Web Store listing assets for the Hissab extension: HTML mockups rendered to PNG",
+  "type": "module",
+  "scripts": {
+    "render": "node scripts/render.mjs",
+    "render:mockups": "node scripts/render.mjs --skip-capture"
+  },
+  "devDependencies": {
+    "playwright-core": "1.63.0",
+    "sharp": "0.34.5"
+  }
+}

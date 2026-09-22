@@ -315,7 +315,7 @@ The raw `+` / `-` implementations live on the operand token classes themselves (
 3. **CITY target** on a `DateToken` — shift the spacetime to the new IANA zone.
 4. **Compound / cross-type via dim** — if either side is compound, or both sides share a dimensional signature but live in different `UnitTypes` (e.g., `m^2 → square meter`), require `dimEquals(from.dim, to.dim)` and apply `from.siFactor / to.siFactor`. Same-name-different-prefix pairs in the same family (`km → m`) and same-name same-family pairs still flow through path 6 for precision.
 5. **TEMPERATURE** (same-type) — affine lambdas (`kelvin`/`celsius`/`fahrenheit`/`rankine` on the *from* unit's entry), dispatched through the typed `temperatureFn` accessor (throws loudly instead of calling undefined).
-6. **Same-type linear** — `value * linearFactor(from.value, to.value) * (from.factor / to.factor)`. `linearFactor` prefers the hand-tuned `Units[from].factors[to]` entry (precise) and falls back to deriving from each family's canonical SI base in `BASE_UNIT_BY_TYPE` (meter / square meter / liter / gram / degree / bit / second / secondly / kelvin / ampere / mole / candela).
+6. **Same-type linear** — `value * linearFactor(from.value, to.value) * (from.factor / to.factor)`. `linearFactor` prefers the hand-tuned `Units[from].factors[to]` entry and falls back to deriving from each family's canonical SI base in `BASE_UNIT_BY_TYPE` (meter / square meter / liter / gram / degree / bit / second / secondly / kelvin / ampere / mole / candela). A pair stored in **both** directions is one exact definition plus a ~10-digit truncated reciprocal (mile→meter `1609.344` vs meter→mile `0.0006213712`); when the two agree within 1e-6, the entry with fewer decimal places wins (inverted if it is the reverse), so chained conversions round-trip. Pairs that disagree by more are deliberate conventions (52 weeks/year) and keep their direct factor.
 
 Each path is a named private method (`convertViaFunction`, `convertViaPostfix`, `convertCityTimezone`, `convertViaDim`, `convertTemperature`, `convertLinear`); `convert()` is a flat ladder trying them strictly in the order above — the order is precision-load-bearing (same-family pairs must reach `linearFactor`, not the siFactor ratio). Adding a conversion kind = one method + one ladder rung.
 
@@ -355,7 +355,7 @@ Both are applied in `tokenFactory`'s `buildString` stage. Adding a new alias is 
 
 ## 7. Variables and multi-line semantics
 
-The engine itself only knows about variables via the `variables` parameter to `doLex` — a `{ [name]: TokenType }` map. If a lexed identifier matches a key, `tokenFactory` returns a `VariableToken(name, originalValue, valueToken)`. The parser unwraps `VariableToken` to its `valueToken` before dispatch (`parser.ts` line ~46), so by the time states see it, it's already the resolved underlying token.
+The engine itself only knows about variables via the `variables` parameter to `doLex` — a `{ [name]: TokenType }` map. If a lexed identifier matches a key, `tokenFactory` returns a `VariableToken(name, originalValue, valueToken)`. The parser unwraps `VariableToken` to a **copy** of its `valueToken` before dispatch (`dispatchToken` in `parser.ts`), with `variableName` cleared. The copy matters: stored results are shared by every later line, and several parse paths mutate an operand in place (unary minus, postfix `k`, unit alignment, date add/subtract). `lib/calculateExpressions.ts` builds `total<N>` by lexing `line1 + line2 + …` so it takes the same copying path.
 
 **Multi-line semantics** (`total1`, `prev2`, `line3`, `l3`) are *not* in the engine. They live in `lib/calculateExpressions.ts` at the repo root. That file is the contract between the app editor and any other multi-line consumer — if you're adding line-scoped features, do it there.
 
@@ -370,7 +370,7 @@ Two paths exit `doParse`:
 - **Explicit conversion was requested** (`isExplicit === true`, set by the `to` operator's func) — call `result.getString()` directly. The result already has the target unit attached.
 - **Implicit / no conversion** — call `humanize(result, convertTo)` from `src/pro.ts`. This walks the unit's `display` family looking for the largest unit where `|value| >= 1` and emits one or more components (`1 km 200 meter`).
 
-`NumberToken.formatResult` handles number-system formatting (binary/octal/hex prefixes), currency locale formatting, and the small/large number heuristics (scientific notation thresholds, fraction digit caps, locale grouping). Edit there if you're touching how plain numbers render.
+`NumberToken.formatValue` handles number-system formatting (binary/octal/hex prefixes), currency locale formatting, and the small/large number heuristics (scientific notation thresholds, fraction digit caps, locale grouping). It is **pure** — the token's `_value` keeps full precision, so a later line that references the result computes on the exact number, not the rounded display. Exact integers past 1e15 render with all their digits (`formatExactInteger` in `src/exact.ts`, scientific past 100 digits). Edit there if you're touching how plain numbers render.
 
 `DateToken.formatResult` builds a spacetime format string from which date/time fields are actually set on the token (so `2020.08.07` formats without a time portion but `2020.08.07 3pm` includes the meridian).
 
@@ -508,12 +508,24 @@ pre-evaluation node as `source` so the editor can render the input notation (∫
 while the value shows the answer. Non-integer coefficients reconstruct to fractions
 at render time (`symbolic/util.ts` `toFraction`; used by `render.ts`/`latex.ts`).
 
-**Scope / what's deferred.** `solve` (equation solving) is still *representation
-only* — the `Equation` node is built and rendered but not solved. Bare-equation input
-(`2x + 3y = 8`) is not yet parsed because the lexer flushes the token before `=`
-as a `VariableNameToken` (which is how assignment `x = 5` keeps working); use the
-function forms for now. Natural calculus syntax (`d/dx`, `∫`, `lim x->0`) is deferred —
-only the function forms (`derivative(2x^2, x)`) compute.
+**Equation solving** (`symbolic/solve.ts`). `solve(expr, [var])` / `solve(lhs, rhs,
+[var])` / `solve(lhs = rhs, [var])` is captured as a `solve` node (`from_tree.ts`
+`solveNode`) and `evaluate` turns it into a `solutions` node (rendered `x = 2, x = 3`).
+Numeric-coefficient polynomials get every root: rational ones exactly (rational-root
+theorem over BigInt, with exact deflation), then the closed form up to quadratics,
+then Durand–Kerner + Newton polish. Linear-in-the-variable with symbolic coefficients
+solves symbolically; anything else in one variable gets a sign-change scan over
+`sinh`-spaced points plus bisection (real roots only, radians for trig). A
+`solutions` node can't sit inside arithmetic (`standalone` in `calculus.ts` throws
+8823). `x = 4` inside `solve` arrives pre-evaluated as the value 4 labelled `x`
+(assignment); `solveArg` reads it back as the equation `x = 4`.
+
+**Scope / what's deferred.** Bare-equation input whose `=` follows a letter
+(`2x + 3y = 8`) still doesn't parse — the lexer flushes the identifier before `=` as a
+`VariableNameToken` (which is how assignment `x = 5` keeps working); inside `solve`,
+pass the sides as arguments. Systems of equations are not solved. Natural calculus
+syntax (`d/dx`, `∫`, `lim x->0`) is deferred — only the function forms
+(`derivative(2x^2, x)`) compute. `sqrt(u)` is captured as `u^(1/2)`.
 
 ---
 
@@ -537,7 +549,8 @@ only the function forms (`derivative(2x^2, x)`) compute.
 | A new way to recognise something in input | Try synonyms/plurals first. Only touch `tokenFactory` if the recognition needs look-back at previous tokens. Only touch the lexer if it's a new *character* class. |
 | Compound-unit absorption rules | `parser/parser_states.ts` (`absorbCompoundUnit`, `parseUnitFactor`, `parseUnitGroupInterior`) |
 | Compound-unit composition during arithmetic | `tokens/compound.ts` (`composeUnits`, `scaleUnit`, `mergeAtoms`, `formatCompound`) |
-| Change how a result is displayed | `tokens/tokens.ts` (`NumberToken.formatResult` / `DateToken.formatResult` / `ColorToken.getString`) or `pro.ts` (`humanize`) |
+| Change how a result is displayed | `tokens/tokens.ts` (`NumberToken.formatValue` / `DateToken.formatResult` / `ColorToken.getString`) or `pro.ts` (`humanize`) |
+| Exact (BigInt) integer behaviour | `src/exact.ts` (math), `NumberToken.exactValue` / `fromExact` / `exactPair`, and an operator's or function's optional `exact` implementation (tried first by `ParseTree.exactResult`) |
 | Add a multi-line variable | **Do not** edit the engine — edit `lib/calculateExpressions.ts` at the repo root |
 | Update user-facing syntax docs | **Do not** edit the engine — edit `lib/documentation/base.ts` (basics/catalog) or `lib/documentation/chunks/<tag>.ts` (per-category). Run `pnpm sync:skill-docs` to regenerate `skills/*/documentation.md`. |
 | Add a new documentation category (`OperationTag`) | `lib/documentation/tags.ts` (add to `OPERATION_TAGS` + `tagDescriptions`), create `lib/documentation/chunks/<tag>.ts`, and wire it into `lib/documentation/index.ts`'s `chunks` map. |
@@ -555,6 +568,8 @@ only the function forms (`derivative(2x^2, x)`) compute.
 - **Parser brackets recurse.** `parse(tokens, index, func)` returns the `index` it stopped at; the parent then splices the result back as if it were a literal token. This means the same token array is consumed cooperatively — be careful if you ever clone or mutate tokens during parse.
 - **Raw operator funcs receive the *children* array.** Non-raw funcs receive *unwrapped numbers* via `getChildrenValues()`. If you write `isRaw: false` but your function expects tokens, it'll silently get numbers. If you write `isRaw: true` but your function expects numbers, you'll get `TokenType[]` and confused arithmetic.
 - **`getNumberType()` derives the result base.** When a non-raw op produces a result, `tokenFactory` is called with `currHead.getNumberType()`, which inspects the left/right child types. Mixed-base operations (e.g. `0b101 + 0x10`) will adopt whichever child the helper finds first — usually fine but worth checking when changing operand handling.
+- **Exact integers.** A `NumberToken` is float64 unless it holds an exact integer: an integer literal (flagged in `lexer_tokens.ts` via `markExact`), a result built with `NumberToken.fromExact`, or any integer string within ±2^53. Writing `token.value = …` **clears** the exact flag (a float result's digits past 2^53 are already rounded). Non-raw operators/functions can declare `exact: (...bigint[]) => bigint | null`; raw `+ - * / ^` use `exactPair`. Only unit-less operands with no ambient unit take the exact path.
+- **Dates don't set the ambient unit.** Durations reach `DateToken.shift` in their own unit, so whole days/weeks/months/years step the calendar (wall clock kept across DST) and only the remainder is elapsed seconds. Don't reintroduce `exprUnit = second` for dates — it turned `+ 1 month` into 30.44 days.
 - **`^` / `**` are raw now.** They were converted from non-raw to raw to support complex bases/exponents. The numeric branch in `makePowFunc` must keep mirroring the old non-raw behaviour (base's number base via `a.numbertype`, ambient `exprUnit` attached). If you touch power handling, re-run the full suite — `2^6`, `256 ^ (1/8)`, `(5 m)^2` all exercise it.
 - **Symbolic operands skip `solve()`.** `parse()` routes any tree containing a `SymbolToken`/`ExprToken` to `simplify(parseTreeToExpr(...))` instead of the numeric solver (see §11). If you add a new operand token, decide whether it is numeric (extend the eager path like `ComplexToken`) or symbolic (extend `isSymbolic` + `parseTreeToExpr`).
 - **POSTFIX-type units have two roles**: as standalone multipliers on numbers (`5 million` → `5000000`, unit dropped) and as prefixes on other units (`5 mega byte` → `MB`). The branch is in `CompleteState.handleUnit` (parser) and `tokenFactory` (lexer/factory) respectively.

@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy · Hissab</title>
+    <meta
+      name="description"
+      content="How Hissab handles your data across the web app, the Chrome extension, the CLI and the npm package."
+    />
+    <link rel="canonical" href="https://hissab.io/privacy/" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="theme-color" content="#8100ff" />
+    <!-- Deliberately static and self-contained: no app bundle, no analytics,
+         no web fonts, so reading the privacy policy makes no third-party
+         requests. -->
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #faf8fc;
+        --text: #1e1b22;
+        --text-soft: #5b5263;
+        --line: #e6e0ec;
+        --accent: #7a3fe0;
+        --card: #f2edf7;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #131316;
+          --text: #f5f4f1;
+          --text-soft: #a9a6ad;
+          --line: #2a2a30;
+          --accent: #b690ff;
+          --card: #1c1b21;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font:
+          17px/1.6 system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      main {
+        max-width: 68ch;
+        margin: 0 auto;
+        padding: 40px 20px 80px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--text);
+        font-weight: 600;
+        font-size: 18px;
+        text-decoration: none;
+      }
+
+      .brand img {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+      }
+
+      h1 {
+        margin: 40px 0 4px;
+        font-size: 2.1rem;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+      }
+
+      h2 {
+        margin: 44px 0 8px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+        font-size: 1.3rem;
+        line-height: 1.3;
+      }
+
+      h3 {
+        margin: 28px 0 4px;
+        font-size: 1.05rem;
+      }
+
+      p,
+      ul {
+        margin: 0 0 14px;
+      }
+
+      ul {
+        padding-left: 1.3em;
+      }
+
+      li + li {
+        margin-top: 6px;
+      }
+
+      a {
+        color: var(--accent);
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.88em;
+      }
+
+      .updated {
+        margin-bottom: 28px;
+        color: var(--text-soft);
+      }
+
+      .summary {
+        padding: 18px 22px 6px;
+        border-radius: 12px;
+        background: var(--card);
+      }
+
+      .summary h2 {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+        font-size: 1.05rem;
+      }
+
+      footer {
+        margin-top: 56px;
+        color: var(--text-soft);
+        font-size: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a class="brand" href="/">
+        <img src="/icons/128.png" alt="" />
+        Hissab
+      </a>
+
+      <h1>Privacy Policy</h1>
+      <p class="updated">Last updated 22 September 2026</p>
+
+      <section class="summary" aria-labelledby="summary">
+        <h2 id="summary">The short version</h2>
+        <ul>
+          <li>
+            Hissab has no accounts and no server that stores your data. Your
+            calculations, notebooks, settings and API keys stay in your browser
+            or on your computer.
+          </li>
+          <li>
+            The Chrome extension collects nothing. It has no analytics, asks for
+            no permissions, and never sends what you type anywhere.
+          </li>
+          <li>
+            The website at hissab.io counts page visits with cookie-free
+            analytics.
+          </li>
+          <li>
+            If you use the web app's optional AI features, your prompts go
+            directly from your browser to the AI provider you choose, with your
+            own API key.
+          </li>
+          <li>We don't sell data, show ads, or build profiles.</li>
+        </ul>
+      </section>
+
+      <h2>Who we are and what this covers</h2>
+      <p>
+        Hissab is made by Rawbytes Technologies ("we", "us"). This policy
+        covers the Hissab web app and documentation at
+        <a href="https://hissab.io">hissab.io</a>, the Hissab Chrome extension,
+        the <code>hissab</code> command-line tool, the
+        <code>@rawbytes/hissab</code> npm package, and the Hissab agent skill.
+        Hissab is open source; you can check everything described here in the
+        <a href="https://github.com/rawbytess/hissab">source code</a>.
+      </p>
+
+      <h2>Chrome extension</h2>
+      <h3>What it stores</h3>
+      <p>
+        The extension keeps the calculations you type in its own local storage
+        on your device, so they are still there the next time you open it. They
+        are never sent to us or anyone else. The first time a new version runs,
+        it can copy calculations saved by an older version of the extension;
+        that copy also happens entirely on your device.
+      </p>
+      <h3>What it can access</h3>
+      <p>
+        Nothing beyond its own popup. The extension requests no permissions:
+        it cannot read or change the pages you visit, see your browsing
+        history, or run in the background.
+      </p>
+      <h3>Network requests</h3>
+      <p>
+        The extension's code is all bundled with it; it loads no remote code.
+        The only request it makes on its own is to download its typeface
+        (Chillax) from <code>fonts.cdnfonts.com</code>. Like any web request,
+        this shows the font host your IP address and browser version. It
+        contains nothing you typed. The Hissab, Docs and GitHub links in the
+        popup open a tab only when you click them.
+      </p>
+      <h3>Removing your data</h3>
+      <p>Uninstalling the extension deletes everything it stored.</p>
+
+      <h2>Web app (hissab.io)</h2>
+      <h3>What stays in your browser</h3>
+      <p>
+        Notebooks, settings, files you add, MCP server settings, skills, AI
+        provider settings and API keys are stored in your browser (local
+        storage and IndexedDB). We never receive them. To delete them, open
+        <strong>Settings → Privacy &amp; data → Clear all local data</strong>,
+        or clear this site's data in your browser.
+      </p>
+      <h3>AI features (optional)</h3>
+      <p>
+        If you set up an AI provider, the app sends your prompt and the
+        notebook content needed to answer it directly from your browser to that
+        provider (for example OpenAI, Anthropic, Google or DeepSeek, or a
+        custom endpoint you enter), using your API key. These requests don't
+        pass through us, and we can't see them. The provider's own privacy
+        policy applies to what you send it. If you connect an MCP server, the
+        app talks to that server directly from your browser too.
+      </p>
+      <h3>Documentation search</h3>
+      <p>
+        When you search the documentation, what you type in the search box is
+        sent to Algolia (DocSearch) to find matching pages.
+      </p>
+      <h3>Analytics</h3>
+      <p>
+        We count visits to hissab.io with Umami, which we host ourselves at
+        <code>analytics.rawbytes.com</code>, and with Cloudflare Web Analytics.
+        Neither uses cookies or tracks you across other sites. They record the
+        page address, the referring site, and your browser, operating system,
+        device type, screen size, language and approximate country. Umami works
+        out your country from your IP address without storing the address
+        itself. Your calculations and notebook contents are never sent to
+        analytics.
+      </p>
+      <h3>Hosting and fonts</h3>
+      <p>
+        hissab.io is served by Cloudflare, which processes standard request
+        data such as your IP address, browser and the page requested, to
+        deliver the site and protect it from abuse. The app loads fonts from
+        Google Fonts and <code>fonts.cdnfonts.com</code>, which receive the
+        same kind of request data.
+      </p>
+
+      <h2>Command-line tool, npm package and agent skill</h2>
+      <p>
+        These run entirely on your computer. They include no telemetry and make
+        no network requests; your expressions and results never leave your
+        machine. Downloading them from npm, GitHub or a skills directory is
+        governed by that service's own privacy policy.
+      </p>
+
+      <h2>What we don't do</h2>
+      <ul>
+        <li>We don't sell or rent data to anyone.</li>
+        <li>We don't show ads or use advertising trackers.</li>
+        <li>We don't build profiles of users or track you across sites.</li>
+        <li>
+          We don't use data from any Hissab product to determine
+          creditworthiness or for lending.
+        </li>
+      </ul>
+
+      <h2>Contacting us</h2>
+      <p>
+        If you email us, we use your address and message only to reply, and we
+        keep them only as long as that conversation needs. You can ask us to
+        delete them at any time. Questions about this policy go to
+        <a href="mailto:support@hissab.io">support@hissab.io</a>, or open an
+        issue on
+        <a href="https://github.com/rawbytess/hissab/issues">GitHub</a>.
+      </p>
+
+      <h2>Children</h2>
+      <p>
+        Hissab isn't directed at children under 13, and we don't knowingly
+        collect personal information from them.
+      </p>
+
+      <h2>Changes to this policy</h2>
+      <p>
+        If how Hissab handles data changes, we'll update this page and the date
+        at the top.
+      </p>
+
+      <footer>
+        <a href="/">Open Hissab</a> ·
+        <a href="/docs/">Documentation</a> ·
+        <a href="https://github.com/rawbytess/hissab">GitHub</a>
+      </footer>
+    </main>
+  </body>
+</html>

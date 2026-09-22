@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils.ts";
 const DOCSEARCH_APP_ID = "MWV41FNTTM";
 const DOCSEARCH_API_KEY = "1a55fc9a35a243cd7f5d88859192a860";
 const DOCSEARCH_INDEX_NAME = "Hissab Docs";
-const isExtension = import.meta.env.VITE_CHROME === "true";
 
 type DocSearchNavigator = NonNullable<DocSearchProps["navigator"]>;
 type DocSearchHitComponent = NonNullable<DocSearchProps["hitComponent"]>;
@@ -102,8 +101,6 @@ export function DocSearchBox({ className }: DocSearchBoxProps) {
       },
     [navigateToResult],
   );
-
-  if (isExtension) return null;
 
   return (
     <div className={cn("docsearch-box", className)}>

@@ -21,7 +21,6 @@ function combination(n: number, r: number): number {
 
 function permutation(n: number, r: number): number {
   if (n < r) throw new UserError(7453);
-  if (n === r) return 1;
 
   return factorial(n) / factorial(n - r);
 }

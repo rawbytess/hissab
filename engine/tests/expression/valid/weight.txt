@@ -3,7 +3,7 @@
 ["5 lbs to kg", "2.268 kg"]
 ["1000 decagram + 100 hectogram + 100 decigram to megagram", "0.02 megagram"]
 ["100 teragram - 100 kg - 5 gigagram - 500 gram to petagram", "0.1 petagram"]
-["10 centigram + 5 milligram + 1 ton to microgram", "1,000,000,105,000 microgram"]
+["10 centigram + 5 milligram + 1 ton to microgram", "907,184,845,000 microgram"]
 ["10 pound + 5 nanogram + 10 picogram to ounce", "160 ounce"]
 ["1 carat - 5 femtogram to amu", "1.20442733E23 amu"]
 
@@ -13,3 +13,8 @@
 ["1 tonne to kilo gram", "1,000 kilo gram"]
 ["1 troy ounce to gram", "31.1035 gram"]
 ["7000 grain to pound", "1 pound"]
+# `ton` is the US short ton (2,000 lb); the metric ton is `tonne`.
+["1 ton to pound", "2,000 pound"]
+["1 ton to kg", "907.1847 kg"]
+["1000000 gram to ton", "1.1023 ton"]
+["1 tonne to ton", "1.1023 ton"]

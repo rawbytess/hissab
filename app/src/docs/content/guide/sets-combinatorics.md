@@ -50,5 +50,6 @@ min(12 meters, 20 kms, 12 miles)
 - **`max 1, 2`** is invalid — `max`, `min`, `lcm`, and `gcd` are functions, so
   their arguments must be inside parentheses.
 - **`perm`** and **`comb`** work on non-negative integers where `n >= r >= 0`.
+  The results are exact at any size (`100 comb 50` shows all 30 digits).
 
 :::

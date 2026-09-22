@@ -1,5 +1,5 @@
 import chroma from "chroma-js";
-import spacetime, { type Spacetime, type TimeUnit } from "spacetime";
+import spacetime, { type Spacetime } from "spacetime";
 import {
   type CoordSystem,
   combine,
@@ -10,6 +10,7 @@ import {
   resolveTarget,
   toCartesian,
 } from "../coordinates";
+import { beyondFloatDisplay, formatExactInteger, isSafe } from "../exact";
 import { UnhandledError, UserError } from "../exceptions";
 // Type-only imports — erased at compile time, so they don't add runtime edges
 // to the module graph (function.ts/operator_types.ts import values from this
@@ -38,6 +39,7 @@ import {
   dimEquals,
   dimIsEmpty,
   dimOfUnitData,
+  linearFactor,
   type UnitsTypeIF,
 } from "../types/unit_types";
 import TokenBaseType, { type TokenType } from "./token_basetypes";
@@ -90,6 +92,14 @@ class Token {
   public set value(value: string) {
     this._value = value;
   }
+
+  // Shallow copy of the same class. A result held in `Variables` (a label,
+  // `line<N>`, `prev`) is shared by every later line that references it, while
+  // several parse paths mutate an operand in place (unary minus, postfix `k`,
+  // unit alignment, date add/subtract) — so a reference must work on a copy.
+  clone(): this {
+    return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+  }
 }
 
 function valuesOf(children: ReadonlyArray<TokenType>): number[] {
@@ -108,6 +118,10 @@ class NumberToken extends Token {
   // bitwise ops, the same way they overload onto IpToken. Set by P(...) and the
   // probability functions; propagated onto their results so chains keep working.
   probability = false;
+  // `_value` holds an exact integer — a written-out literal or the result of
+  // exact integer arithmetic — even past 2^53, where a float would round. Any
+  // other write to `value` clears it (see exactValue / src/exact.ts).
+  private exactInt = false;
 
   constructor(
     value: string,
@@ -119,6 +133,60 @@ class NumberToken extends Token {
     this.numbertype = basetype;
     this._unit = undefined;
     this.percent = percent;
+  }
+
+  static fromExact(n: bigint): NumberToken {
+    const token = new NumberToken(n.toString(), "", TokenBaseType.DECIMAL);
+    token.exactInt = true;
+    return token;
+  }
+
+  public override get value(): string {
+    return this._value;
+  }
+
+  public override set value(value: string) {
+    this._value = value;
+    this.exactInt = false;
+  }
+
+  // Flag a freshly lexed integer literal as exact.
+  markExact(): this {
+    if (/^-?\d+$/.test(this._value.replaceAll(",", ""))) this.exactInt = true;
+    return this;
+  }
+
+  // The value as an exact integer, or null when it is not one: a non-integer,
+  // a percent/probability, another number base, or a float result past 2^53
+  // (whose digits are already rounded). Units are the caller's concern.
+  exactValue(): bigint | null {
+    if (this.percent || this.probability) return null;
+    if (this.numbertype !== TokenBaseType.DECIMAL) return null;
+    const digits = this._value.replaceAll(",", "");
+    if (!/^-?\d+$/.test(digits)) return null;
+    const n = BigInt(digits);
+    return this.exactInt || isSafe(n) ? n : null;
+  }
+
+  // Both operands as exact integers when `this op other` can stay exact:
+  // plain numbers (no unit on either side or in the expression).
+  exactPair(
+    other: NumberToken,
+    expUnit?: expressionUnit,
+  ): [bigint, bigint] | null {
+    if (this._unit || other._unit || expUnit) return null;
+    const a = this.exactValue();
+    const b = other.exactValue();
+    return a !== null && b !== null ? [a, b] : null;
+  }
+
+  negate(): this {
+    const exact = this.exactValue();
+    if (exact !== null) {
+      this._value = (-exact).toString();
+      this.exactInt = true;
+    } else this.value = (this.toNumber() * -1).toString();
+    return this;
   }
 
   isNumber() {
@@ -158,54 +226,57 @@ class NumberToken extends Token {
   }
 
   getString() {
-    this.formatResult();
+    const display = this.formatValue();
     let stringValue = "";
-    if (this._value) stringValue = `${this._value} `;
+    if (display) stringValue = `${display} `;
     if (this._unit?.unitdata.type === UnitTypes.CURRENCY)
       return stringValue.trim();
     if (this.unit) stringValue += this.unit.originalValue;
     return stringValue.trim();
   }
 
-  formatResult() {
+  // Display form of the value: 4 decimal places (3 significant figures below
+  // 1), digit grouping, scientific notation past 1e15. Pure — `_value` keeps
+  // full precision, so a later line referencing this result (`prev`, `line1`,
+  // a label) computes on the exact number rather than the rounded display.
+  formatValue(): string {
     const thisVal = this.toNumber().toString();
     if (this.numbertype === TokenBaseType.BINARY)
-      this._value = `0b${parseFloat(thisVal).toString(TokenBaseType.BINARY)}`;
-    else if (this.numbertype === TokenBaseType.OCTAL)
-      this._value = `0o${parseFloat(thisVal).toString(TokenBaseType.OCTAL)}`;
-    else if (this.numbertype === TokenBaseType.HEX)
-      this._value = `0x${parseFloat(thisVal).toString(TokenBaseType.HEX)}`;
-    else {
-      const v = this.toNumber();
-      let localeOptions: Intl.NumberFormatOptions | null = null;
-      if (this._unit?.unitdata.type === UnitTypes.CURRENCY) {
-        localeOptions = {
-          style: "currency",
-          currency: this._unit.value,
-        };
-      }
-      if (Math.abs(v) < 1) {
-        this._value = parseFloat(
-          parseFloat(thisVal).toPrecision(3),
-        ).toLocaleString(
-          undefined,
-          localeOptions ?? {
-            maximumFractionDigits: 10,
-            notation: Math.abs(v) < 1e-9 ? "scientific" : "standard",
-            useGrouping: false,
-          },
-        );
-      } else {
-        this._value = parseFloat(parseFloat(thisVal).toFixed(4)).toLocaleString(
-          undefined,
-          localeOptions ?? {
-            maximumFractionDigits: 10,
-            notation: Math.abs(v) > 1e15 ? "scientific" : "standard",
-            useGrouping: true,
-          },
-        );
-      }
+      return `0b${parseFloat(thisVal).toString(TokenBaseType.BINARY)}`;
+    if (this.numbertype === TokenBaseType.OCTAL)
+      return `0o${parseFloat(thisVal).toString(TokenBaseType.OCTAL)}`;
+    if (this.numbertype === TokenBaseType.HEX)
+      return `0x${parseFloat(thisVal).toString(TokenBaseType.HEX)}`;
+    const v = this.toNumber();
+    const exact = this.exactValue();
+    const isCurrency = this._unit?.unitdata.type === UnitTypes.CURRENCY;
+    if (exact !== null && !isCurrency && beyondFloatDisplay(exact))
+      return formatExactInteger(exact);
+    let localeOptions: Intl.NumberFormatOptions | null = null;
+    if (isCurrency && this._unit) {
+      localeOptions = {
+        style: "currency",
+        currency: this._unit.value,
+      };
     }
+    if (Math.abs(v) < 1) {
+      return parseFloat(parseFloat(thisVal).toPrecision(3)).toLocaleString(
+        undefined,
+        localeOptions ?? {
+          maximumFractionDigits: 10,
+          notation: Math.abs(v) < 1e-9 ? "scientific" : "standard",
+          useGrouping: false,
+        },
+      );
+    }
+    return parseFloat(parseFloat(thisVal).toFixed(4)).toLocaleString(
+      undefined,
+      localeOptions ?? {
+        maximumFractionDigits: 10,
+        notation: Math.abs(v) > 1e15 ? "scientific" : "standard",
+        useGrouping: true,
+      },
+    );
   }
 
   add(token: TokenType, expUnit: expressionUnit) {
@@ -219,7 +290,7 @@ class NumberToken extends Token {
       );
     }
     if (token instanceof NumberToken) {
-      let result;
+      let result: TokenType | null;
       if (this.percent && !token.percent) {
         result = tokenFactory(
           this.formatString(
@@ -244,11 +315,14 @@ class NumberToken extends Token {
         // cross-prefix operands to the same factor scale, so this stays
         // precision-faithful to the legacy formula. siFactor enters only
         // during compound composition (`*`, `/`, `^`).
+        const exact = this.exactPair(token, expUnit);
         const aF = this._unit?.factor ?? 1;
         const bF = token._unit?.factor ?? 1;
         const eF = expUnit?.factor ?? aF;
         const res = (this.toNumber() * aF + token.toNumber() * bF) / eF;
-        result = tokenFactory(this.formatString(res), this.numbertype);
+        result = exact
+          ? NumberToken.fromExact(exact[0] + exact[1])
+          : tokenFactory(this.formatString(res), this.numbertype);
       }
       if (expUnit && result instanceof NumberToken) result.unit = expUnit;
       else if (!expUnit && this._unit && result instanceof NumberToken)
@@ -258,11 +332,7 @@ class NumberToken extends Token {
     if (token instanceof DateToken) {
       if (this.unit === null || this.unit?.unitdata.type !== UnitTypes.TIME)
         throw new UnhandledError(9028);
-      return token
-        .setObject(
-          token.spacetime?.add(this.toNumber(), this.unit?.value as TimeUnit),
-        )
-        .formatResult();
+      return token.shift(this, 1);
     }
     throw new UserError(8645);
   }
@@ -278,7 +348,7 @@ class NumberToken extends Token {
       );
     }
     if (token instanceof NumberToken) {
-      let result;
+      let result: TokenType | null;
       if (this.percent && !token.percent) {
         result = tokenFactory(
           this.formatString(
@@ -298,11 +368,14 @@ class NumberToken extends Token {
           if (!dimEquals(this._unit.dim, token._unit.dim))
             throw new UserError(8651);
         }
+        const exact = this.exactPair(token, expUnit);
         const aF = this._unit?.factor ?? 1;
         const bF = token._unit?.factor ?? 1;
         const eF = expUnit?.factor ?? aF;
         const res = (this.toNumber() * aF - token.toNumber() * bF) / eF;
-        result = tokenFactory(this.formatString(res), this.numbertype);
+        result = exact
+          ? NumberToken.fromExact(exact[0] - exact[1])
+          : tokenFactory(this.formatString(res), this.numbertype);
       }
       if (expUnit && result instanceof NumberToken) result.unit = expUnit;
       else if (!expUnit && this._unit && result instanceof NumberToken)
@@ -312,14 +385,7 @@ class NumberToken extends Token {
     if (token instanceof DateToken) {
       if (this.unit === null || this.unit?.unitdata.type !== UnitTypes.TIME)
         throw new UnhandledError(9029);
-      return token
-        .setObject(
-          token.spacetime!.subtract(
-            this.toNumber(),
-            this.unit.value as TimeUnit,
-          ),
-        )
-        .formatResult();
+      return token.shift(this, -1);
     }
     throw new UserError(543);
   }
@@ -345,6 +411,19 @@ type DateFields = {
   iana: string;
   timezone: string;
   meridian: string;
+};
+
+// Duration units that step the calendar rather than a fixed number of seconds
+// (a month or year has no fixed length). Hour and below are always elapsed time.
+const CALENDAR_STEPS: Record<string, { unit: "month" | "day"; per: number }> = {
+  day: { unit: "day", per: 1 },
+  week: { unit: "day", per: 7 },
+  fortnight: { unit: "day", per: 14 },
+  month: { unit: "month", per: 1 },
+  year: { unit: "month", per: 12 },
+  decade: { unit: "month", per: 120 },
+  century: { unit: "month", per: 1200 },
+  millennium: { unit: "month", per: 12000 },
 };
 
 class DateToken extends Token {
@@ -402,8 +481,9 @@ class DateToken extends Token {
       this.spacetime = dtObj;
       return this;
     }
-    this.spacetime = spacetime("", this.iana)
-      .year(this.year)
+    const now = spacetime("", this.iana);
+    this.spacetime = now
+      .year(this.calendarYear(now.year()))
       .month(this.month - 1)
       .date(this.date)
       .hour(this.hour)
@@ -412,6 +492,20 @@ class DateToken extends Token {
       .millisecond(this.millisecond)
       .ampm(this.meridian);
     return this;
+  }
+  // The year the underlying date is placed in. A calendar date written without
+  // one (`25 dec`) means that day in the current year — `25 dec - today` is the
+  // days until Christmas, not since year 0. `29 feb` rolls forward to the next
+  // leap year rather than clamping to the 28th. Only the date is affected: the
+  // `year` field stays 0, so the display still omits the year, and time-only
+  // tokens (no day or month) keep their old placement.
+  private calendarYear(currentYear: number): number {
+    if (this.year || !(this.month || this.date)) return this.year;
+    let year = currentYear;
+    const isLeap = (y: number) =>
+      (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+    if (this.month === 2 && this.date === 29) while (!isLeap(year)) year++;
+    return year;
   }
   isOperand() {
     return true;
@@ -423,7 +517,11 @@ class DateToken extends Token {
   setTimeFormat() {
     this.timeformat = "";
     const hourFormat = this.hour && this.meridian ? "{hour}" : "{hour-24}";
-    if (this.hour || this.spacetime?.hour()) this.timeformat = hourFormat;
+    // `3 pm` reads fine alone; a bare 24-hour `15` does not, so it gets `:00`.
+    if (this.hour || this.spacetime?.hour())
+      this.timeformat = this.meridian
+        ? hourFormat
+        : `${hourFormat}:{minute-pad}`;
     if (this.minute || this.spacetime?.minute())
       this.timeformat = `${hourFormat}:{minute-pad}`;
     if (this.second || this.spacetime?.second())
@@ -465,13 +563,32 @@ class DateToken extends Token {
     return this.formatResult()._value.trim();
   }
 
+  // Move by a duration (a NumberToken with a TIME unit). Whole calendar units
+  // step the wall clock — `1 jan + 1 month` is 1 Feb, and `+ 280 days` stays
+  // at midnight across a DST change — while a fractional remainder and clock
+  // units (hour and below) are exact elapsed time.
+  shift(duration: NumberToken, sign: 1 | -1) {
+    const unit = duration.unit;
+    if (!unit || !this.spacetime) throw new UnhandledError(9034);
+    const amount = sign * duration.toNumber() * (unit.prefix?.factor ?? 1);
+    let st = this.spacetime;
+    let seconds = amount * linearFactor(unit.value, "second");
+    const calendar = CALENDAR_STEPS[unit.value];
+    if (calendar) {
+      const steps = amount * calendar.per;
+      const whole = Math.trunc(steps);
+      st = st.add(whole, calendar.unit);
+      seconds = (steps - whole) * linearFactor(calendar.unit, "second");
+    }
+    if (seconds) st = st.add(Math.round(seconds * 1000), "millisecond");
+    return this.setObject(st).formatResult();
+  }
+
   add(token: TokenType, expUnit: expressionUnit) {
     if (token instanceof NumberToken) {
       if (token.unit === null || token.unit?.unitdata.type !== UnitTypes.TIME)
         throw new UnhandledError(9030);
-      return this.setObject(
-        this.spacetime?.add(token.toNumber(), token.unit?.value as TimeUnit),
-      ).formatResult();
+      return this.shift(token, 1);
     }
     throw new UserError(3421);
   }
@@ -480,16 +597,19 @@ class DateToken extends Token {
     if (token instanceof NumberToken) {
       if (token.unit === null || token.unit?.unitdata.type !== UnitTypes.TIME)
         throw new UnhandledError(9031);
-      return this.setObject(
-        this.spacetime!.subtract(
-          token.toNumber(),
-          token.unit.value as TimeUnit,
-        ),
-      ).formatResult();
+      return this.shift(token, -1);
     }
     if (token instanceof DateToken) {
+      // Same zone: wall-clock difference, so whole days stay whole across a
+      // DST change (22 Sep → 25 Dec is 94 days, not 94 days 1 hour). Across
+      // zones it is the real elapsed time.
+      const wallClock = (st: Spacetime) => st.epoch + st.offset() * 60_000;
+      const seconds =
+        this.iana === token.iana
+          ? (wallClock(this.spacetime!) - wallClock(token.spacetime!)) / 1000
+          : token.spacetime!.diff(this.spacetime!, "seconds");
       const result = tokenFactory(
-        Math.abs(token.spacetime!.diff(this.spacetime!, "seconds")).toString(),
+        Math.abs(seconds).toString(),
         TokenBaseType.DECIMAL,
       );
       if (result instanceof NumberToken) {

@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import type {
   AICellBlock,
   ExpressionsCell as ExpressionsCellType,
@@ -9,7 +9,6 @@ import { notebookProgressAtom, notebooksAtom } from "@/lib/atoms/notebooks.ts";
 import { Composer, type ComposerHandle } from "./Composer.tsx";
 import { ExpressionsCell } from "./ExpressionsCell.tsx";
 import { FloatingToast } from "./FloatingToast.tsx";
-import { NotebookStarter } from "./NotebookStarter.tsx";
 import { TurnBlock } from "./TurnBlock.tsx";
 
 interface NotebookProps {
@@ -30,6 +29,40 @@ export function Notebook({ notebookId, onAskAI }: NotebookProps) {
   const [progress] = useAtom(notebookProgressAtom);
   const canvasRef = useRef<HTMLDivElement>(null);
   const composerRef = useRef<ComposerHandle>(null);
+
+  // Derived above the early returns below so the auto-scroll effect stays an
+  // unconditional hook.
+  const aiTurnCount =
+    notebooksValue.state === "hasData"
+      ? (notebooksValue.data
+          .find((nb) => nb.id === notebookId)
+          ?.cells.filter((cell) => cell.kind === "ai").length ?? 0)
+      : 0;
+
+  // Whether the reader is parked at the bottom. Tracked on scroll rather than
+  // measured inside the effect below, because by the time that effect runs the
+  // new turn has already been laid out — measuring then would report a large
+  // distance and suppress the scroll precisely when the turn is tall.
+  const stickToBottomRef = useRef(true);
+  const lastTurnCountRef = useRef<number | null>(null);
+
+  // The composer is docked outside the scroll container now, so a new turn
+  // renders below the fold with nothing to hint at it. Follow it down — unless
+  // the user has deliberately scrolled up to read something earlier.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const previousCount = lastTurnCountRef.current;
+    lastTurnCountRef.current = aiTurnCount;
+
+    // The first pass only records a baseline: opening a notebook that already
+    // has turns should leave the reader at the top, not snap to the end.
+    if (previousCount === null || aiTurnCount <= previousCount) return;
+    if (!stickToBottomRef.current) return;
+
+    canvas.scrollTo({ top: canvas.scrollHeight, behavior: "smooth" });
+  }, [aiTurnCount]);
 
   if (notebooksValue.state === "loading") return null;
   if (notebooksValue.state === "hasError") return null;
@@ -85,66 +118,63 @@ export function Notebook({ notebookId, onAskAI }: NotebookProps) {
     }
   }
 
-  const playgroundCell = notebook.cells.find(
+  const playgroundCellId = notebook.cells.find(
     (cell): cell is ExpressionsCellType =>
       cell.kind === "expressions" && cell.source === "user",
-  );
-  const playgroundCellId = playgroundCell?.id;
-
-  // The getting-started starter shows only on a fresh notebook: no AI turn yet
-  // (a turn appends an `ai` cell the instant the chat starts) and an empty
-  // playground. Either action makes it disappear.
-  const showStarter =
-    !notebook.cells.some((cell) => cell.kind === "ai") &&
-    !playgroundCell?.content.trim();
+  )?.id;
 
   return (
-    <div className="wb-canvas scroll" ref={canvasRef} id="wb-canvas">
-      <div className="notebook2">
-        <div className="nb2-editor">
-          {(() => {
-            let turnIndex = 0;
-            return items.map((item) => {
-              if (item.kind === "user-cell") {
+    <>
+      <div
+        className="wb-canvas scroll"
+        ref={canvasRef}
+        id="wb-canvas"
+        onScroll={(event) => {
+          const el = event.currentTarget;
+          stickToBottomRef.current =
+            el.scrollHeight - el.scrollTop - el.clientHeight < 160;
+        }}
+      >
+        <div className="notebook2">
+          <div className="nb2-editor">
+            {(() => {
+              let turnIndex = 0;
+              return items.map((item) => {
+                if (item.kind === "user-cell") {
+                  return (
+                    <ExpressionsCell
+                      key={item.cell.id}
+                      cell={item.cell}
+                      notebookId={notebookId}
+                      variant={
+                        item.cell.id === playgroundCellId
+                          ? "playground"
+                          : "default"
+                      }
+                    />
+                  );
+                }
+                const aiData = notebook.aiCells[item.block.aiCellId];
+                if (!aiData) return null;
+                const currentIndex = turnIndex++;
                 return (
-                  <ExpressionsCell
-                    key={item.cell.id}
-                    cell={item.cell}
+                  <TurnBlock
+                    key={item.block.id}
+                    data={aiData}
+                    generatedCells={item.generatedCells}
                     notebookId={notebookId}
-                    variant={
-                      item.cell.id === playgroundCellId
-                        ? "playground"
-                        : "default"
-                    }
+                    index={currentIndex}
+                    allNotebooks={notebooksValue.data}
+                    onRerun={(prompt) => onAskAI(notebookId, prompt)}
                   />
                 );
-              }
-              const aiData = notebook.aiCells[item.block.aiCellId];
-              if (!aiData) return null;
-              const currentIndex = turnIndex++;
-              return (
-                <TurnBlock
-                  key={item.block.id}
-                  data={aiData}
-                  generatedCells={item.generatedCells}
-                  notebookId={notebookId}
-                  index={currentIndex}
-                  allNotebooks={notebooksValue.data}
-                  onRerun={(prompt) => onAskAI(notebookId, prompt)}
-                />
-              );
-            });
-          })()}
+              });
+            })()}
+          </div>
         </div>
-
-        {showStarter && (
-          <NotebookStarter
-            onPickExample={(prompt) => composerRef.current?.setValue(prompt)}
-          />
-        )}
       </div>
 
-      <div className="wb-composer-inline">
+      <div className="wb-composer-dock">
         <div className="inner">
           {runningProgress && (
             <FloatingToast
@@ -167,6 +197,6 @@ export function Notebook({ notebookId, onAskAI }: NotebookProps) {
           />
         </div>
       </div>
-    </div>
+    </>
   );
 }

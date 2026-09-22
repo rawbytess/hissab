@@ -1,0 +1,10 @@
+// Weekend trip
+5 km to miles
+72 fahrenheit to celsius
+3:30 pm pst in london
+today + 3 weeks
+// Budget
+rent = 1850
+rent * 12
+20% of rent
+tip(86.40, 18%)

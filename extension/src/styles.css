@@ -1,0 +1,215 @@
+/* ====== Hissab Chrome extension popup ======
+   One editor, a slim footer. Design tokens + fonts are shared with the web
+   app; the editor itself is styled by app/src/lib/editor/cmTheme.ts, and the
+   popovers / graphs bring their own stylesheets. */
+
+@import "../../app/src/styles/tokens.css";
+
+/* ====== Fonts ======
+   Nothing here may block the popup's first paint (it reopens from scratch on
+   every click), so there are no remote stylesheet @imports.
+
+   Inter (OFL) is bundled and loads from the extension package itself. It only
+   styles secondary UI (footer, tooltips, pickers); the web app's `Inter`
+   family name is kept so the shared stylesheets pick it up. */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url("@fontsource-variable/inter/files/inter-latin-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url("@fontsource-variable/inter/files/inter-latin-ext-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* Chillax (the expression font) is served from the same CDN files the web app
+   uses — its licence doesn't cover redistributing the files. Declared here
+   rather than via the CDN's stylesheet so it (a) isn't a render-blocking
+   @import and (b) gets `font-display: optional`: when the font is in the HTTP
+   cache (every open after the first) it is used from the first frame; when it
+   isn't, the editor paints immediately in the fallback stack instead of
+   hiding text for up to 3s, and the font is cached for the next open. The
+   regular weight is preloaded from index.html. */
+@font-face {
+  font-family: "Chillax";
+  font-style: normal;
+  font-weight: 300;
+  font-display: optional;
+  src: url("https://fonts.cdnfonts.com/s/85273/Chillax-Light.woff")
+    format("woff");
+}
+@font-face {
+  font-family: "Chillax";
+  font-style: normal;
+  font-weight: 400;
+  font-display: optional;
+  src: url("https://fonts.cdnfonts.com/s/85273/Chillax-Regular.woff")
+    format("woff");
+}
+@font-face {
+  font-family: "Chillax";
+  font-style: normal;
+  font-weight: 600;
+  font-display: optional;
+  src: url("https://fonts.cdnfonts.com/s/85273/Chillax-Semibold.woff")
+    format("woff");
+}
+@font-face {
+  font-family: "Chillax";
+  font-style: normal;
+  font-weight: 700;
+  font-display: optional;
+  src: url("https://fonts.cdnfonts.com/s/85273/Chillax-Bold.woff")
+    format("woff");
+}
+
+:root {
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* The web app gets these from Tailwind's preflight; the shared popovers and
+   graph controls expect them. */
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+/* Chrome sizes a popup to its content, capped at 800×600. */
+body {
+  width: 520px;
+  height: 580px;
+  overflow: hidden;
+  background: var(--bg-0);
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  height: 100%;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--text-0);
+}
+
+.ext-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* cmTheme gives `.cm-scroller` `overflow: hidden`, so the editor always keeps
+   its natural height and this column is what scrolls. */
+.ext-main {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-top: 6px;
+}
+
+.ext-editor {
+  flex: 0 0 auto;
+}
+
+.ext-filler {
+  flex: 1 1 auto;
+  min-height: 24px;
+  cursor: text;
+}
+
+.ext-footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 36px;
+  padding: 0 8px 0 12px;
+  background: var(--bg-1);
+  border-top: 1px solid var(--line-1);
+  font-size: 12px;
+}
+
+.ext-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: -6px;
+  padding: 4px 6px;
+  border-radius: var(--r-xs);
+  font-weight: 600;
+  color: var(--text-0);
+  text-decoration: none;
+  transition: background 0.12s;
+}
+
+.ext-brand:hover {
+  background: var(--bg-3);
+}
+
+.ext-brand:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.ext-brand img {
+  display: block;
+}
+
+.ext-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.ext-links a {
+  padding: 4px 8px;
+  border-radius: var(--r-xs);
+  color: var(--text-2);
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background 0.12s,
+    color 0.12s;
+}
+
+.ext-links a:hover {
+  background: var(--bg-3);
+  color: var(--text-0);
+}
+
+.ext-links a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}

@@ -1,0 +1,8 @@
+# Square root — a prefix like log, so both `sqrt 2` and `sqrt(2)` work. A perfect
+# square stays exact; a negative input gives the imaginary root.
+["sqrt(144)", "12"]
+["sqrt 2", "1.4142"]
+["sqrt(16) + 1", "5"]
+["sqrt(-4)", "2i"]
+["sqrt(2^100)", "1,125,899,906,842,624"]
+["sqrt(0.25)", "0.5"]

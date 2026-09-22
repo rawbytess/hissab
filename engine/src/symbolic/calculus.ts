@@ -14,6 +14,7 @@
 // a two-sided numeric estimate for indeterminate limits (`(x^2-1)/(x-1) -> 2`,
 // `sin(x)/x -> 1`) and composite-Simpson quadrature for definite integrals.
 
+import { UserError } from "../exceptions";
 import {
   add,
   cst,
@@ -28,6 +29,7 @@ import {
   sym,
 } from "./expr";
 import { simplify } from "./polynomial";
+import { solveFor } from "./solve";
 
 // Internal sentinel: "this construct is outside the supported class". Caught at
 // the `evaluate` boundary, where it means "leave the node unevaluated".
@@ -193,6 +195,9 @@ export function freeSymbols(expr: Expr): string[] {
       case "equation":
         walk(e.lhs);
         walk(e.rhs);
+        return;
+      case "solutions":
+        e.values.forEach(walk);
         return;
       default:
         // derivative / integral / limit — the bound variable still "appears".
@@ -465,6 +470,13 @@ function limitOf(e: Expr, v: string, point: Expr): Expr {
 // place (so they still render as operator notation rather than erroring).
 // ---------------------------------------------------------------------------
 
+// A solve() answer is a list of values, not a term — it can't be added to,
+// multiplied, or solved again.
+function standalone(e: Expr): Expr {
+  if (e.kind === "solutions") throw new UserError(8823);
+  return e;
+}
+
 export function evaluate(e: Expr): Expr {
   switch (e.kind) {
     case "derivative": {
@@ -502,15 +514,17 @@ export function evaluate(e: Expr): Expr {
       }
     }
     case "add":
-      return add(...e.terms.map(evaluate));
+      return add(...e.terms.map(evaluate).map(standalone));
     case "mul":
-      return mul(...e.factors.map(evaluate));
+      return mul(...e.factors.map(evaluate).map(standalone));
     case "pow":
-      return pow(evaluate(e.base), evaluate(e.exp));
+      return pow(standalone(evaluate(e.base)), standalone(evaluate(e.exp)));
     case "func":
-      return func(e.name, ...e.args.map(evaluate));
+      return func(e.name, ...e.args.map(evaluate).map(standalone));
     case "equation":
       return { kind: "equation", lhs: evaluate(e.lhs), rhs: evaluate(e.rhs) };
+    case "solve":
+      return solveFor(standalone(evaluate(e.body)), e.variable);
     default:
       return e;
   }

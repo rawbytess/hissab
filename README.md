@@ -81,7 +81,7 @@ Hissab currently supports these operation categories:
 
 | Category | Examples |
 | --- | --- |
-| Arithmetic | `+`, `-`, `*`, `/`, `^`, roots, factorial, `abs`, `mod` |
+| Arithmetic | `+`, `-`, `*`, `/`, `^`, `sqrt`, factorial, `abs`, `mod`, `powmod`, `floor`/`ceil`/`round`; exact whole numbers at any size |
 | Percentages | `% of`, discounts, percent addition/subtraction, reverse percentage |
 | Unit conversion | `<value> <unit> to <unit>`, mixed-unit math, prefixes, multi-target breakdowns |
 | Compound units | Speed, acceleration, force-like unit expressions, dimensional arithmetic and conversion |
@@ -99,7 +99,7 @@ Hissab currently supports these operation categories:
 | Bitwise operations | `~`, `&`, `|`, `xor`, `<<`, `>>` |
 | Color math | Hex, RGB, RGBA, HSL, named colors, mixing, shading, complement, color temperature |
 | IP address math | IPv4/IPv6 literals, CIDR blocks, masks, address arithmetic, subnet functions, classification |
-| Symbolic algebra | Free variables `x`, `y`, `z`, simplify/expand, derivatives, integrals, limits |
+| Symbolic algebra | Free variables `x`, `y`, `z`, simplify/expand, derivatives, integrals, limits, `solve` equations |
 | Complex numbers | Imaginary unit `i` and complex arithmetic in `a + bi` form |
 | Coordinate systems | `point`/`vector`, polar/cylindrical/spherical/Minkowski, `to`-conversions, `distance`, `dot`, `cross`, `angle` |
 | Matrices | Literals `[1 2, 3 4]` (space=column, comma/semicolon=row), `*`/`+`/`-`/`^`, `transpose`, `determinant`, `inverse`, `rank`, `rref`, `eigenvalues` |
@@ -166,8 +166,8 @@ Important syntax notes:
 ## Using the App
 
 Use the web app at [hissab.io](https://hissab.io). It can be installed as a PWA
-on desktop and mobile browsers, and the same app is packaged as a Chrome
-extension.
+on desktop and mobile browsers. A minimal Chrome extension (in `extension/`)
+puts a single Hissab editor in the browser toolbar.
 
 The app provides:
 
@@ -332,8 +332,8 @@ quantitative tool.
 
 - It does **not** fetch live currency or FX rates in the local engine. Provide a
   rate, or use an AI/realtime lookup flow before calculating.
-- It does **not** solve equations yet. It does support symbolic simplification,
-  expansion, derivatives, integrals, and limits.
+- It solves single equations (`solve(x^2 - 5x + 6, x)`) but **not** systems of
+  non-linear equations or equations with several unknowns.
 - It does **not** replace Python, Jupyter, R, or Julia for datasets, ML,
   simulations, custom algorithms, or general programming.
 - It does **not** replace spreadsheets for large tabular models and recurring

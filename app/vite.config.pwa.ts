@@ -3,6 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+import { browserSafeAliases } from "./vite.shared.ts";
 
 export default defineConfig({
   server: {
@@ -32,7 +33,12 @@ export default defineConfig({
         // Keep crawler/static endpoints out of the SPA navigation fallback.
         // Without this, an installed service worker can answer a browser
         // navigation to /sitemap.xml with index.html even though dist has XML.
-        navigateFallbackDenylist: [/^\/[^/?]+\.[^/?]+$/],
+        // /privacy/ is a static page (public/privacy/index.html) that the SPA
+        // has no route for, and /privacy-app redirects to it (public/_redirects).
+        navigateFallbackDenylist: [
+          /^\/[^/?]+\.[^/?]+$/,
+          /^\/privacy(-app)?(\/|$)/,
+        ],
         runtimeCaching: [
           {
             urlPattern: /\.(?:png|woff|woff2|ttf)$/,
@@ -167,8 +173,11 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
+    // Array form (not an object) so the aliases can use anchored regexes —
+    // see browserSafeAliases.
+    alias: [
+      { find: "@", replacement: path.resolve(__dirname, "./src") },
+      ...browserSafeAliases(__dirname),
+    ],
   },
 });

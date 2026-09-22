@@ -1,5 +1,13 @@
 import chroma from "chroma-js";
 import * as arith from "../arithmetic_functions";
+import {
+  combExact,
+  factorialExact,
+  isqrt,
+  permExact,
+  powExact,
+  ratio,
+} from "../exact";
 import { UnhandledError, UserError } from "../exceptions";
 import {
   inverse as matInverse,
@@ -56,6 +64,11 @@ export type RawOpFunc = (
 // values and re-wraps the result with the ambient unit.
 export type NumericOpFunc = (...values: number[]) => number;
 
+// Optional exact integer implementation of a non-raw op/function. The solver
+// tries it first when every operand is an exact, unit-less integer (see
+// NumberToken.exactValue); null means "not exact here", falling back to func.
+export type ExactFunc = (...values: bigint[]) => bigint | null;
+
 interface OperatorDefBase {
   precedence: number;
   operands: OperandSlot[];
@@ -68,7 +81,11 @@ interface OperatorDefBase {
 
 export type OperatorDef =
   | (OperatorDefBase & { isRaw: true; func: RawOpFunc })
-  | (OperatorDefBase & { isRaw: false; func: NumericOpFunc });
+  | (OperatorDefBase & {
+      isRaw: false;
+      func: NumericOpFunc;
+      exact?: ExactFunc;
+    });
 
 const Operators: Record<string, OperatorDef> = {
   "~": {
@@ -111,6 +128,7 @@ const Operators: Record<string, OperatorDef> = {
     precedence: 1,
     operands: ["prenumber", "postnumber"],
     func: arith.combination,
+    exact: combExact,
     isRaw: false,
     description: "Combinations operator",
   },
@@ -118,6 +136,7 @@ const Operators: Record<string, OperatorDef> = {
     precedence: 1,
     operands: ["prenumber", "postnumber"],
     func: arith.permutation,
+    exact: permExact,
     isRaw: false,
     description: "Permutations operator",
   },
@@ -125,6 +144,7 @@ const Operators: Record<string, OperatorDef> = {
     precedence: 2,
     operands: ["prenumber"],
     func: arith.factorial,
+    exact: factorialExact,
     isRaw: false,
     description: "Factorial operator",
   },
@@ -162,6 +182,31 @@ const Operators: Record<string, OperatorDef> = {
     isRaw: true,
     description: "Power operator",
   },
+  // Square root (prefix, like `log`: `sqrt 16`, `sqrt(16)`). A negative input
+  // gives the principal imaginary root (`sqrt(-4)` → 2i); an exact perfect
+  // square stays an exact integer.
+  sqrt: {
+    precedence: 3,
+    operands: ["postnumber"],
+    func: async ([, x]: TokenType[]) => {
+      if (x instanceof ComplexToken) {
+        const r = cxPow(x.cx, { re: 0.5, im: 0 });
+        return new ComplexToken(r.re, r.im);
+      }
+      if (!(x instanceof NumberToken)) throw new UserError(6893);
+      if (x.unit) throw new UserError(6894);
+      const exact = x.exactValue();
+      if (exact !== null && exact >= 0n) {
+        const root = isqrt(exact);
+        if (root * root === exact) return NumberToken.fromExact(root);
+      }
+      const v = x.toNumber();
+      if (v < 0) return new ComplexToken(0, Math.sqrt(-v));
+      return tokenFactory(Math.sqrt(v).toString(), TokenBaseType.DECIMAL);
+    },
+    isRaw: true,
+    description: "Square root",
+  },
   "/": {
     precedence: 5,
     operands: ["prenumber", "postnumber"],
@@ -173,6 +218,7 @@ const Operators: Record<string, OperatorDef> = {
     precedence: 5,
     operands: ["prenumber", "postnumber"],
     func: (n1: number, n2: number): number => n1 % n2,
+    exact: (a, b) => (b === 0n ? null : a % b),
     isRaw: false,
     description: "Modules operator",
   },
@@ -584,6 +630,14 @@ function makeMulDivFunc(sign: 1 | -1) {
     }
     if (!(a instanceof NumberToken) || !(b instanceof NumberToken))
       throw new UserError(8651);
+    // Exact integers stay exact: products always, quotients when they divide.
+    const exact = a.exactPair(b);
+    if (exact) {
+      const [x, y] = exact;
+      if (sign === 1) return NumberToken.fromExact(x * y);
+      if (y !== 0n && x % y === 0n) return NumberToken.fromExact(x / y);
+      if (y !== 0n) return tokenFactory(ratio(x, y).toString(), a.numbertype);
+    }
     const aVal = a.toNumber();
     const bVal = b.toNumber();
     const numValue = sign === 1 ? aVal * bVal : aVal / bVal;
@@ -616,6 +670,9 @@ function makePowFunc() {
     }
     if (!(a instanceof NumberToken) || !(b instanceof NumberToken))
       throw new UserError(8651);
+    const exact = exprUnit ? null : a.exactPair(b);
+    const exactPower = exact ? powExact(exact[0], exact[1]) : null;
+    if (exactPower !== null) return NumberToken.fromExact(exactPower);
     const res = a.toNumber() ** b.toNumber();
     const result = tokenFactory(res.toString(), a.numbertype) as NumberToken;
     if (exprUnit) result.unit = exprUnit;

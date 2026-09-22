@@ -227,6 +227,10 @@ export function simplify(e: Expr): Expr {
         body: simplify(e.body),
         point: simplify(e.point),
       } as LimitExpr;
+    case "solve":
+      return { ...e, body: simplify(e.body) };
+    case "solutions":
+      return e;
     default:
       return polyToExpr(buildPoly(e));
   }

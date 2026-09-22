@@ -1,7 +1,7 @@
 export const logarithm = `
 ## Logarithms
 
-- Natural log (base e): \`log 20\` → 2.9957 (\`loge\` is the same)
+- Natural log (base e): \`log 20\` → 2.9957 (\`ln\` and \`loge\` are the same)
 - Log base 10: \`log10 20\` → 1.301
 - Log base 2: \`log2 20\` → 4.3219
 
@@ -18,11 +18,10 @@ Expression: \`log 343 / log 7\` → 3 (use the change-of-base identity log x / l
 
 ### Common mistakes
 
-Incorrect: \`ln 100\`
-Result: errors (no result — \`ln\` is not recognized)
-Correct: \`log 100\` or \`loge 100\` → 4.6052
-Why: the natural-log keyword is \`log\` / \`loge\`, not \`ln\`. Also note \`log\` is
-base **e**, not base 10 — for base 10 use \`log10\`.
+Incorrect: \`log 1000\` (meaning base 10)
+Result: \`6.9078\` (no error — \`log\` is the natural log)
+Correct: \`log10 1000\` → 3
+Why: \`log\` is base **e** (same as \`ln\`), not base 10 — for base 10 use \`log10\`.
 
 Incorrect: \`-log10 0.00001\`
 Result: errors

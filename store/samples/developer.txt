@@ -1,0 +1,14 @@
+// Number systems
+255 to hex
+255 to binary
+0xff & 0b1010
+1 << 10
+// Networks
+hosts(192.168.1.0/24)
+broadcast(192.168.1.0/24)
+192.168.1.130 & 255.255.255.0
+isprivate(10.1.2.3)
+// Colors and hashes
+#ff69b4 to color name
+red + blue
+crc32("hissab")

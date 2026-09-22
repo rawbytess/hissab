@@ -1,0 +1,69 @@
+/* ====== Hissab design tokens ======
+   The `:root` palette shared by the web app (workbook.css) and the Chrome
+   extension (extension/src/styles.css). Keep this file to `:root` only — no
+   selectors and no font loading — so both surfaces can import it wholesale and
+   each decides how its fonts are fetched. */
+
+:root {
+  /* Neutrals — warm graphite */
+  --bg-0: #0c0c0e;
+  --bg-1: #131316;
+  --bg-2: #1a1a1e;
+  --bg-3: #232328;
+  --bg-4: #2e2e35;
+  --bg-5: #3b3b44;
+
+  /* Lines */
+  --line-1: rgba(255, 255, 255, 0.06);
+  --line-2: rgba(255, 255, 255, 0.12);
+  --line-3: rgba(255, 255, 255, 0.22);
+  --line-4: rgba(255, 255, 255, 0.36);
+
+  /* Text */
+  --text-0: #f5f4f1;
+  --text-1: #c8c6c1;
+  --text-2: #8b8983;
+  --text-3: #595852;
+  --text-4: #34332f;
+
+  /* Accent — Plasma (purple) */
+  --accent: #a06bff;
+  --accent-strong: #8a4ff0;
+  --accent-soft: rgba(160, 107, 255, 0.16);
+  --accent-faint: rgba(160, 107, 255, 0.08);
+  --accent-ink: #ffffff;
+
+  /* Agent — secondary (signal red), used to distinguish AI from prompts */
+  --agent: #ff3b1f;
+  --agent-strong: #e02810;
+  --agent-soft: rgba(255, 59, 31, 0.14);
+  --agent-faint: rgba(255, 59, 31, 0.07);
+
+  /* Status */
+  --success: #6ed29a;
+  --success-soft: rgba(110, 210, 154, 0.16);
+  --warning: #e8b54a;
+  --warning-soft: rgba(232, 181, 74, 0.14);
+  --danger: #ef6a6a;
+  --danger-soft: rgba(239, 106, 106, 0.16);
+  --info: #6db7e8;
+  --info-soft: rgba(109, 183, 232, 0.14);
+  --product-hunt: #da552f;
+  --product-hunt-strong: #d04b25;
+  --product-hunt-soft: rgba(218, 85, 47, 0.14);
+
+  /* Radius — Soft */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 18px;
+
+  --font-display: "Inter Tight", "Inter", system-ui, sans-serif;
+  --font-ui: "Inter Tight", "Inter", system-ui, sans-serif;
+  --font-serif: "Inter", system-ui, sans-serif;
+  --font-mono: "Inter", system-ui, sans-serif;
+  --font-expr: "chillax", "Inter Tight", system-ui;
+
+  --sidebar-w: 268px;
+}

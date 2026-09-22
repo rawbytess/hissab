@@ -5,7 +5,7 @@ import {
   HighlightStyle,
   syntaxHighlighting,
 } from "@codemirror/language";
-import { EditorState, StateEffect } from "@codemirror/state";
+import { EditorState, StateEffect, Transaction } from "@codemirror/state";
 import {
   EditorView,
   highlightActiveLine,
@@ -13,7 +13,6 @@ import {
   lineNumbers,
   placeholder,
 } from "@codemirror/view";
-import { debounce } from "lodash-es";
 import { hissabTheme } from "@/lib/editor/cmTheme.ts";
 import type { Results } from "@/lib/editor/getResults.ts";
 import { hissabHoverTooltip } from "@/lib/editor/hoverTooltip.ts";
@@ -44,6 +43,12 @@ interface hissabEditorIf {
 type ReplaceDocumentOptions = {
   focus?: boolean;
   resetResults?: boolean;
+  // `false` keeps the replacement out of undo history, so loading saved content
+  // into a fresh editor can't be undone back to an empty document.
+  addToHistory?: boolean;
+  // Leave the caret after the last character (scrolled into view) instead of
+  // at the start of the document.
+  cursorAtEnd?: boolean;
 };
 
 export default class HissabEditor {
@@ -119,12 +124,21 @@ export default class HissabEditor {
   }
 
   replaceDocument(text: string, options: ReplaceDocumentOptions = {}) {
+    // Measured through `toText` so a `\r\n` input maps to the same offset the
+    // document will have once CodeMirror normalises its line breaks.
+    const end = this.view?.state.toText(text).length ?? 0;
     const transaction = this.view?.state.update({
       changes: {
         from: 0,
         to: this.view?.state?.doc.length,
         insert: text,
       },
+      selection: options.cursorAtEnd ? { anchor: end } : undefined,
+      scrollIntoView: options.cursorAtEnd,
+      annotations:
+        options.addToHistory === false
+          ? Transaction.addToHistory.of(false)
+          : undefined,
     });
 
     if (transaction) {
@@ -319,8 +333,6 @@ export default class HissabEditor {
       EditorView.editable.of(this.isWritable),
       undoRedoKeymap,
     ];
-
-    if (this.storePage) debounce(this.storePage, 2000);
 
     const state = EditorState.create({
       doc: page ?? "",

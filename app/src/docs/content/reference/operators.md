@@ -14,7 +14,7 @@ last)**. Operators sharing a rank are applied left to right.
 | ---- | --------- | ----- |
 | 1 | `~` (NOT), `perm`, `comb` | Bitwise / combinatorics |
 | 2 | `!` (factorial) | Arithmetic |
-| 3 | `%` (postfix), prefix functions `sin`, `cos`, `log`, … | Percent / functions |
+| 3 | `%` (postfix), prefix functions `sqrt`, `sin`, `cos`, `log`, … | Percent / functions |
 | 4 | `^` (power) | Arithmetic |
 | 5 | `*`, `/`, `mod` | Arithmetic |
 | 6 | `+`, `-` | Arithmetic |
@@ -46,11 +46,13 @@ explicit.
 | `^` (or `**`) | power | `2 ^ 10` |
 | `mod` | modulo (remainder) | `10 mod 7` |
 | `!` | factorial (postfix) | `5!` |
+| `sqrt` | square root (prefix) | `sqrt 144` |
 
 ```hissab
 10 mod 7
 5!
 2 ^ 10
+sqrt 144
 ```
 
 ## Percent

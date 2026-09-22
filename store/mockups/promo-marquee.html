@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Hissab marquee promo tile</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        --copy-x: 96px;
+        --copy-w: 560px;
+        --h1-size: 64px;
+      }
+
+      .copy .lockup {
+        --mark: 48px;
+        margin-bottom: 34px;
+      }
+
+      .copy p {
+        max-width: 23em;
+      }
+    </style>
+  </head>
+  <body style="--w: 1400px; --h: 560px">
+    <div class="copy">
+      <div class="lockup">
+        <img src="assets/icon.png" alt="" />
+        <span>Hissab</span>
+      </div>
+      <h1>Math the way you’d say it</h1>
+      <p>
+        Units, dates, money, developer math and graphs, answered as you type
+        in your Chrome toolbar.
+      </p>
+    </div>
+
+    <!-- Runs off the bottom edge: the lines are what matter here. -->
+    <figure class="popup long-shadow" style="--scale: 1.1; --x: 740px; --y: 64px">
+      <img src="captures/overview.png" alt="" />
+    </figure>
+  </body>
+</html>

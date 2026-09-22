@@ -113,14 +113,16 @@ surface. The **Hissab vs Alternatives** page covers this objection in full.
 
 ### Does Hissab solve equations?
 
-**Not yet.** Hissab supports symbolic simplification, expansion, derivatives,
-integrals, and limits for expressions involving `x`, `y`, and `z`, but it does
-not solve equations for a variable.
+**Yes.** `solve(x^2 - 5x + 6, x)` returns `x = 2, x = 3`. Polynomials get every
+root (complex ones too), linear equations with other variables are solved
+symbolically, and other single-variable equations get a numeric search for real
+roots. See **Symbolic algebra** for the details.
 
 ### Is Hissab a CAS?
 
 **Not fully.** It does symbolic simplification, expansion, derivatives,
-integrals, and limits, but not equation solving. Think of it as a practical
+integrals, limits and equation solving over `x`, `y` and `z`, but not the wider
+symbolic toolkit of a full CAS. Think of it as a practical
 natural-language calculator and agent math engine, not a Mathematica
 replacement.
 
@@ -142,8 +144,8 @@ are not trusting a black box; you are trusting an auditable, deterministic one.
 ### What can't Hissab do?
 
 No live currency/FX conversion (pass the rate, or let the AI layer fetch it), no
-equation solving *yet* (it does simplify/expand/derivatives/integrals/limits),
-and it is not for big-dataset, ML, or statistical-modeling work — that is still
+symbolic solving of non-linear systems or of equations with several unknowns, and
+it is not for big-dataset, ML, or statistical-modeling work — that is still
 Python's job.
 
 ## Open source & business model

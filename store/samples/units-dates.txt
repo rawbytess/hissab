@@ -1,0 +1,11 @@
+// Units
+5 feet 11 inches to cm
+2.5 kg to pounds
+100 km per hour to miles per hour
+2 cups to ml
+// Dates and time
+today + 3 weeks
+25 dec 2026 - today
+3:42 am pst in tokyo
+1646480610 seconds to human date
+2 hours + 45 minutes to minutes

@@ -65,13 +65,13 @@ documentation chunk with full grammar, examples, and gotchas. Fetch a chunk
 **before** writing expressions for a category you are not already confident
 about.
 
-- `arithmetic` — Plain math: +, -, *, /, ^, root, !, abs, mod
+- `arithmetic` — Plain math: +, -, *, /, ^, sqrt, !, abs, mod, powmod, floor/ceil/round; whole numbers stay exact at any size
 - `percentage` — % of value, discounts, percent add/subtract, reverse percent
 - `unit_conversion` — `<value> <unit> to <unit>`, mixed-unit math, SI/binary prefixes, multi-target breakdown
 - `compound_units` — Compound units like m/s, N*m^2, mph; dimensional arithmetic and conversion
 - `set_operations` — max, min, lcm, gcd, permutation (perm), combination (comb)
 - `number_theory` — Reduce decimals to fractions / mixed numbers, test primality, list divisors
-- `logarithm` — Natural log, log10, log2
+- `logarithm` — Natural log (log / ln), log10, log2
 - `statistics` — avg, median, range, variance, standard / harmonic / geometric mean
 - `probability` — P() probabilities, complement/AND/OR via ~ & |, conditional, Bayes, odds, binomial, expected value
 - `finance` — Simple & compound interest, future/present value, loan & mortgage EMI, annuities, CAGR, ROI, APY, profit margin, markup, break-even, runway; tip, discount/sale price, sales tax, NPV, IRR, depreciation
@@ -83,7 +83,7 @@ about.
 - `bitwise` — NOT (~), AND (&), OR (|), XOR (xor), left/right shifts
 - `color` — Hex / rgb / rgba / hsl / named colors; format conversion, mixing, shading, complement, temperature
 - `ip_address` — IPv4 & IPv6 addresses and CIDR: format conversion, address arithmetic, bitwise masking, subnet/network/broadcast/host math, classification
-- `symbolic` — Free variables (x, y, z), implicit multiplication, simplify / collect like terms; derivative/integral/limit structure captured
+- `symbolic` — Free variables (x, y, z), implicit multiplication, simplify / collect like terms; derivative, integral, limit; solve equations
 - `complex_numbers` — Imaginary unit i and complex arithmetic (+, -, *, /, ^) in a + bi form
 - `coordinate_systems` — Points/vectors in cartesian, polar, cylindrical, spherical & minkowski systems; arithmetic, `to`-conversions, distance/dot/cross/angle/magnitude
 - `matrix` — Matrix literals [1 2, 3 4] (space=column, comma/semicolon=row); add/subtract/multiply, scalar ops, power/inverse, transpose, determinant, rank, rref, eigenvalues

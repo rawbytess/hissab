@@ -38,6 +38,9 @@ export class Tokens {
         "",
         this._multiWord,
       );
+      // Integer literals are exact: they keep their digits past 2^53.
+      if (tkn && tokentype === TokenBaseType.DECIMAL && "markExact" in tkn)
+        tkn.markExact();
       if (tkn) this._tokens.push(tkn);
     }
     this._thetoken = "";

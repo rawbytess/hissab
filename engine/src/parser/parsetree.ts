@@ -8,6 +8,7 @@ import {
   NumberToken,
   OperatorToken,
 } from "../tokens/tokens";
+import type { ExactFunc } from "../types/operator_types";
 
 type HasChildren = OperatorToken | FunctionToken;
 
@@ -98,10 +99,11 @@ export default class ParseTree {
             this.setIsExplicit,
             this.setConvertTo,
           )
-        : this.wrapNumericResult(
+        : (this.exactResult(currHead, currHead.def.exact) ??
+          this.wrapNumericResult(
             currHead,
             currHead.def.func(...currHead.getChildrenValues()),
-          );
+          ));
     } else {
       result = currHead.def.isRaw
         ? await currHead.def.run(
@@ -110,16 +112,37 @@ export default class ParseTree {
             this.setIsExplicit,
             this.setConvertTo,
           )
-        : this.wrapNumericResult(
+        : (this.exactResult(currHead, currHead.def.exact) ??
+          this.wrapNumericResult(
             currHead,
             currHead.def.run(...currHead.getChildrenValues()),
-          );
+          ));
     }
     if (!result) throw new UnhandledError(9001);
     currHead.clearChildren();
 
     if (parent) parent.setChild(direction, result);
     else this._head = result;
+  }
+
+  // A non-raw def's exact integer implementation, used when every operand is
+  // an exact integer and no unit is in play (see NumberToken.exactValue).
+  // Null defers to the float implementation.
+  private exactResult(
+    node: OperatorToken | FunctionToken,
+    exact: ExactFunc | undefined,
+  ): NumberToken | null {
+    if (!exact || this.exprUnit) return null;
+    const values: bigint[] = [];
+    for (const child of node.children) {
+      if (!child) continue;
+      if (!(child instanceof NumberToken) || child.unit) return null;
+      const value = child.exactValue();
+      if (value === null) return null;
+      values.push(value);
+    }
+    const result = exact(...values);
+    return result === null ? null : NumberToken.fromExact(result);
   }
 
   private wrapNumericResult(

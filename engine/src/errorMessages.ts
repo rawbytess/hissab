@@ -66,6 +66,13 @@ export const userErrorMessages: Record<number, string> = {
   // Single-argument arithmetic (function.ts)
   12343: "`abs` takes a single value.",
 
+  // Rounding, modular exponentiation, number theory (functions/arithmetic.ts)
+  7806: "This number is too large to test for primality — it was computed in floating point and has lost digits. Write it out, or build it from exact integer arithmetic.",
+  7807: "`factors` supports whole numbers up to 9,007,199,254,740,991.",
+  7810: "`floor`, `ceil` and `round` take a number and optional decimal places, e.g. `round(3.14159, 2)`.",
+  7811: "The number of decimal places must be a whole number with no unit.",
+  7812: "`powmod` takes three whole numbers: base, exponent ≥ 0 and a non-zero modulus, e.g. `powmod(7, 222, 1000)`.",
+
   // Color (function.ts, tokens.ts)
   63434: "Wrong number of color components (`rgb` takes 3-4, `hsl` takes 3).",
   976: "Invalid color values.",
@@ -78,8 +85,18 @@ export const userErrorMessages: Record<number, string> = {
   321: "Trigonometric functions expect an angle (degree or radian).",
   4312: "The value is outside the valid domain for this inverse hyperbolic function.",
 
-  // Logarithm (operator_types.ts)
+  // Equation solving (symbolic/solve.ts, symbolic/from_tree.ts)
+  8820: "`solve` takes an expression (solved for = 0) or two sides of an equation, then optionally the variable: `solve(x^2 - 4, x)` or `solve(2x + 1, 7, x)`.",
+  8821: "This equation has more than one variable — name the one to solve for, e.g. `solve(2x + 3y - 8, x)`.",
+  8822: "Only linear equations can be solved when the other coefficients are symbolic.",
+  8823: "A `solve` answer is a list of values — use it on its own line, not inside a larger expression.",
+  8824: "`solve` can only solve for x, y or z — `name = value` inside it is read as an equation in that variable.",
+  8805: "This needs a variable (x, y or z) to work with, e.g. `derivative(x^2, x)` or `solve(x^2 - 4, x)`.",
+
+  // Logarithm and square root (operator_types.ts)
   6892: "Logarithm is undefined for negative numbers.",
+  6893: "`sqrt` takes a number, e.g. `sqrt(2)`.",
+  6894: "`sqrt` takes a plain number with no unit — take the root of the value, then add the unit back.",
 
   // Arithmetic on non-numeric operands (operator_types.ts, tokens.ts)
   8651: "This operation expects numeric values.",

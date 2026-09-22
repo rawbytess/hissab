@@ -87,7 +87,7 @@ Audience: people wiring the agent skills.
 Currently the **stock `React + TypeScript + Vite` template** — it has no Hissab
 content. Don't silently overwrite it as part of a routine sync; flag it to the
 user and replace it only with their go-ahead. A real version would mirror the
-app's role (PWA + Chrome extension calculator) and point at `app/src/docs/` for
+app's role (PWA calculator) and point at `app/src/docs/` for
 syntax.
 
 ---

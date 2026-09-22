@@ -44,8 +44,11 @@ export function render(e: Expr): string {
       return renderProduct(e.factors);
     case "pow": {
       const base = renderFactor(e.base);
+      // Only a non-negative integer exponent goes bare: `x^(3/2)`, not `x^3/2`.
       const exp =
-        e.exp.kind === "const" && e.exp.value >= 0
+        e.exp.kind === "const" &&
+        e.exp.value >= 0 &&
+        Number.isInteger(e.exp.value)
           ? formatRational(e.exp.value)
           : `(${render(e.exp)})`;
       return `${base}^${exp}`;
@@ -72,6 +75,16 @@ export function render(e: Expr): string {
         : `integral(${render(e.body)}, ${e.variable})`;
     case "limit":
       return `limit(${render(e.body)}, ${e.variable} -> ${render(e.point)})`;
+    case "solve":
+      return `solve(${render(e.body)}${e.variable ? `, ${e.variable}` : ""})`;
+    case "solutions":
+      if (e.all) return `${e.variable} = any value`;
+      if (e.values.length === 0)
+        return e.exhaustive ? "no solution" : "no real solution found";
+      return (
+        e.values.map((v) => `${e.variable} = ${render(v)}`).join(", ") +
+        (e.more ? ", …" : "")
+      );
     default:
       return "";
   }

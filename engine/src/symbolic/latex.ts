@@ -111,6 +111,18 @@ export function exprToLatex(e: Expr): string {
         : `\\int ${exprToLatex(e.body)} \\,\\mathrm{d}${e.variable}`;
     case "limit":
       return `\\lim_{${e.variable} \\to ${exprToLatex(e.point)}} ${exprToLatex(e.body)}`;
+    case "solve":
+      return `\\operatorname{solve}\\left(${exprToLatex(e.body)} = 0\\right)`;
+    case "solutions":
+      if (e.all) return `${e.variable} \\in \\mathbb{R}`;
+      if (e.values.length === 0)
+        return e.exhaustive
+          ? "\\text{no solution}"
+          : "\\text{no real solution found}";
+      return (
+        e.values.map((v) => `${e.variable} = ${exprToLatex(v)}`).join(",\\; ") +
+        (e.more ? ",\\; \\ldots" : "")
+      );
     default:
       return "";
   }

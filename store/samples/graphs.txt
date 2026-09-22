@@ -1,0 +1,5 @@
+// Calculus
+derivative(x * sin(x), x)
+integrate(2x^2 + 3x + 10, x, 0, 5)
+// Graphs
+draw(x * sin(x), sin(x) + x * cos(x))

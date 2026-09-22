@@ -27,7 +27,7 @@ have a source unit**.
 - **Area** — hectare, acre, square mile, square feet, square inch, square yard, square meter, are, barn
 - **Volume** — litre, gallon, quart, pint, cup, tablespoon, teaspoon, barrel, fluid ounce, cubic mile/foot/inch/yard/meter, imperial gallon/quart/pint/fluid ounce, peck, bushel, jigger, hogshead, fluid dram, minim
 - **Temperature** — Celsius, kelvin, Fahrenheit, rankine
-- **Weight** — gram, ton, pound, ounce, carat, amu, tonne / metric ton, long ton, stone, slug, grain, dram, troy ounce, troy pound, hundredweight
+- **Weight** — gram, ton (US short ton, 2,000 lb), pound, ounce, carat, amu, tonne / metric ton, long ton, stone, slug, grain, dram, troy ounce, troy pound, hundredweight
 - **Angle** — degree, grad, radian, arcminute, arcsecond, turn
 - **Data** — bit, byte, nibble
 - **Time** — second, minute, hour, day, week, month, year, decade, century, millennium, fortnight

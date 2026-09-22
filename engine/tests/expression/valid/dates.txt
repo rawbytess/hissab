@@ -35,3 +35,27 @@
 ["12 mar 2020 to timestamp", "1,583,985,600,000 milliseconds"]
 ["1693248840 seconds to human date", "Mon 28 Aug 2023, 18:54"]
 ["1693248840234 to human date", "Mon 28 Aug 2023, 18:54:00:234"]
+# A date without a year is that day in the current year (clock frozen at
+# 22 Sep 2026 in the test runner); `29 feb` rolls to the next leap year.
+["25 dec - 1 dec 2026 to days", "24 days"]
+["25 dec 2026", "Fri 25 Dec 2026"]
+["29 feb", "29 Feb"]
+["29 feb - 1 mar 2027 to days", "365 days"]
+# Durations step the calendar: whole days, months and years keep the wall
+# clock (8 Oct stays at midnight across the DST change); a fractional remainder
+# and hours are elapsed time. Same-zone date differences are wall-clock.
+["1 jan 2026 + 280 days", "Thu 8 Oct 2026"]
+["280 days + 1 jan 2026", "Thu 8 Oct 2026"]
+["1 jan 2026 + 1 month", "Sun 1 Feb 2026"]
+["31 jan 2026 + 1 month", "Sat 28 Feb 2026"]
+["1 mar 2026 - 1 month", "Sun 1 Feb 2026"]
+["1 jan 2026 + 1 year", "Fri 1 Jan 2027"]
+["1 jan 2026 - 1 decade", "Fri 1 Jan 2016"]
+["1 jan 2026 + 1 fortnight", "Thu 15 Jan 2026"]
+["1 jan 2026 + 1.5 days", "Fri 2 Jan 2026, 12:00"]
+["1 jan 2026 + 90 minutes", "Thu 1 Jan 2026, 1:30"]
+["20 dec 2026 - 15 march 2026 to days", "280 days"]
+["10 mar 2026 - 1 mar 2026", "1 week 2 day"]
+# An hour with am/pm attaches to the date before it; a 24-hour time keeps :00.
+["25 dec 2026 3 pm", "Fri 25 Dec 2026, 3 pm"]
+["25 dec 2026 15:00", "Fri 25 Dec 2026, 15:00"]

@@ -641,7 +641,7 @@ const Units: UnitsIF = {
       "cubic feet": 0.0005221897,
       "cubic inch": 0.90234375,
       "cubic yard": 0.0000193404,
-      "cubic meter": 1,
+      "cubic meter": 0.0000147867648,
     },
   },
   teaspoon: {
@@ -940,25 +940,26 @@ const Units: UnitsIF = {
     display: metricFamily,
     factors: {
       gram: 1,
-      ton: 1000,
+      ton: 1.1023113109e-6,
       pound: 0.0022046226,
       ounce: 0.0352739619,
       carat: 5,
       amu: 6.022136651e23,
     },
   },
+  // US short ton (2,000 lb). `short ton` is a synonym; the metric ton is `tonne`.
   ton: {
     plural: "tons",
     type: UnitTypes.WEIGHT,
-    description: "Unit of Weight",
-    factor: 907185,
+    description: "Unit of Weight (US short ton)",
+    factor: 907184.74,
     factors: {
-      gram: 1000000,
+      gram: 907184.74,
       ton: 1,
-      pound: 2204.6226218,
-      ounce: 35273.96195,
-      carat: 5000000,
-      amu: 6.022136651e29,
+      pound: 2000,
+      ounce: 32000,
+      carat: 4535923.7,
+      amu: 5.4631904759e29,
     },
   },
   pound: {
@@ -969,7 +970,7 @@ const Units: UnitsIF = {
     display: poundFamily,
     factors: {
       gram: 453.59237,
-      ton: 0.0004535924,
+      ton: 0.0005,
       pound: 1,
       ounce: 16,
       carat: 2267.96185,
@@ -984,7 +985,7 @@ const Units: UnitsIF = {
     display: poundFamily,
     factors: {
       gram: 28.349523125,
-      ton: 0.0000283495,
+      ton: 0.00003125,
       pound: 0.0625,
       ounce: 1,
       carat: 141.74761563,
@@ -998,7 +999,7 @@ const Units: UnitsIF = {
     factor: 0.2,
     factors: {
       gram: 0.2,
-      ton: 2e-7,
+      ton: 2.2046226218e-7,
       pound: 0.0004409245,
       ounce: 0.0070547924,
       carat: 1,
@@ -1012,7 +1013,7 @@ const Units: UnitsIF = {
     factor: 1.660540199e-24,
     factors: {
       gram: 1.660540199e-24,
-      ton: 1.660540199e-30,
+      ton: 1.8304322436e-30,
       pound: 3.660864489e-27,
       ounce: 5.857383183e-26,
       carat: 8.302700999e-24,
@@ -1473,7 +1474,7 @@ const Units: UnitsIF = {
       daily: 86400,
       weekly: 604800,
       monthly: 2628000,
-      quarterly: 10512000,
+      quarterly: 7884000,
       yearly: 31557600,
     },
   },
@@ -1489,7 +1490,7 @@ const Units: UnitsIF = {
       daily: 1440,
       weekly: 10080,
       monthly: 43800,
-      quarterly: 175200,
+      quarterly: 131400,
       yearly: 525960,
     },
   },
@@ -1505,7 +1506,7 @@ const Units: UnitsIF = {
       daily: 24,
       weekly: 168,
       monthly: 730,
-      quarterly: 2920,
+      quarterly: 2190,
       yearly: 8766,
     },
   },
@@ -1520,8 +1521,8 @@ const Units: UnitsIF = {
       hourly: 1 / 24,
       daily: 1,
       weekly: 7,
-      monthly: 30,
-      quarterly: 120,
+      monthly: 365 / 12,
+      quarterly: 365 / 4,
       yearly: 365,
     },
   },
@@ -1537,7 +1538,7 @@ const Units: UnitsIF = {
       daily: 1 / 7,
       weekly: 1,
       monthly: 4.3452380952,
-      quarterly: 17.381,
+      quarterly: 365 / 28,
       yearly: 52,
     },
   },
@@ -1553,7 +1554,7 @@ const Units: UnitsIF = {
       daily: 0.0328767123,
       weekly: 0.2301369863,
       monthly: 1,
-      quarterly: 4,
+      quarterly: 3,
       yearly: 12,
     },
   },
@@ -1563,12 +1564,12 @@ const Units: UnitsIF = {
     factor: 4,
     display: { kind: "units", family: ["yearly"] },
     factors: {
-      secondly: 9.51293759e-8,
-      minutely: 0.00000570777,
-      hourly: 0.00034246575,
-      daily: 0.00821917807,
-      weekly: 0.05753424657,
-      monthly: 0.25,
+      secondly: 1 / 7884000,
+      minutely: 1 / 131400,
+      hourly: 1 / 2190,
+      daily: 4 / 365,
+      weekly: 28 / 365,
+      monthly: 1 / 3,
       quarterly: 1,
       yearly: 4,
     },
@@ -2416,12 +2417,30 @@ function unitToBase(unitName: string): number {
   return data.factor ?? 1;
 }
 
+// Digits after the decimal point in a factor's shortest form (1609.344 → 3,
+// 0.0006213712 → 10, 3600 → 0).
+function decimalPlaces(n: number): number {
+  const [mantissa, exponent] = Math.abs(n).toExponential().split("e");
+  const fraction = mantissa.split(".")[1]?.length ?? 0;
+  return Math.max(0, fraction - Number(exponent));
+}
+
 // Conversion factor: 1 fromUnit = (returned value) toUnits. Same family required.
 // Prefers the hand-tuned pairwise factor when present, then derives from canonical base.
+// A pair stored in both directions holds one exact definition and one ~10-digit
+// truncated reciprocal (mile→meter 1609.344 vs meter→mile 0.0006213712). The
+// exact one is the shorter decimal, so it is used — inverted when it is the
+// reverse entry — so chained conversions (`5 km to miles`, then `prev to
+// meters`) land back on 5,000. Pairs that disagree by more than 1e-6 are
+// deliberate conventions (52 weeks/year) and keep their direct factor.
 function linearFactor(fromUnit: string, toUnit: string): number {
   const direct = Units[fromUnit]?.factors?.[toUnit];
-  if (direct !== undefined) return direct;
-  return unitToBase(fromUnit) / unitToBase(toUnit);
+  if (direct === undefined) return unitToBase(fromUnit) / unitToBase(toUnit);
+  const reverse = Units[toUnit]?.factors?.[fromUnit];
+  if (!reverse) return direct;
+  const inverted = 1 / reverse;
+  if (Math.abs(direct - inverted) > Math.abs(inverted) * 1e-6) return direct;
+  return decimalPlaces(reverse) < decimalPlaces(direct) ? inverted : direct;
 }
 
 // Dimension vector for a unit type *without* explicit `dim`. AREA → meter^2,

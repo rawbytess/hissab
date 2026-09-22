@@ -200,6 +200,7 @@ const raw: SynonymsType = {
   t: "tera",
 
   log: "loge",
+  ln: "loge",
 
   annually: "yearly",
 

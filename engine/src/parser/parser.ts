@@ -105,7 +105,13 @@ async function dispatchToken(
   tokens: TokenType[],
   parseIndex: number,
 ): Promise<DispatchResult> {
-  if (token instanceof VariableToken) token = token.valueToken;
+  if (token instanceof VariableToken) {
+    // Work on an unlabelled copy: the stored result must not be mutated in
+    // place, and a result that is this very token (`-a`, `d - 1 day`) must not
+    // re-bind the label `a` / `d`.
+    token = token.valueToken.clone();
+    token.variableName = "";
+  }
   if (isOperandToken(token))
     return {
       state: await parseState.handleOperand(parseTree, token),
