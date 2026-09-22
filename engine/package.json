@@ -25,9 +25,9 @@
   "devDependencies": {
     "@types/chroma-js": "3.1.2",
     "@types/jest": "30.0.0",
-    "jest": "30.4.2",
+    "jest": "30.5.1",
     "regenerator-runtime": "0.14.1",
-    "ts-jest": "29.4.11",
+    "ts-jest": "29.4.12",
     "tsup": "8.5.1"
   },
   "dependencies": {
